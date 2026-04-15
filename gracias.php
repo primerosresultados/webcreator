@@ -6,18 +6,26 @@ $v = time();
 
 // Load thank you config from DB
 $thankYouConfig = [];
+$siteInfo = [];
 try {
-    require_once __DIR__ . '/api/init.php';
-    $db = getDB();
-    $stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'thank_you_config'");
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row && $row['setting_value']) {
-        $thankYouConfig = json_decode($row['setting_value'], true) ?: [];
+    $cfgPath = __DIR__ . '/config/database.php';
+    if (file_exists($cfgPath)) {
+        require_once $cfgPath;
+        $db = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        $stmt = $db->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('thank_you_config','site_info')");
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            if ($row['setting_key'] === 'thank_you_config') {
+                $thankYouConfig = json_decode($row['setting_value'], true) ?: [];
+            } elseif ($row['setting_key'] === 'site_info') {
+                $siteInfo = json_decode($row['setting_value'], true) ?: [];
+            }
+        }
     }
-} catch (Exception $e) {
-    // Use defaults
-}
+} catch (Exception $e) {}
 
 $title = !empty($thankYouConfig['title']) ? htmlspecialchars($thankYouConfig['title']) : '¡Gracias por contactarnos!';
 $message = !empty($thankYouConfig['message']) ? htmlspecialchars($thankYouConfig['message']) : 'Hemos recibido tu mensaje y nos pondremos en contacto contigo a la brevedad.';
@@ -26,25 +34,9 @@ $ctaText = !empty($thankYouConfig['ctaText']) ? htmlspecialchars($thankYouConfig
 $ctaUrl = !empty($thankYouConfig['ctaUrl']) ? htmlspecialchars($thankYouConfig['ctaUrl']) : '/';
 $showSocial = !empty($thankYouConfig['showSocial']);
 
-// Extract YouTube embed ID
 $youtubeEmbed = '';
-if ($youtubeUrl) {
-    if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $youtubeUrl, $matches)) {
-        $youtubeEmbed = $matches[1];
-    }
-}
-
-// Load site info for social links
-$siteInfo = [];
-if ($showSocial) {
-    try {
-        $stmt2 = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'site_info'");
-        $stmt2->execute();
-        $row2 = $stmt2->fetch(PDO::FETCH_ASSOC);
-        if ($row2 && $row2['setting_value']) {
-            $siteInfo = json_decode($row2['setting_value'], true) ?: [];
-        }
-    } catch (Exception $e) {}
+if ($youtubeUrl && preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $youtubeUrl, $matches)) {
+    $youtubeEmbed = $matches[1];
 }
 ?>
 <!DOCTYPE html>

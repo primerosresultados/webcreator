@@ -22,24 +22,27 @@ $S = [
     'tiktok'          => '',
 ];
 try {
-    require_once __DIR__ . '/api/init.php';
-    $db = getDB();
-    $stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'site_info'");
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row && $row['setting_value']) {
-        $loaded = json_decode($row['setting_value'], true);
-        if (is_array($loaded)) {
-            foreach ($loaded as $k => $val) {
-                if (!empty($val)) $S[$k] = $val;
+    $cfgPath = __DIR__ . '/config/database.php';
+    if (file_exists($cfgPath)) {
+        require_once $cfgPath;
+        $pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('site_info','logo_normal','logo_negative')");
+        $stmt->execute();
+        while ($row = $stmt->fetch()) {
+            if ($row['setting_key'] === 'site_info') {
+                $loaded = json_decode($row['setting_value'], true);
+                if (is_array($loaded)) {
+                    foreach ($loaded as $k => $val) {
+                        if (!empty($val)) $S[$k] = $val;
+                    }
+                }
+            } else {
+                $S[$row['setting_key']] = $row['setting_value'];
             }
         }
-    }
-    // Load logos
-    $logoStmt = $db->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('logo_normal','logo_negative')");
-    $logoStmt->execute();
-    while ($lr = $logoStmt->fetch(PDO::FETCH_ASSOC)) {
-        $S[$lr['setting_key']] = $lr['setting_value'];
     }
 } catch (Exception $e) {}
 
