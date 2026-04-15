@@ -884,6 +884,7 @@ function setThemeConfigToUI(config) {
 
 async function loadThemeConfig() {
     const result = await api('/api/settings.php?key=theme_config');
+    console.log('[Theme Load] API response:', result);
     if (result && result.success && result.setting && result.setting.setting_value) {
         try {
             const config = JSON.parse(result.setting.setting_value);
@@ -899,11 +900,13 @@ async function saveThemeConfig() {
     if (btn) { btn.classList.add('btn-loading'); btn.disabled = true; }
 
     const config = getThemeConfigFromUI();
+    console.log('[Theme Save] Sending config:', config);
 
     const result = await api('/api/settings.php', {
         method: 'POST',
         body: JSON.stringify({ _method: 'PUT', theme_config: config })
     });
+    console.log('[Theme Save] API response:', result);
 
     if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; }
 
