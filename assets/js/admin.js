@@ -393,8 +393,8 @@ async function cycleLead(id) {
     const nextStatus = statusCycle[(currentIdx + 1) % statusCycle.length];
 
     const result = await api(`/api/leads.php?id=${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ status: nextStatus })
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', status: nextStatus })
     });
 
     if (result && result.success) {
@@ -699,8 +699,8 @@ async function uploadLogo(file, type) {
             settingsData[logoKey] = logoUrl;
             
             await api('/api/settings.php', {
-                method: 'PUT',
-                body: JSON.stringify(settingsData)
+                method: 'POST',
+                body: JSON.stringify({ _method: 'PUT', ...settingsData })
             });
             
             Toast.success(`Logo ${type === 'normal' ? 'principal' : 'negativo'} actualizado y guardado.`);
@@ -731,8 +731,8 @@ async function removeLogo(type) {
     settingsData[logoKey] = '';
     
     await api('/api/settings.php', {
-        method: 'PUT',
-        body: JSON.stringify(settingsData)
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', ...settingsData })
     });
 
     Toast.info(`Logo ${type === 'normal' ? 'principal' : 'negativo'} eliminado.`);
@@ -893,8 +893,8 @@ async function saveThemeConfig() {
     const config = getThemeConfigFromUI();
 
     const result = await api('/api/settings.php', {
-        method: 'PUT',
-        body: JSON.stringify({ theme_config: config })
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', theme_config: config })
     });
 
     if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; }

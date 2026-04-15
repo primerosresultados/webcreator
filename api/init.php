@@ -134,12 +134,18 @@ function sanitize(string $input): string {
 }
 
 /**
- * Get JSON body from POST request
+ * Get JSON body from POST request (cached)
  */
 function getJSONBody(): array {
-    $raw = file_get_contents('php://input');
-    $data = json_decode($raw, true);
-    return is_array($data) ? $data : [];
+    static $cached = null;
+    if ($cached === null) {
+        $raw = file_get_contents('php://input');
+        $cached = json_decode($raw, true);
+        if (!is_array($cached)) $cached = [];
+        // Strip _method override key — not real data
+        unset($cached['_method']);
+    }
+    return $cached;
 }
 
 /**

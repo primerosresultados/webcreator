@@ -13,6 +13,16 @@ require_once __DIR__ . '/init.php';
 
 $method = getMethod();
 
+// Support _method override for hosts that block PUT/DELETE
+if ($method === 'POST') {
+    $body = json_decode(file_get_contents('php://input'), true);
+    if (isset($body['_method'])) {
+        $method = strtoupper($body['_method']);
+    } elseif (isset($_POST['_method'])) {
+        $method = strtoupper($_POST['_method']);
+    }
+}
+
 switch ($method) {
 
     case 'GET':
@@ -58,6 +68,7 @@ switch ($method) {
         break;
 
     case 'PUT':
+    case 'PATCH':
         $user = requireAuth();
         requireCSRF();
         $db = getDB();
