@@ -574,7 +574,7 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
-    if (viewName === 'settings') { loadSiteInfo(); loadSavedLogos(); loadThemeConfig(); }
+    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); }
 }
 
 // ============================================
@@ -852,6 +852,49 @@ async function saveSiteInfo() {
         Toast.success('Información del sitio guardada correctamente.');
     } else {
         Toast.error(result?.error || 'Error al guardar la información.');
+    }
+}
+
+// ============================================
+// THANK YOU PAGE CONFIGURATION
+// ============================================
+const THANK_YOU_KEYS = ['title', 'message', 'youtubeUrl', 'ctaText', 'ctaUrl'];
+
+async function loadThankYouConfig() {
+    const result = await api('/api/settings.php?key=thank_you_config');
+    if (result && result.success && result.setting && result.setting.setting_value) {
+        try {
+            const config = JSON.parse(result.setting.setting_value);
+            THANK_YOU_KEYS.forEach(key => {
+                const el = document.getElementById(`ty-${key}`);
+                if (el && config[key]) el.value = config[key];
+            });
+            const showSocial = document.getElementById('ty-showSocial');
+            if (showSocial) showSocial.checked = !!config.showSocial;
+        } catch (e) {
+            console.warn('Could not parse thank_you_config:', e);
+        }
+    }
+}
+
+async function saveThankYouConfig() {
+    const config = {};
+    THANK_YOU_KEYS.forEach(key => {
+        const el = document.getElementById(`ty-${key}`);
+        if (el) config[key] = el.value.trim();
+    });
+    const showSocial = document.getElementById('ty-showSocial');
+    config.showSocial = showSocial ? showSocial.checked : false;
+
+    const result = await api('/api/settings.php', {
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', thank_you_config: config })
+    });
+
+    if (result && result.success) {
+        Toast.success('Página de agradecimiento guardada.');
+    } else {
+        Toast.error(result?.error || 'Error al guardar.');
     }
 }
 

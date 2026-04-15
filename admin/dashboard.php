@@ -316,6 +316,58 @@
                     </div>
                 </div>
 
+                <!-- Página de Agradecimiento -->
+                <div class="admin-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>Página de Agradecimiento</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <p style="font-size:12px;color:#8b90a6;margin-bottom:var(--space-4);">Personaliza la página que se muestra después de enviar un formulario (/gracias.php)</p>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-5);">
+                        <div class="config-control">
+                            <label class="config-label">Título</label>
+                            <input type="text" id="ty-title" class="form-input" placeholder="¡Gracias por contactarnos!" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">URL Video YouTube (opcional)</label>
+                            <input type="text" id="ty-youtubeUrl" class="form-input" placeholder="https://youtube.com/watch?v=..." style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:var(--space-4);">
+                        <div class="config-control">
+                            <label class="config-label">Mensaje</label>
+                            <textarea id="ty-message" class="form-input" rows="3" placeholder="Hemos recibido tu mensaje y nos pondremos en contacto contigo a la brevedad." style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-5);margin-top:var(--space-4);">
+                        <div class="config-control">
+                            <label class="config-label">Texto del Botón</label>
+                            <input type="text" id="ty-ctaText" class="form-input" placeholder="Volver al inicio" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">URL del Botón</label>
+                            <input type="text" id="ty-ctaUrl" class="form-input" placeholder="/" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:var(--space-4);">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-secondary);">
+                            <input type="checkbox" id="ty-showSocial" style="width:16px;height:16px;accent-color:#6366f1;">
+                            Mostrar enlaces de redes sociales en la página de agradecimiento
+                        </label>
+                    </div>
+
+                    <div style="margin-top:var(--space-5);display:flex;gap:var(--space-3);justify-content:flex-end;">
+                        <button class="btn btn-primary btn-sm" onclick="saveThankYouConfig()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Guardar Página de Agradecimiento
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Logo Upload Section -->
                 <div class="admin-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>

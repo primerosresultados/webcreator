@@ -391,24 +391,5 @@
 
     <!-- Scripts -->
     <script src="/assets/js/app.js?v=<?=$v?>"></script>
-
-    <!-- Load site info for WhatsApp button -->
-    <script>
-    (async function() {
-        try {
-            const r = await fetch('/api/settings.php?key=site_info');
-            const d = await r.json();
-            if (d.success && d.setting && d.setting.setting_value) {
-                const info = JSON.parse(d.setting.setting_value);
-                if (info.whatsapp) {
-                    const btn = document.getElementById('whatsapp-btn');
-                    const num = info.whatsapp.replace(/[^0-9]/g, '');
-                    btn.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent('Hola, me gustaría obtener más información.');
-                    btn.style.display = 'flex';
-                }
-            }
-        } catch(e) {}
-    })();
-    </script>
 </body>
 </html>
