@@ -17,14 +17,6 @@ $method = getMethod();
 $action = $_GET['action'] ?? '';
 $id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-// Support _method override for hosts that block PUT/DELETE
-if ($method === 'POST') {
-    $body = json_decode(file_get_contents('php://input'), true);
-    if (isset($body['_method'])) {
-        $method = strtoupper($body['_method']);
-    }
-}
-
 switch ($method) {
 
     // ============================================

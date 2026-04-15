@@ -134,13 +134,23 @@ function sanitize(string $input): string {
 }
 
 /**
- * Get JSON body from POST request (cached)
+ * Get raw request body (cached to allow multiple reads)
+ */
+function getRawBody(): string {
+    static $raw = null;
+    if ($raw === null) {
+        $raw = file_get_contents('php://input');
+    }
+    return $raw;
+}
+
+/**
+ * Get JSON body from POST request (cached, _method stripped)
  */
 function getJSONBody(): array {
     static $cached = null;
     if ($cached === null) {
-        $raw = file_get_contents('php://input');
-        $cached = json_decode($raw, true);
+        $cached = json_decode(getRawBody(), true);
         if (!is_array($cached)) $cached = [];
         // Strip _method override key — not real data
         unset($cached['_method']);
@@ -149,10 +159,20 @@ function getJSONBody(): array {
 }
 
 /**
- * Get request method
+ * Get request method (with _method override for shared hosting)
  */
 function getMethod(): string {
-    return strtoupper($_SERVER['REQUEST_METHOD']);
+    $method = strtoupper($_SERVER['REQUEST_METHOD']);
+    
+    // Support _method override for hosts that block PUT/DELETE
+    if ($method === 'POST') {
+        $body = json_decode(getRawBody(), true);
+        if (is_array($body) && isset($body['_method'])) {
+            return strtoupper($body['_method']);
+        }
+    }
+    
+    return $method;
 }
 
 // ============================================
