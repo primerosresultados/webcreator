@@ -180,6 +180,14 @@ async function loadDashboard() {
     setValue('#stat-today', stats.today || 0);
     setValue('#stat-week', stats.this_week || 0);
 
+    // Update sidebar leads badge (show new leads count)
+    const newCount = stats.by_status?.new || 0;
+    const badge = document.getElementById('leads-count');
+    if (badge) {
+        badge.textContent = newCount;
+        badge.style.display = newCount > 0 ? 'inline-flex' : 'none';
+    }
+
     // Render simple chart (daily trend)
     renderTrendChart(stats.daily_trend || []);
 }
