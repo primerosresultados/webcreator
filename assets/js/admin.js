@@ -574,7 +574,7 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
-    if (viewName === 'settings') loadThemeConfig();
+    if (viewName === 'settings') { loadSiteInfo(); loadSavedLogos(); loadThemeConfig(); }
 }
 
 // ============================================
@@ -811,6 +811,48 @@ function initLogoDragDrop() {
             }
         });
     });
+}
+
+// ============================================
+// SITE INFO CONFIGURATION
+// ============================================
+const SITE_INFO_KEYS = [
+    'siteName', 'siteDescription', 'phone', 'email', 'whatsapp', 'address',
+    'instagram', 'facebook', 'youtube', 'linkedin', 'twitter', 'pinterest', 'tiktok'
+];
+
+async function loadSiteInfo() {
+    const result = await api('/api/settings.php?key=site_info');
+    if (result && result.success && result.setting && result.setting.setting_value) {
+        try {
+            const info = JSON.parse(result.setting.setting_value);
+            SITE_INFO_KEYS.forEach(key => {
+                const el = document.getElementById(`info-${key}`);
+                if (el && info[key]) el.value = info[key];
+            });
+        } catch (e) {
+            console.warn('Could not parse site_info:', e);
+        }
+    }
+}
+
+async function saveSiteInfo() {
+    const info = {};
+    SITE_INFO_KEYS.forEach(key => {
+        const el = document.getElementById(`info-${key}`);
+        if (el) info[key] = el.value.trim();
+    });
+
+    const result = await api('/api/settings.php', {
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', site_info: info })
+    });
+
+    if (result && result.success) {
+        Toast.success('Información del sitio guardada correctamente.');
+    } else {
+        Toast.error(result?.error || 'Error al guardar la información.');
+    }
 }
 
 // ============================================
