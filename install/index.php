@@ -452,7 +452,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
 <body>
     <div class="installer">
         <div class="installer-header">
-            <div class="logo">🚀</div>
+            <div class="logo" style="font-size:2rem;font-weight:bold;color:#6366f1;">W</div>
             <h1>WebCreator Installer</h1>
             <p>Configuración inicial del sistema</p>
         </div>
@@ -469,7 +469,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                 <!-- SUCCESS SCREEN -->
                 <!-- ============================================ -->
                 <div class="success-screen">
-                    <div class="success-icon">✅</div>
+                    <div class="success-icon" style="font-size:2.5rem;color:var(--success);">&#10003;</div>
                     <h2>¡Instalación Completada!</h2>
                     <p>El sistema se ha configurado correctamente.</p>
 
@@ -480,7 +480,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                     </div>
 
                     <div class="security-note">
-                        ⚠️ El instalador ha sido bloqueado automáticamente. Guarda tus credenciales en un lugar seguro.
+                        El instalador ha sido bloqueado automáticamente. Guarda tus credenciales en un lugar seguro.
                     </div>
 
                     <a href="../admin/" class="btn btn-success">Ir al Panel de Administración →</a>
@@ -494,11 +494,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                 <p style="color:var(--text-secondary); font-size:0.9rem;">Este asistente configurará tu sitio web en pocos pasos.</p>
 
                 <ul class="welcome-features">
-                    <li><span class="icon">📦</span> Conexión a base de datos MySQL</li>
-                    <li><span class="icon">🗄️</span> Creación automática de tablas</li>
-                    <li><span class="icon">👤</span> Cuenta de administrador</li>
-                    <li><span class="icon">🔒</span> Configuración de seguridad</li>
-                    <li><span class="icon">📁</span> Directorio de uploads</li>
+                    <li><span class="icon">&bull;</span> Conexión a base de datos MySQL</li>
+                    <li><span class="icon">&bull;</span> Creación automática de tablas</li>
+                    <li><span class="icon">&bull;</span> Cuenta de administrador</li>
+                    <li><span class="icon">&bull;</span> Configuración de seguridad</li>
+                    <li><span class="icon">&bull;</span> Directorio de uploads</li>
                 </ul>
 
                 <div class="requirements">
@@ -576,7 +576,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                         </div>
                     </div>
 
-                    <div class="section-title">🌐 Configuración del Sitio</div>
+                    <div class="section-title">Configuración del Sitio</div>
 
                     <div class="form-group">
                         <label for="site_name">Nombre del Sitio</label>
@@ -584,11 +584,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                     </div>
 
                     <div class="form-group" style="margin-bottom:0;">
-                        <label style="color:var(--text-secondary);font-size:0.8rem;">🌐 URL del sitio: <strong style="color:var(--success);"><?php $p = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http'; echo $p . '://' . $_SERVER['HTTP_HOST']; ?></strong></label>
+                        <label style="color:var(--text-secondary);font-size:0.8rem;">URL del sitio: <strong style="color:var(--success);"><?php $p = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http'; echo $p . '://' . $_SERVER['HTTP_HOST']; ?></strong></label>
                         <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem;">Se detecta automáticamente. Si cambias el dominio en Hostinger, el sitio se adaptará solo.</p>
                     </div>
 
-                    <div class="section-title">👤 Cuenta de Administrador</div>
+                    <div class="section-title">Cuenta de Administrador</div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -613,7 +613,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
                     </div>
 
                     <div style="margin-top: 1.5rem;">
-                        <button type="submit" class="btn btn-primary">⚡ Instalar Ahora</button>
+                        <button type="submit" class="btn btn-primary">Instalar Ahora</button>
                     </div>
                 </form>
             <?php endif; ?>
