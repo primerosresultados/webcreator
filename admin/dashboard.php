@@ -91,18 +91,14 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div class="sidebar-user" onclick="document.getElementById('user-dropdown').classList.toggle('active')">
+                <div class="sidebar-user">
                     <div class="avatar">A</div>
                     <div class="info">
                         <span class="name">Admin</span>
                         <span class="role">Super Admin</span>
                     </div>
-                    <span style="color:var(--text-tertiary);">⋮</span>
-                </div>
-                <div class="dropdown-menu" id="user-dropdown" style="bottom:100%;top:auto;margin-bottom:var(--space-2);">
-                    <button class="dropdown-item" onclick="logout()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                        Cerrar Sesión
+                    <button onclick="logout()" title="Cerrar Sesión" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);padding:6px;border-radius:8px;transition:all 0.2s;" onmouseover="this.style.color='#ef4444';this.style.background='rgba(239,68,68,0.08)'" onmouseout="this.style.color='var(--text-tertiary)';this.style.background='none'">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     </button>
                 </div>
             </div>
