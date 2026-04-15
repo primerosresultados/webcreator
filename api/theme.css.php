@@ -120,9 +120,9 @@ try {
 
     echo "}\n\n";
 
-    // --- Apply font families ---
+    // --- Apply font families globally ---
     if (!empty($theme['fontBody'])) {
-        echo "body { font-family: var(--font-primary); }\n\n";
+        echo "body, p, span, li, td, th, label, input, textarea, select, button { font-family: var(--font-primary); }\n\n";
     }
 
     if (!empty($theme['fontHeadings'])) {
@@ -130,13 +130,18 @@ try {
     }
 
     if (!empty($theme['fontMenu'])) {
-        echo ".nav-links, .nav-links a, .nav-brand { font-family: var(--font-menu); }\n\n";
+        echo ".nav-links, .nav-links a, .nav-brand, .site-header { font-family: var(--font-menu); }\n\n";
     }
 
-    // --- Individual heading styles ---
+    // --- Individual heading styles (desktop) ---
+    $headingSizes = [];
     for ($i = 1; $i <= 6; $i++) {
         $rules = [];
-        if (!empty($theme["h{$i}Size"])) $rules[] = "font-size: " . cssVal($theme["h{$i}Size"]);
+        $size = !empty($theme["h{$i}Size"]) ? cssVal($theme["h{$i}Size"]) : null;
+        if ($size) {
+            $rules[] = "font-size: {$size}";
+            $headingSizes[$i] = $size;
+        }
         if (!empty($theme["h{$i}Weight"])) $rules[] = "font-weight: " . cssVal($theme["h{$i}Weight"]);
         if (!empty($theme["h{$i}Color"])) $rules[] = "color: " . cssVal($theme["h{$i}Color"]);
 
@@ -147,6 +152,27 @@ try {
             }
             echo "}\n\n";
         }
+    }
+
+    // --- Responsive heading sizes (tablet: 85%, mobile: 70%) ---
+    if (!empty($headingSizes)) {
+        echo "/* Tablet */\n@media (max-width: 768px) {\n";
+        foreach ($headingSizes as $level => $size) {
+            $num = (float) preg_replace('/[^0-9.]/', '', $size);
+            $unit = preg_replace('/[0-9.]/', '', $size) ?: 'px';
+            $tablet = round($num * 0.85, 1);
+            echo "    h{$level} { font-size: {$tablet}{$unit}; }\n";
+        }
+        echo "}\n\n";
+
+        echo "/* Mobile */\n@media (max-width: 480px) {\n";
+        foreach ($headingSizes as $level => $size) {
+            $num = (float) preg_replace('/[^0-9.]/', '', $size);
+            $unit = preg_replace('/[0-9.]/', '', $size) ?: 'px';
+            $mobile = round($num * 0.7, 1);
+            echo "    h{$level} { font-size: {$mobile}{$unit}; }\n";
+        }
+        echo "}\n\n";
     }
 
     // --- Button radius ---
