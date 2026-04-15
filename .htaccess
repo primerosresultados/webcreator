@@ -5,6 +5,9 @@
 # Prevent directory listing
 Options -Indexes
 
+# Prioritize PHP over HTML for dynamic cache busting
+DirectoryIndex index.php index.html
+
 # Block access to sensitive files
 <FilesMatch "\.(php|sql|log|env)$">
     # Allow PHP execution only (not direct download)

@@ -1,0 +1,48 @@
+<?php $v = time(); ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin — Iniciar Sesión</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text x='50' y='68' text-anchor='middle' fill='white' font-size='54' font-weight='bold'>W</text></svg>">
+    <link rel="stylesheet" href="/assets/css/variables.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/base.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/components.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/admin.css?v=<?=$v?>">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:36px;height:36px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <h1>Panel de Administración</h1>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="admin@tusitio.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:var(--space-6);">
+                    Iniciar Sesión →
+                </button>
+            </form>
+
+            <p style="text-align:center;margin-top:var(--space-6);font-size:var(--text-xs);color:var(--text-tertiary);">
+                <a href="/" style="color:var(--text-tertiary);">← Volver al sitio</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/assets/js/admin.js?v=<?=$v?>"></script>
+</body>
+</html>
