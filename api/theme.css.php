@@ -154,6 +154,15 @@ try {
         echo ".btn, .btn-outline-light, .btn-dark, .btn-accent { border-radius: " . cssVal($theme['btnRadius']) . "; }\n\n";
     }
 
+    // --- Button colors ---
+    $btnColor = !empty($theme['btnColor']) ? cssVal($theme['btnColor']) : (!empty($theme['colorPrimary']) ? cssVal($theme['colorPrimary']) : '');
+    $btnHover = !empty($theme['btnHoverColor']) ? cssVal($theme['btnHoverColor']) : (!empty($theme['colorPrimaryHover']) ? cssVal($theme['colorPrimaryHover']) : '');
+
+    if ($btnColor) {
+        echo ".btn-primary { background: {$btnColor}; border-color: {$btnColor}; }\n";
+        echo ".btn-primary:hover:not(:disabled) { background: " . ($btnHover ?: $btnColor) . "; border-color: " . ($btnHover ?: $btnColor) . "; filter: brightness(1.1); }\n\n";
+    }
+
     // --- Apply secondary color to all accent elements on public site ---
     if (!empty($theme['colorSecondary'])) {
         $s = cssVal($theme['colorSecondary']);

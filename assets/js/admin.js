@@ -818,7 +818,7 @@ function initLogoDragDrop() {
 // ============================================
 const THEME_CONFIG_KEYS = [
     'colorPrimary', 'colorPrimaryHover', 'colorSecondary', 'colorAccent',
-    'borderRadius', 'btnRadius',
+    'borderRadius', 'btnRadius', 'btnColor', 'btnHoverColor',
     'fontHeadings', 'fontMenu', 'fontBody',
     'h1Size', 'h1Weight', 'h1Color',
     'h2Size', 'h2Weight', 'h2Color',
@@ -835,6 +835,8 @@ const THEME_DEFAULTS = {
     colorAccent: '#06b6d4',
     borderRadius: '12',
     btnRadius: '8',
+    btnColor: '#c9a96e',
+    btnHoverColor: '#b8944f',
     fontHeadings: 'Inter',
     fontMenu: 'Inter',
     fontBody: 'Inter',
@@ -925,7 +927,7 @@ function resetThemeConfig() {
 
 function initThemeConfigControls() {
     // Sync color pickers with hex inputs
-    const colorKeys = ['colorPrimary', 'colorPrimaryHover', 'colorSecondary', 'colorAccent'];
+    const colorKeys = ['colorPrimary', 'colorPrimaryHover', 'colorSecondary', 'colorAccent', 'btnColor', 'btnHoverColor'];
     colorKeys.forEach(key => {
         const picker = document.getElementById(`cfg-${key}`);
         const hex = document.getElementById(`cfg-${key}-hex`);
