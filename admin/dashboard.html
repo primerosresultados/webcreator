@@ -139,6 +139,60 @@
                     </div>
                 </div>
 
+                <!-- Logo Upload Section -->
+                <div style="margin-top:var(--space-8);">
+                    <div class="admin-section-title">
+                        <div class="section-icon">🎨</div>
+                        <span>Logo del Sitio</span>
+                    </div>
+
+                    <div class="logo-upload-grid">
+                        <!-- Normal Logo -->
+                        <div class="logo-upload-card">
+                            <h4>Logo Principal</h4>
+                            <p class="logo-subtitle">Versión a color para fondos claros</p>
+                            <div class="logo-preview-area" id="logo-normal-preview" onclick="document.getElementById('logo-normal-input').click()">
+                                <div class="logo-placeholder" id="logo-normal-placeholder">
+                                    <div class="upload-icon">📤</div>
+                                    <span>Click o arrastra tu logo aquí</span>
+                                    <span style="font-size:0.65rem;color:#aaa;">PNG, SVG, JPG — máx 2MB</span>
+                                </div>
+                            </div>
+                            <input type="file" id="logo-normal-input" accept="image/*" style="display:none;" onchange="previewLogo(this, 'normal')">
+                            <div class="logo-upload-actions">
+                                <button class="btn btn-primary btn-sm" onclick="document.getElementById('logo-normal-input').click()">
+                                    Subir Logo
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="logo-normal-remove" style="display:none;" onclick="removeLogo('normal')">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Negative / Inverted Logo -->
+                        <div class="logo-upload-card">
+                            <h4>Logo Negativo</h4>
+                            <p class="logo-subtitle">Versión clara para fondos oscuros</p>
+                            <div class="logo-preview-area dark-bg" id="logo-negative-preview" onclick="document.getElementById('logo-negative-input').click()">
+                                <div class="logo-placeholder" id="logo-negative-placeholder">
+                                    <div class="upload-icon">📤</div>
+                                    <span>Click o arrastra tu logo aquí</span>
+                                    <span style="font-size:0.65rem;color:rgba(255,255,255,0.35);">PNG, SVG, JPG — máx 2MB</span>
+                                </div>
+                            </div>
+                            <input type="file" id="logo-negative-input" accept="image/*" style="display:none;" onchange="previewLogo(this, 'negative')">
+                            <div class="logo-upload-actions">
+                                <button class="btn btn-primary btn-sm" onclick="document.getElementById('logo-negative-input').click()">
+                                    Subir Logo
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="logo-negative-remove" style="display:none;" onclick="removeLogo('negative')">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- ============================================ -->

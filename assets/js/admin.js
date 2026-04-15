@@ -633,6 +633,168 @@ async function exportLeadsCSV() {
 }
 
 // ============================================
+// LOGO MANAGEMENT
+// ============================================
+function previewLogo(input, type) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Validate
+    if (file.size > 2 * 1024 * 1024) {
+        Toast.error('El logo no puede pesar más de 2MB.');
+        input.value = '';
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        Toast.error('Solo se permiten archivos de imagen.');
+        input.value = '';
+        return;
+    }
+
+    const previewArea = document.getElementById(`logo-${type}-preview`);
+    const placeholder = document.getElementById(`logo-${type}-placeholder`);
+    const removeBtn = document.getElementById(`logo-${type}-remove`);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        // Show preview
+        if (placeholder) placeholder.style.display = 'none';
+        
+        // Remove existing img if any
+        const existingImg = previewArea.querySelector('img');
+        if (existingImg) existingImg.remove();
+
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = type === 'normal' ? 'Logo Principal' : 'Logo Negativo';
+        previewArea.appendChild(img);
+
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
+
+        // Upload to server
+        uploadLogo(file, type);
+    };
+    reader.readAsDataURL(file);
+}
+
+async function uploadLogo(file, type) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('csrf_token', AdminApp.csrfToken);
+    formData.append('alt_text', `logo-${type}`);
+
+    try {
+        const response = await fetch('/api/upload.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            // Save the logo path in site settings
+            const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
+            const logoUrl = result.media.url || '/' + result.media.path;
+            
+            // Store in localStorage for now (could be saved to DB settings table)
+            localStorage.setItem(logoKey, logoUrl);
+            localStorage.setItem(`${logoKey}_id`, result.media.id);
+            
+            Toast.success(`Logo ${type === 'normal' ? 'principal' : 'negativo'} actualizado.`);
+        } else {
+            Toast.error(result.error || 'Error al subir el logo.');
+        }
+    } catch (err) {
+        Toast.error('Error de conexión al subir el logo.');
+    }
+}
+
+function removeLogo(type) {
+    const previewArea = document.getElementById(`logo-${type}-preview`);
+    const placeholder = document.getElementById(`logo-${type}-placeholder`);
+    const removeBtn = document.getElementById(`logo-${type}-remove`);
+    const fileInput = document.getElementById(`logo-${type}-input`);
+
+    // Remove preview image
+    const img = previewArea.querySelector('img');
+    if (img) img.remove();
+
+    // Show placeholder
+    if (placeholder) placeholder.style.display = 'flex';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (fileInput) fileInput.value = '';
+
+    // Clear storage
+    const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
+    localStorage.removeItem(logoKey);
+    localStorage.removeItem(`${logoKey}_id`);
+
+    Toast.info(`Logo ${type === 'normal' ? 'principal' : 'negativo'} eliminado.`);
+}
+
+function loadSavedLogos() {
+    ['normal', 'negative'].forEach(type => {
+        const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
+        const savedUrl = localStorage.getItem(logoKey);
+        
+        if (savedUrl) {
+            const previewArea = document.getElementById(`logo-${type}-preview`);
+            const placeholder = document.getElementById(`logo-${type}-placeholder`);
+            const removeBtn = document.getElementById(`logo-${type}-remove`);
+
+            if (previewArea && placeholder) {
+                placeholder.style.display = 'none';
+                
+                const existingImg = previewArea.querySelector('img');
+                if (existingImg) existingImg.remove();
+
+                const img = document.createElement('img');
+                img.src = savedUrl;
+                img.alt = type === 'normal' ? 'Logo Principal' : 'Logo Negativo';
+                previewArea.appendChild(img);
+
+                if (removeBtn) removeBtn.style.display = 'inline-flex';
+            }
+        }
+    });
+}
+
+// Drag and drop support for logo areas
+function initLogoDragDrop() {
+    ['normal', 'negative'].forEach(type => {
+        const previewArea = document.getElementById(`logo-${type}-preview`);
+        if (!previewArea) return;
+
+        previewArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            previewArea.style.borderColor = '#6366f1';
+            previewArea.style.transform = 'scale(1.01)';
+        });
+
+        previewArea.addEventListener('dragleave', () => {
+            previewArea.style.borderColor = '';
+            previewArea.style.transform = '';
+        });
+
+        previewArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            previewArea.style.borderColor = '';
+            previewArea.style.transform = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const input = document.getElementById(`logo-${type}-input`);
+                // Create a new DataTransfer to set to the input
+                const dt = new DataTransfer();
+                dt.items.add(files[0]);
+                input.files = dt.files;
+                previewLogo(input, type);
+            }
+        });
+    });
+}
+
+// ============================================
 // INITIALIZE DASHBOARD PAGE
 // ============================================
 async function initDashboard() {
@@ -641,6 +803,8 @@ async function initDashboard() {
 
     initSidebar();
     initLeadsToolbar();
+    loadSavedLogos();
+    initLogoDragDrop();
     
     // Load initial view
     loadDashboard();
