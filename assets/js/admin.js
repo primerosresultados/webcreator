@@ -950,11 +950,15 @@ function setThemeConfigToUI(config) {
         const el = document.getElementById(`cfg-${key}`);
         if (!el) return;
 
-        let val = config[key] || THEME_DEFAULTS[key];
+        // Use config value if it exists (even if "0"), otherwise default
+        let val = (config[key] !== undefined && config[key] !== null && config[key] !== '') 
+            ? config[key] 
+            : THEME_DEFAULTS[key];
         
-        // Strip px for range inputs
+        // Strip px for range inputs (keep 0 as valid!)
         if ((key === 'borderRadius' || key === 'btnRadius') && typeof val === 'string') {
-            val = parseInt(val) || THEME_DEFAULTS[key];
+            const parsed = parseInt(val);
+            val = isNaN(parsed) ? THEME_DEFAULTS[key] : parsed;
         }
 
         el.value = val;
