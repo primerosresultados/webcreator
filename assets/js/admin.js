@@ -114,7 +114,7 @@ function initLogin() {
         if (result && result.success) {
             AdminApp.csrfToken = result.csrf_token;
             AdminApp.user = result.user;
-            window.location.href = '/admin/dashboard.html';
+            window.location.href = '/admin/dashboard.php';
         } else {
             Toast.error(result?.error || 'Credenciales incorrectas.');
             form.querySelector('#login-password').value = '';

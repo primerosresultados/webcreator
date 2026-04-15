@@ -1,3 +1,4 @@
+<?php $v = time(); ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,10 +7,10 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Admin — Dashboard</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text x='50' y='68' text-anchor='middle' fill='white' font-size='54' font-weight='bold'>W</text></svg>">
-    <link rel="stylesheet" href="/assets/css/variables.css?v=1776294627">
-    <link rel="stylesheet" href="/assets/css/base.css?v=1776294627">
-    <link rel="stylesheet" href="/assets/css/components.css?v=1776294627">
-    <link rel="stylesheet" href="/assets/css/admin.css?v=1776294627">
+    <link rel="stylesheet" href="/assets/css/variables.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/base.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/components.css?v=<?=$v?>">
+    <link rel="stylesheet" href="/assets/css/admin.css?v=<?=$v?>">
     <!-- Force light theme for admin -->
     <style>
         :root {
@@ -626,6 +627,6 @@
             document.getElementById('sidebar-toggle').style.display = window.innerWidth <= 1024 ? 'flex' : 'none';
         });
     </script>
-    <script src="/assets/js/admin.js?v=1776294627"></script>
+    <script src="/assets/js/admin.js?v=<?=$v?>"></script>
 </body>
 </html>
