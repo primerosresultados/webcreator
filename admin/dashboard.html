@@ -40,6 +40,9 @@
 
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Herramientas</div>
+                    <a class="sidebar-link" data-view="settings" href="#">
+                        <span>⚙️</span> Configuración
+                    </a>
                     <a class="sidebar-link" href="#" onclick="exportLeadsCSV(); return false;">
                         <span>📥</span> Exportar CSV
                     </a>
@@ -247,6 +250,216 @@
                 <!-- Pagination -->
                 <div class="pagination" id="leads-pagination"></div>
 
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VIEW: CONFIGURACIÓN DEL SITIO -->
+            <!-- ============================================ -->
+            <div class="admin-content admin-view hidden" id="view-settings">
+
+                <!-- Colores Principales -->
+                <div class="admin-section-title">
+                    <div class="section-icon">🎨</div>
+                    <span>Colores del Sitio</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-6);">
+                        <div class="config-control">
+                            <label class="config-label">Color Primario</label>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="cfg-colorPrimary" value="#6366f1" class="color-input">
+                                <input type="text" id="cfg-colorPrimary-hex" value="#6366f1" class="color-hex-input" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Color Primario Hover</label>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="cfg-colorPrimaryHover" value="#4f46e5" class="color-input">
+                                <input type="text" id="cfg-colorPrimaryHover-hex" value="#4f46e5" class="color-hex-input" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Color Secundario</label>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="cfg-colorSecondary" value="#c9a96e" class="color-input">
+                                <input type="text" id="cfg-colorSecondary-hex" value="#c9a96e" class="color-hex-input" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Color Acento</label>
+                            <div class="color-picker-wrap">
+                                <input type="color" id="cfg-colorAccent" value="#06b6d4" class="color-input">
+                                <input type="text" id="cfg-colorAccent-hex" value="#06b6d4" class="color-hex-input" maxlength="7">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bordes -->
+                <div class="admin-section-title">
+                    <div class="section-icon">⬜</div>
+                    <span>Bordes y Botones</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:var(--space-6);">
+                        <div class="config-control">
+                            <label class="config-label">Radio de Bordes Global</label>
+                            <div class="range-wrap">
+                                <input type="range" id="cfg-borderRadius" min="0" max="24" step="1" value="12" class="range-input">
+                                <span class="range-value" id="cfg-borderRadius-val">12px</span>
+                            </div>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Radio de Botones</label>
+                            <div class="range-wrap">
+                                <input type="range" id="cfg-btnRadius" min="0" max="30" step="1" value="8" class="range-input">
+                                <span class="range-value" id="cfg-btnRadius-val">8px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipografía -->
+                <div class="admin-section-title">
+                    <div class="section-icon">🔤</div>
+                    <span>Tipografía</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:var(--space-6);margin-bottom:var(--space-6);">
+                        <div class="config-control">
+                            <label class="config-label">Fuente de Títulos (H1-H6)</label>
+                            <select id="cfg-fontHeadings" class="config-select">
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Outfit">Outfit</option>
+                                <option value="Poppins">Poppins</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="Playfair Display">Playfair Display</option>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Space Grotesk">Space Grotesk</option>
+                                <option value="Sora">Sora</option>
+                                <option value="Raleway">Raleway</option>
+                            </select>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Fuente del Menú</label>
+                            <select id="cfg-fontMenu" class="config-select">
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Outfit">Outfit</option>
+                                <option value="Poppins">Poppins</option>
+                                <option value="Montserrat">Montserrat</option>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Space Grotesk">Space Grotesk</option>
+                            </select>
+                        </div>
+                        <div class="config-control">
+                            <label class="config-label">Fuente del Cuerpo</label>
+                            <select id="cfg-fontBody" class="config-select">
+                                <option value="Inter">Inter</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Lato">Lato</option>
+                                <option value="DM Sans">DM Sans</option>
+                                <option value="Nunito">Nunito</option>
+                                <option value="Source Sans 3">Source Sans 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Heading sizes -->
+                    <p style="font-size:var(--text-xs);font-weight:var(--font-bold);text-transform:uppercase;letter-spacing:0.06em;color:#8b90a6;margin-bottom:var(--space-4);">Tamaño, peso y color por título</p>
+
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:var(--space-4);">
+                        <!-- H1 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H1</span>
+                            <input type="text" id="cfg-h1Size" class="config-input-sm" placeholder="3rem" value="3rem">
+                            <select id="cfg-h1Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600">Semi</option>
+                                <option value="700" selected>Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h1Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                        <!-- H2 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H2</span>
+                            <input type="text" id="cfg-h2Size" class="config-input-sm" placeholder="2rem" value="2rem">
+                            <select id="cfg-h2Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600">Semi</option>
+                                <option value="700" selected>Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h2Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                        <!-- H3 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H3</span>
+                            <input type="text" id="cfg-h3Size" class="config-input-sm" placeholder="1.5rem" value="1.5rem">
+                            <select id="cfg-h3Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600" selected>Semi</option>
+                                <option value="700">Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h3Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                        <!-- H4 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H4</span>
+                            <input type="text" id="cfg-h4Size" class="config-input-sm" placeholder="1.25rem" value="1.25rem">
+                            <select id="cfg-h4Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600" selected>Semi</option>
+                                <option value="700">Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h4Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                        <!-- H5 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H5</span>
+                            <input type="text" id="cfg-h5Size" class="config-input-sm" placeholder="1rem" value="1rem">
+                            <select id="cfg-h5Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600" selected>Semi</option>
+                                <option value="700">Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h5Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                        <!-- H6 -->
+                        <div class="heading-config-row">
+                            <span class="heading-label">H6</span>
+                            <input type="text" id="cfg-h6Size" class="config-input-sm" placeholder="0.875rem" value="0.875rem">
+                            <select id="cfg-h6Weight" class="config-select-sm">
+                                <option value="300">Light</option>
+                                <option value="400">Regular</option>
+                                <option value="600" selected>Semi</option>
+                                <option value="700">Bold</option>
+                                <option value="800">Extra</option>
+                            </select>
+                            <input type="color" id="cfg-h6Color" value="#ffffff" class="color-input-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div style="display:flex;gap:var(--space-3);justify-content:flex-end;margin-top:var(--space-6);">
+                    <button class="btn btn-secondary" onclick="resetThemeConfig()" style="width:auto;padding:0.75rem 2rem;">Restablecer</button>
+                    <button class="btn btn-primary" id="save-theme-btn" onclick="saveThemeConfig()" style="width:auto;padding:0.75rem 2rem;">💾 Guardar Configuración</button>
+                </div>
             </div>
 
         </main>

@@ -35,7 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
     $dbUser = trim($_POST['db_user'] ?? '');
     $dbPass = $_POST['db_pass'] ?? '';
     $siteName = trim($_POST['site_name'] ?? 'Mi Sitio Web');
-    $siteUrl = trim($_POST['site_url'] ?? '');
+    // Auto-detect site URL from current request
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $siteUrl = $protocol . '://' . $_SERVER['HTTP_HOST'];
     $adminUser = trim($_POST['admin_user'] ?? '');
     $adminEmail = trim($_POST['admin_email'] ?? '');
     $adminPass = $_POST['admin_pass'] ?? '';
@@ -93,7 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
             $configContent .= "define('DB_PASS', " . var_export($dbPass, true) . ");\n";
             $configContent .= "define('DB_CHARSET', 'utf8mb4');\n\n";
             $configContent .= "define('SITE_NAME', " . var_export($siteName, true) . ");\n";
-            $configContent .= "define('SITE_URL', " . var_export($siteUrl, true) . ");\n";
+            $configContent .= "// SITE_URL se auto-detecta dinámicamente del dominio actual\n";
+            $configContent .= "// Esto permite cambiar de dominio en Hostinger sin tocar config\n";
+            $configContent .= "\$_protocol = (!empty(\$_SERVER['HTTPS']) && \$_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';\n";
+            $configContent .= "define('SITE_URL', \$_protocol . '://' . \$_SERVER['HTTP_HOST']);\n";
             $configContent .= "define('ADMIN_EMAIL', " . var_export($adminEmail, true) . ");\n\n";
             $configContent .= "define('CSRF_SECRET', " . var_export($csrfSecret, true) . ");\n";
             $configContent .= "define('SESSION_LIFETIME', 3600);\n";
@@ -573,15 +578,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 2) {
 
                     <div class="section-title">🌐 Configuración del Sitio</div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="site_name">Nombre del Sitio</label>
-                            <input type="text" id="site_name" name="site_name" value="<?= htmlspecialchars($_POST['site_name'] ?? 'Mi Sitio Web') ?>" placeholder="Mi Sitio Web" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="site_url">URL del Sitio</label>
-                            <input type="url" id="site_url" name="site_url" value="<?= htmlspecialchars($_POST['site_url'] ?? '') ?>" placeholder="https://tusitio.com" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="site_name">Nombre del Sitio</label>
+                        <input type="text" id="site_name" name="site_name" value="<?= htmlspecialchars($_POST['site_name'] ?? 'Mi Sitio Web') ?>" placeholder="Mi Sitio Web" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="color:var(--text-secondary);font-size:0.8rem;">🌐 URL del sitio: <strong style="color:var(--success);"><?php $p = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http'; echo $p . '://' . $_SERVER['HTTP_HOST']; ?></strong></label>
+                        <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem;">Se detecta automáticamente. Si cambias el dominio en Hostinger, el sitio se adaptará solo.</p>
                     </div>
 
                     <div class="section-title">👤 Cuenta de Administrador</div>

@@ -16,7 +16,10 @@ define('DB_CHARSET', 'utf8mb4');
 
 // Site configuration
 define('SITE_NAME', 'Mi Sitio Web');
-define('SITE_URL', 'https://tusitio.com');
+// SITE_URL is auto-detected from the current domain
+// This allows seamless domain changes in Hostinger
+$_protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+define('SITE_URL', $_protocol . '://' . $_SERVER['HTTP_HOST']);
 define('ADMIN_EMAIL', 'admin@tusitio.com');
 
 // Security

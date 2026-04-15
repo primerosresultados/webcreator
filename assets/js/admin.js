@@ -557,7 +557,7 @@ function switchView(viewName) {
     if (targetView) targetView.classList.remove('hidden');
 
     // Update header title
-    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads' };
+    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads', settings: 'Configuración del Sitio' };
     const headerTitle = document.querySelector('.admin-header h1');
     if (headerTitle) headerTitle.textContent = titles[viewName] || viewName;
 
@@ -566,6 +566,7 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
+    if (viewName === 'settings') loadThemeConfig();
 }
 
 // ============================================
@@ -795,6 +796,139 @@ function initLogoDragDrop() {
 }
 
 // ============================================
+// THEME CONFIGURATION
+// ============================================
+const THEME_CONFIG_KEYS = [
+    'colorPrimary', 'colorPrimaryHover', 'colorSecondary', 'colorAccent',
+    'borderRadius', 'btnRadius',
+    'fontHeadings', 'fontMenu', 'fontBody',
+    'h1Size', 'h1Weight', 'h1Color',
+    'h2Size', 'h2Weight', 'h2Color',
+    'h3Size', 'h3Weight', 'h3Color',
+    'h4Size', 'h4Weight', 'h4Color',
+    'h5Size', 'h5Weight', 'h5Color',
+    'h6Size', 'h6Weight', 'h6Color',
+];
+
+const THEME_DEFAULTS = {
+    colorPrimary: '#6366f1',
+    colorPrimaryHover: '#4f46e5',
+    colorSecondary: '#c9a96e',
+    colorAccent: '#06b6d4',
+    borderRadius: '12',
+    btnRadius: '8',
+    fontHeadings: 'Inter',
+    fontMenu: 'Inter',
+    fontBody: 'Inter',
+    h1Size: '3rem', h1Weight: '700', h1Color: '#ffffff',
+    h2Size: '2rem', h2Weight: '700', h2Color: '#ffffff',
+    h3Size: '1.5rem', h3Weight: '600', h3Color: '#ffffff',
+    h4Size: '1.25rem', h4Weight: '600', h4Color: '#ffffff',
+    h5Size: '1rem', h5Weight: '600', h5Color: '#ffffff',
+    h6Size: '0.875rem', h6Weight: '600', h6Color: '#ffffff',
+};
+
+function getThemeConfigFromUI() {
+    const config = {};
+    THEME_CONFIG_KEYS.forEach(key => {
+        const el = document.getElementById(`cfg-${key}`);
+        if (el) config[key] = el.value;
+    });
+    // Add px unit for radius values
+    if (config.borderRadius) config.borderRadius = config.borderRadius + 'px';
+    if (config.btnRadius) config.btnRadius = config.btnRadius + 'px';
+    return config;
+}
+
+function setThemeConfigToUI(config) {
+    THEME_CONFIG_KEYS.forEach(key => {
+        const el = document.getElementById(`cfg-${key}`);
+        if (!el) return;
+
+        let val = config[key] || THEME_DEFAULTS[key];
+        
+        // Strip px for range inputs
+        if ((key === 'borderRadius' || key === 'btnRadius') && typeof val === 'string') {
+            val = parseInt(val) || THEME_DEFAULTS[key];
+        }
+
+        el.value = val;
+
+        // Sync hex text inputs for color pickers
+        const hexInput = document.getElementById(`cfg-${key}-hex`);
+        if (hexInput) hexInput.value = val;
+
+        // Update range value labels
+        const valLabel = document.getElementById(`cfg-${key}-val`);
+        if (valLabel) valLabel.textContent = val + 'px';
+    });
+}
+
+async function loadThemeConfig() {
+    const result = await api('/api/settings.php?key=theme_config');
+    if (result && result.success && result.setting && result.setting.setting_value) {
+        try {
+            const config = JSON.parse(result.setting.setting_value);
+            setThemeConfigToUI(config);
+        } catch (e) {
+            console.warn('Could not parse theme config:', e);
+        }
+    }
+}
+
+async function saveThemeConfig() {
+    const btn = document.getElementById('save-theme-btn');
+    if (btn) { btn.classList.add('btn-loading'); btn.disabled = true; }
+
+    const config = getThemeConfigFromUI();
+
+    const result = await api('/api/settings.php', {
+        method: 'PUT',
+        body: JSON.stringify({ theme_config: config })
+    });
+
+    if (btn) { btn.classList.remove('btn-loading'); btn.disabled = false; }
+
+    if (result && result.success) {
+        Toast.success('Configuración del tema guardada. Los cambios se reflejarán en el sitio público.');
+    } else {
+        Toast.error(result?.error || 'Error al guardar la configuración.');
+    }
+}
+
+function resetThemeConfig() {
+    if (!confirm('¿Restablecer toda la configuración de diseño a los valores por defecto?')) return;
+    setThemeConfigToUI(THEME_DEFAULTS);
+    Toast.info('Valores restablecidos. Haz clic en "Guardar" para aplicar.');
+}
+
+function initThemeConfigControls() {
+    // Sync color pickers with hex inputs
+    const colorKeys = ['colorPrimary', 'colorPrimaryHover', 'colorSecondary', 'colorAccent'];
+    colorKeys.forEach(key => {
+        const picker = document.getElementById(`cfg-${key}`);
+        const hex = document.getElementById(`cfg-${key}-hex`);
+        if (!picker || !hex) return;
+
+        picker.addEventListener('input', () => { hex.value = picker.value; });
+        hex.addEventListener('input', () => {
+            if (/^#[0-9a-fA-F]{6}$/.test(hex.value)) {
+                picker.value = hex.value;
+            }
+        });
+    });
+
+    // Range sliders value display
+    ['borderRadius', 'btnRadius'].forEach(key => {
+        const range = document.getElementById(`cfg-${key}`);
+        const label = document.getElementById(`cfg-${key}-val`);
+        if (range && label) {
+            range.addEventListener('input', () => { label.textContent = range.value + 'px'; });
+        }
+    });
+}
+
+// ============================================
 // INITIALIZE DASHBOARD PAGE
 // ============================================
 async function initDashboard() {
@@ -805,6 +939,7 @@ async function initDashboard() {
     initLeadsToolbar();
     loadSavedLogos();
     initLogoDragDrop();
+    initThemeConfigControls();
     
     // Load initial view
     loadDashboard();
