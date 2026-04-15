@@ -240,3 +240,70 @@ function rateLimit(string $key, int $maxAttempts = 5, int $windowSeconds = 60): 
     $_SESSION[$sessionKey][] = $now;
     return true; // Allowed
 }
+
+// ============================================
+// AUTO-MIGRATION SYSTEM
+// ============================================
+// Runs pending migrations automatically once per session.
+// Checks are lightweight: compares a hash of migration filenames
+// to avoid re-scanning on every request.
+function runAutoMigrations(): void {
+    $migrationsDir = __DIR__ . '/../migrations/';
+    if (!is_dir($migrationsDir)) return;
+
+    // Get all .sql files (skip files starting with _)
+    $files = glob($migrationsDir . '[!_]*.sql');
+    if (empty($files)) return;
+    sort($files);
+
+    // Build a hash of current migration files to detect changes
+    $fileNames = array_map('basename', $files);
+    $currentHash = md5(implode('|', $fileNames));
+
+    // Skip if we already checked this exact set of files in this session
+    if (isset($_SESSION['_migrations_hash']) && $_SESSION['_migrations_hash'] === $currentHash) {
+        return;
+    }
+
+    try {
+        $db = getDB();
+
+        // Create migrations tracking table if needed
+        $db->exec("CREATE TABLE IF NOT EXISTS `migrations` (
+            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            `filename` VARCHAR(255) NOT NULL UNIQUE,
+            `executed_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        // Get already executed migrations
+        $executed = $db->query("SELECT filename FROM migrations")->fetchAll(PDO::FETCH_COLUMN);
+
+        // Run pending migrations
+        $ran = 0;
+        foreach ($files as $file) {
+            $filename = basename($file);
+            if (in_array($filename, $executed)) continue;
+
+            try {
+                $sql = file_get_contents($file);
+                $db->exec($sql);
+                $db->prepare("INSERT INTO migrations (filename) VALUES (?)")->execute([$filename]);
+                $ran++;
+                error_log("Auto-migration executed: {$filename}");
+            } catch (PDOException $e) {
+                error_log("Auto-migration error ({$filename}): " . $e->getMessage());
+            }
+        }
+
+        // Cache the hash so we don't re-check until files change
+        $_SESSION['_migrations_hash'] = $currentHash;
+
+    } catch (Exception $e) {
+        error_log('Auto-migration system error: ' . $e->getMessage());
+    }
+}
+
+// Run auto-migrations if admin is logged in
+if (!empty($_SESSION['user_id'])) {
+    runAutoMigrations();
+}

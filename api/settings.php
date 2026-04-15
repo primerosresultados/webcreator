@@ -11,23 +11,6 @@
 
 require_once __DIR__ . '/init.php';
 
-// Auto-create settings table if it doesn't exist (for pre-existing installations)
-function ensureSettingsTable() {
-    try {
-        $db = getDB();
-        $db->exec("CREATE TABLE IF NOT EXISTS `settings` (
-            `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            `setting_key` VARCHAR(100) NOT NULL UNIQUE,
-            `setting_value` TEXT DEFAULT NULL,
-            `setting_type` ENUM('string', 'number', 'boolean', 'json') NOT NULL DEFAULT 'string',
-            `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-    } catch (Exception $e) {
-        // Table might already exist, that's fine
-    }
-}
-ensureSettingsTable();
-
 $method = getMethod();
 
 switch ($method) {

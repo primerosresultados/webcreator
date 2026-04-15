@@ -177,35 +177,79 @@ Todo formulario que envíe leads debe incluir:
 
 ---
 
-## 📁 Estructura de archivos
+## Migraciones de Base de Datos
+
+El sistema ejecuta migraciones **automáticamente** cuando un admin inicia sesión.
+
+### Cómo agregar una tabla nueva
+
+1. Crear un archivo `.sql` en `/migrations/`:
+
+```
+migrations/
+├── 001_create_settings.sql     ← Ya ejecutada
+├── 002_create_products.sql     ← Nueva (se ejecutará sola)
+└── _ejemplo_products.sql       ← Ignorada (empieza con _)
+```
+
+2. El archivo debe usar `CREATE TABLE IF NOT EXISTS`:
+
+```sql
+-- migrations/002_create_products.sql
+CREATE TABLE IF NOT EXISTS `products` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `price` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+3. Hacer deploy — la próxima vez que un admin acceda al panel, la tabla se creará sola.
+
+### Reglas de migraciones
+
+| Regla | Detalle |
+|-------|---------|
+| Archivos que empiezan con `_` | Son **ignorados** (plantillas de ejemplo) |
+| Orden de ejecución | Alfabético por nombre de archivo |
+| Idempotencia | Usar `IF NOT EXISTS` / `ON DUPLICATE KEY` |
+| Se ejecutan una sola vez | La tabla `migrations` registra qué archivos ya corrieron |
+| Trigger | Automático al login de admin, o manual vía `/api/migrate.php` |
+
+---
+
+## Estructura de archivos
 
 ```
 webcreator/
-├── index.html              ← Landing page principal
-├── pagina-nueva.html       ← Tus páginas nuevas aquí
+├── index.html              <- Landing page principal
+├── pagina-nueva.html       <- Tus paginas nuevas aqui
 ├── admin/
-│   ├── index.html          ← Login admin
-│   └── dashboard.html      ← Panel admin
+│   ├── index.html          <- Login admin
+│   └── dashboard.html      <- Panel admin
 ├── api/
-│   ├── init.php            ← Bootstrap de API
-│   ├── leads.php           ← CRUD de leads
-│   ├── auth.php            ← Autenticación
-│   ├── upload.php          ← Subida de archivos
-│   ├── settings.php        ← Configuraciones (tema, logos)
-│   └── theme.css.php       ← CSS dinámico desde BD
+│   ├── init.php            <- Bootstrap de API + auto-migraciones
+│   ├── leads.php           <- CRUD de leads
+│   ├── auth.php            <- Autenticación
+│   ├── upload.php          <- Subida de archivos
+│   ├── settings.php        <- Configuraciones (tema, logos)
+│   ├── theme.css.php       <- CSS dinámico desde BD
+│   └── migrate.php         <- Migraciones manuales (backup)
 ├── assets/
 │   ├── css/
-│   │   ├── variables.css   ← Tokens de diseño (NO tocar en proyectos)
-│   │   ├── base.css        ← Reset y estilos base
-│   │   ├── components.css  ← Botones, cards, modales, etc.
-│   │   ├── public.css      ← Estilos del sitio público
-│   │   └── admin.css       ← Estilos del panel admin
+│   │   ├── variables.css   <- Tokens de diseño (NO tocar en proyectos)
+│   │   ├── base.css        <- Reset y estilos base
+│   │   ├── components.css  <- Botones, cards, modales, etc.
+│   │   ├── public.css      <- Estilos del sitio público
+│   │   └── admin.css       <- Estilos del panel admin
 │   ├── js/
-│   │   ├── app.js          ← JS del sitio público
-│   │   └── admin.js        ← JS del panel admin
-│   └── img/                ← Imágenes del proyecto
+│   │   ├── app.js          <- JS del sitio público
+│   │   └── admin.js        <- JS del panel admin
+│   └── img/                <- Imagenes del proyecto
 ├── config/
-│   └── database.php        ← Credenciales (NO subir a Git)
-├── uploads/                ← Archivos subidos por el admin
-└── install/                ← Instalador (se bloquea después)
+│   └── database.php        <- Credenciales (NO subir a Git)
+├── migrations/             <- Archivos .sql auto-ejecutables
+├── uploads/                <- Archivos subidos por el admin
+└── install/                <- Instalador (se bloquea después)
 ```
+
