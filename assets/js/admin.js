@@ -939,9 +939,16 @@ function getThemeConfigFromUI() {
         const el = document.getElementById(`cfg-${key}`);
         if (el) config[key] = el.value;
     });
-    // Add px unit for radius values
-    if (config.borderRadius) config.borderRadius = config.borderRadius + 'px';
-    if (config.btnRadius) config.btnRadius = config.btnRadius + 'px';
+    // Always add px unit for radius values (even if 0)
+    if (config.borderRadius !== undefined) config.borderRadius = config.borderRadius + 'px';
+    if (config.btnRadius !== undefined) config.btnRadius = config.btnRadius + 'px';
+    // Ensure font size values have px
+    for (let i = 1; i <= 6; i++) {
+        const sizeKey = `h${i}Size`;
+        if (config[sizeKey] && !config[sizeKey].endsWith('px')) {
+            config[sizeKey] = config[sizeKey] + 'px';
+        }
+    }
     return config;
 }
 
@@ -950,15 +957,21 @@ function setThemeConfigToUI(config) {
         const el = document.getElementById(`cfg-${key}`);
         if (!el) return;
 
-        // Use config value if it exists (even if "0"), otherwise default
+        // Use config value if it exists (even if "0" or "#000000"), otherwise default
         let val = (config[key] !== undefined && config[key] !== null && config[key] !== '') 
             ? config[key] 
             : THEME_DEFAULTS[key];
         
-        // Strip px for range inputs (keep 0 as valid!)
+        // Strip px/rem for range/number inputs (keep 0 as valid!)
         if ((key === 'borderRadius' || key === 'btnRadius') && typeof val === 'string') {
             const parsed = parseInt(val);
             val = isNaN(parsed) ? THEME_DEFAULTS[key] : parsed;
+        }
+        
+        // Strip units from font size values for number inputs
+        if (key.match(/^h[1-6]Size$/) && typeof val === 'string') {
+            const parsed = parseInt(val);
+            if (!isNaN(parsed)) val = parsed + 'px';
         }
 
         el.value = val;
@@ -967,7 +980,7 @@ function setThemeConfigToUI(config) {
         const hexInput = document.getElementById(`cfg-${key}-hex`);
         if (hexInput) hexInput.value = val;
 
-        // Update range value labels
+        // Update range value labels (only for radius fields)
         const valLabel = document.getElementById(`cfg-${key}-val`);
         if (valLabel) valLabel.textContent = val + 'px';
     });

@@ -18,7 +18,7 @@ if (!file_exists($configPath)) {
 require_once $configPath;
 
 header('Content-Type: text/css; charset=utf-8');
-header('Cache-Control: public, max-age=300');
+header('Cache-Control: no-cache, must-revalidate');
 
 try {
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
@@ -93,9 +93,9 @@ try {
         echo "    --color-accent: " . cssVal($theme['colorAccent']) . ";\n";
     }
 
-    // Border radius
-    if (!empty($theme['borderRadius'])) {
-        $r = cssVal($theme['borderRadius']);
+    // Border radius (use isset to support 0px values)
+    if (isset($theme['borderRadius'])) {
+        $r = cssVal($theme['borderRadius'], '12px');
         echo "    --radius-sm: calc({$r} * 0.5);\n";
         echo "    --radius-md: calc({$r} * 0.67);\n";
         echo "    --radius-lg: {$r};\n";
@@ -175,9 +175,9 @@ try {
         echo "}\n\n";
     }
 
-    // --- Button radius ---
-    if (!empty($theme['btnRadius'])) {
-        echo ".btn, .btn-outline-light, .btn-dark, .btn-accent { border-radius: " . cssVal($theme['btnRadius']) . "; }\n\n";
+    // --- Button radius (use isset to support 0px) ---
+    if (isset($theme['btnRadius'])) {
+        echo ".btn, .btn-outline-light, .btn-dark, .btn-accent { border-radius: " . cssVal($theme['btnRadius'], '8px') . "; }\n\n";
     }
 
     // --- Button colors ---
