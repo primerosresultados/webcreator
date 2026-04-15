@@ -141,10 +141,32 @@
     pointer-events: none;
 }
 
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: var(--space-12);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 1024px) {
+    .hero-grid {
+        grid-template-columns: 1fr 380px;
+        gap: var(--space-8);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-10);
+    }
+}
+
 .hero-content {
     position: relative;
     z-index: 1;
-    max-width: 700px;
 }
 
 .hero-badge {
@@ -188,6 +210,83 @@
     display: flex;
     gap: var(--space-4);
     flex-wrap: wrap;
+}
+
+/* ── HERO FORM ── */
+.hero-form {
+    position: relative;
+}
+
+.hero-form-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.hero-form-header {
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.hero-form-header h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.hero-form-header p {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin-bottom: 0;
+    max-width: none;
+}
+
+.hero-form-card .form-input,
+.hero-form-card .form-textarea {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+    transition: all var(--transition-base);
+}
+
+.hero-form-card .form-input:focus,
+.hero-form-card .form-textarea:focus {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.hero-form-note {
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: var(--space-4);
+    margin-bottom: 0;
 }
 
 /* ── SECTIONS ── */

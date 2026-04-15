@@ -248,6 +248,70 @@ function showFieldError(form, fieldName, message) {
 }
 
 // ============================================
+// HERO CONTACT FORM HANDLER
+// ============================================
+function initHeroForm() {
+    const form = document.getElementById('hero-contact-form');
+    if (!form) return;
+
+    // Set form load time for anti-spam
+    const timeField = form.querySelector('input[name="_form_time"]');
+    if (timeField) {
+        timeField.value = Math.floor(Date.now() / 1000);
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Clear previous errors
+        form.querySelectorAll('.form-error').forEach(el => el.remove());
+        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+        // Collect data
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Client-side validation
+        const errors = validateContactForm(data);
+        if (errors.length > 0) {
+            errors.forEach(err => showFieldError(form, err.field, err.message));
+            return;
+        }
+
+        // Submit
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/leads.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Toast.success(result.message || '¡Solicitud enviada exitosamente!');
+                form.reset();
+                if (timeField) timeField.value = Math.floor(Date.now() / 1000);
+            } else {
+                Toast.error(result.error || 'Error al enviar el formulario.');
+            }
+        } catch (error) {
+            Toast.error('Error de conexión. Intente nuevamente.');
+            console.error('Hero form submission error:', error);
+        } finally {
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+}
+
+// ============================================
 // SMOOTH SCROLL FOR ANCHOR LINKS
 // ============================================
 function initSmoothScroll() {
@@ -271,5 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeader();
     initScrollAnimations();
     initContactForm();
+    initHeroForm();
     initSmoothScroll();
 });
