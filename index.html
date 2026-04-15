@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Descripción de tu sitio web. Cámbiala por la de tu proyecto.">
+    <meta name="description" content="Constructora y estudio de arquitectura premium. Del concepto a la realización. Cotiza tu proyecto hoy.">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#1a1a1a">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Mi Sitio Web">
-    <meta property="og:description" content="Descripción de tu sitio web.">
+    <meta property="og:title" content="MiSitio — Arquitectura & Construcción">
+    <meta property="og:description" content="Redefinimos cómo se construye el mundo. Cotiza tu proyecto hoy.">
     <meta property="og:type" content="website">
     
-    <title>Mi Sitio Web — Inicio</title>
+    <title>MiSitio — Arquitectura & Construcción Premium</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="/assets/css/variables.css">
@@ -31,16 +36,17 @@
     <header class="site-header" id="header">
         <nav class="nav container">
             <a href="/" class="nav-brand">
-                <span>🚀</span>
+                <span>🏗️</span>
                 <span>MiSitio</span>
             </a>
 
             <div class="nav-links" id="nav-links">
                 <a href="#inicio" class="active">Inicio</a>
-                <a href="#servicios">Servicios</a>
                 <a href="#nosotros">Nosotros</a>
+                <a href="#servicios">Servicios</a>
                 <a href="#contacto">Contacto</a>
-                <a href="/admin/" class="btn btn-primary btn-sm">Acceso Admin</a>
+                <a href="tel:+56912345678" class="nav-phone">📞 +56 9 1234 5678</a>
+                <a href="#inicio" class="btn btn-primary btn-sm">Cotizar Proyecto</a>
             </div>
 
             <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
@@ -52,28 +58,41 @@
     </header>
 
     <!-- ============================================ -->
-    <!-- HERO SECTION -->
+    <!-- HERO SECTION — Full-screen with form -->
     <!-- ============================================ -->
     <section class="hero" id="inicio">
+        <div class="hero-bg">
+            <img src="/assets/img/hero-bg.png" alt="Skyline moderno" loading="eager">
+            <div class="hero-overlay"></div>
+        </div>
+
         <div class="container">
             <div class="hero-grid">
+                <!-- Left: Text content -->
                 <div class="hero-content" data-animate="fadeInUp">
-                    <div class="hero-badge">
-                        ✨ Bienvenido a tu nuevo sitio
+                    <div class="hero-subtitle-row">
+                        <span class="hero-step">DESDE</span>
+                        <span class="hero-step-divider"></span>
+                        <span class="hero-step">CONCEPTO</span>
+                        <span class="hero-step-divider"></span>
+                        <span class="hero-step">HASTA</span>
+                        <span class="hero-step-divider"></span>
+                        <span class="hero-step">REALIZACIÓN</span>
                     </div>
-                    <h1>
-                        Soluciones digitales <br>
-                        <span class="highlight">que transforman</span>
-                    </h1>
-                    <p>
-                        Creamos experiencias digitales excepcionales que impulsan tu negocio al siguiente nivel. Innovación, diseño y tecnología al servicio de tus metas.
+
+                    <h1>Redefinimos cómo<br>se construye el mundo</h1>
+
+                    <p class="hero-desc">
+                        Arquitectura y construcción de excelencia. Transformamos ideas en espacios que inspiran, con calidad, innovación y compromiso.
                     </p>
+
                     <div class="hero-actions">
-                        <a href="#contacto" class="btn btn-primary btn-lg">Contáctanos →</a>
-                        <a href="#servicios" class="btn btn-secondary btn-lg">Ver Servicios</a>
+                        <a href="#servicios" class="btn btn-outline-light btn-lg">Ver Proyectos</a>
+                        <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
                     </div>
                 </div>
 
+                <!-- Right: Lead capture form -->
                 <div class="hero-form" data-animate="fadeInUp" data-delay="200">
                     <div class="hero-form-card">
                         <div class="hero-form-header">
@@ -89,30 +108,37 @@
                             <input type="hidden" name="source" value="website-hero">
 
                             <div class="form-group">
-                                <label class="form-label" for="hero-name">Nombre <span class="required">*</span></label>
-                                <input type="text" id="hero-name" name="name" class="form-input" placeholder="Tu nombre completo" required minlength="2">
+                                <input type="text" id="hero-name" name="name" class="form-input" placeholder="Nombre completo *" required minlength="2">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="hero-email">Email <span class="required">*</span></label>
-                                <input type="email" id="hero-email" name="email" class="form-input" placeholder="tu@email.com" required>
+                                <input type="email" id="hero-email" name="email" class="form-input" placeholder="Email *" required>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="hero-phone">Teléfono</label>
-                                <input type="tel" id="hero-phone" name="phone" class="form-input" placeholder="+56 9 1234 5678">
+                                <input type="tel" id="hero-phone" name="phone" class="form-input" placeholder="Teléfono">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label" for="hero-message">¿Qué necesitas?</label>
-                                <textarea id="hero-message" name="message" class="form-textarea" placeholder="Cuéntanos brevemente..." rows="3"></textarea>
+                                <select id="hero-service" name="service" class="form-input">
+                                    <option value="">Tipo de proyecto</option>
+                                    <option value="construccion-residencial">Construcción Residencial</option>
+                                    <option value="construccion-comercial">Construcción Comercial</option>
+                                    <option value="arquitectura">Diseño Arquitectónico</option>
+                                    <option value="remodelacion">Remodelación</option>
+                                    <option value="otro">Otro</option>
+                                </select>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                Enviar Solicitud →
+                            <div class="form-group">
+                                <textarea id="hero-message" name="message" class="form-textarea" placeholder="Cuéntanos sobre tu proyecto..." rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-accent btn-block btn-lg" id="hero-submit-btn">
+                                Solicitar Presupuesto →
                             </button>
 
-                            <p class="hero-form-note">🔒 Tus datos están seguros con nosotros</p>
+                            <p class="hero-form-note">🔒 Tus datos están seguros y protegidos</p>
                         </form>
                     </div>
                 </div>
@@ -121,102 +147,149 @@
     </section>
 
     <!-- ============================================ -->
-    <!-- SERVICES / FEATURES -->
+    <!-- WELCOME / VALUE PROPOSITION -->
     <!-- ============================================ -->
-    <section class="section" id="servicios">
+    <section class="section welcome-section" id="nosotros">
         <div class="container">
-            <div class="section-header" data-animate="fadeInUp">
-                <span class="overline">Lo que hacemos</span>
-                <h2>Nuestros Servicios</h2>
-                <p>Soluciones integrales adaptadas a las necesidades de tu negocio.</p>
+            <div class="welcome-content" data-animate="fadeInUp">
+                <span class="welcome-badge">BIENVENIDOS A MISITIO</span>
+                <h2>
+                    Construimos para quienes dan forma a los espacios en los que vivimos y trabajamos — arquitectos, constructores y estudios de diseño que valoran tanto la estructura como el estilo.
+                </h2>
+                <a href="#contacto" class="btn btn-dark btn-lg">Hablar con un Experto</a>
             </div>
 
-            <div class="features-grid">
-                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="0">
-                    <div class="icon">🎨</div>
-                    <h3>Diseño Web</h3>
-                    <p>Interfaces modernas y atractivas que cautivan a tus usuarios desde el primer momento.</p>
+            <!-- Trust signals -->
+            <div class="trust-grid" data-animate="fadeInUp" data-delay="200">
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h4>Equipo Experimentado</h4>
+                    <p>Arquitectos y constructores con más de 15 años de trayectoria comprobada.</p>
                 </div>
-
-                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="100">
-                    <div class="icon">⚡</div>
-                    <h3>Desarrollo</h3>
-                    <p>Código limpio y optimizado para garantizar velocidad, seguridad y escalabilidad.</p>
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h4>Entrega a Tiempo</h4>
+                    <p>Cada proyecto completado con precisión, cumplimiento y responsabilidad total.</p>
                 </div>
-
-                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="200">
-                    <div class="icon">📈</div>
-                    <h3>Marketing Digital</h3>
-                    <p>Estrategias para posicionar tu marca y generar resultados medibles.</p>
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h4>Calidad & Seguridad</h4>
+                    <p>Construido bajo los más altos estándares de calidad, durabilidad y normativa.</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <h4>Diseño Sostenible</h4>
+                    <p>Materiales eco-conscientes y métodos de construcción eficientes en energía.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================================ -->
-    <!-- ABOUT -->
+    <!-- SERVICES — Split Screen -->
     <!-- ============================================ -->
-    <section class="section" id="nosotros" style="background:var(--bg-secondary);border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);">
-        <div class="container">
-            <div class="section-header" data-animate="fadeInUp">
-                <span class="overline">Sobre Nosotros</span>
-                <h2>¿Por qué elegirnos?</h2>
-                <p>Combinamos experiencia, creatividad y tecnología para ofrecer resultados excepcionales.</p>
+    <section class="services-split" id="servicios">
+        <div class="split-card" data-animate="fadeIn">
+            <img src="/assets/img/construction.png" alt="Construcción" loading="lazy">
+            <div class="split-overlay"></div>
+            <div class="split-content">
+                <h3>Construcción</h3>
+                <div class="split-tags">
+                    <span class="split-tag"># Construcción Residencial</span>
+                    <span class="split-tag"># Renovaciones & Ampliaciones</span>
+                    <span class="split-tag"># Gestión de Proyectos</span>
+                </div>
+                <a href="#contacto" class="btn btn-outline-light">Cotizar Servicio</a>
             </div>
+        </div>
+        <div class="split-card" data-animate="fadeIn" data-delay="200">
+            <img src="/assets/img/architecture.png" alt="Arquitectura" loading="lazy">
+            <div class="split-overlay"></div>
+            <div class="split-content">
+                <h3>Arquitectura</h3>
+                <div class="split-tags">
+                    <span class="split-tag"># Diseño Arquitectónico</span>
+                    <span class="split-tag"># Planificación de Proyectos</span>
+                    <span class="split-tag"># Documentación Técnica</span>
+                </div>
+                <a href="#contacto" class="btn btn-outline-light">Cotizar Servicio</a>
+            </div>
+        </div>
+    </section>
 
-            <div class="features-grid">
-                <div class="card stat-card" data-animate="fadeInUp" data-delay="0">
-                    <span class="stat-value">+100</span>
-                    <span class="stat-label">Proyectos completados</span>
+    <!-- ============================================ -->
+    <!-- STATS BAR -->
+    <!-- ============================================ -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid" data-animate="fadeInUp">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="150">0</span>
+                    <span class="stat-label">Proyectos Completados</span>
                 </div>
-                <div class="card stat-card" data-animate="fadeInUp" data-delay="100">
-                    <span class="stat-value">98%</span>
-                    <span class="stat-label">Clientes satisfechos</span>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="98">0</span>
+                    <span class="stat-suffix">%</span>
+                    <span class="stat-label">Clientes Satisfechos</span>
                 </div>
-                <div class="card stat-card" data-animate="fadeInUp" data-delay="200">
-                    <span class="stat-value">24/7</span>
-                    <span class="stat-label">Soporte disponible</span>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="15">0</span>
+                    <span class="stat-suffix">+</span>
+                    <span class="stat-label">Años de Experiencia</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="50">0</span>
+                    <span class="stat-suffix">+</span>
+                    <span class="stat-label">Profesionales</span>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================================ -->
-    <!-- CONTACT SECTION -->
+    <!-- CONTACT / CTA FINAL -->
     <!-- ============================================ -->
     <section class="section contact-section" id="contacto">
         <div class="container">
             <div class="contact-grid">
                 <div class="contact-info" data-animate="slideInLeft">
-                    <h2>Hablemos de tu <span style="color:var(--color-primary);">proyecto</span></h2>
-                    <p>Estamos listos para ayudarte a llevar tu negocio al siguiente nivel.</p>
+                    <h2>Hablemos de tu <span class="text-accent">proyecto</span></h2>
+                    <p>Estamos listos para ayudarte a llevar tu proyecto al siguiente nivel. Escríbenos y te responderemos a la brevedad.</p>
 
                     <div class="contact-detail">
-                        <div class="icon">📧</div>
+                        <div class="contact-icon">📧</div>
                         <div>
-                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Email</strong>
+                            <strong>Email</strong>
                             <span>contacto@tusitio.com</span>
                         </div>
                     </div>
 
                     <div class="contact-detail">
-                        <div class="icon">📱</div>
+                        <div class="contact-icon">📱</div>
                         <div>
-                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Teléfono</strong>
+                            <strong>Teléfono</strong>
                             <span>+56 9 1234 5678</span>
                         </div>
                     </div>
 
                     <div class="contact-detail">
-                        <div class="icon">📍</div>
+                        <div class="contact-icon">📍</div>
                         <div>
-                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Ubicación</strong>
+                            <strong>Ubicación</strong>
                             <span>Santiago, Chile</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="contact-form" data-animate="slideInRight">
+                <div class="contact-form-wrap" data-animate="slideInRight">
                     <h3>Envíanos un mensaje</h3>
                     <form id="contact-form">
                         <!-- Honeypot anti-spam (hidden field) -->
@@ -266,26 +339,26 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="/" class="nav-brand">
-                        <span>🚀</span>
+                        <span>🏗️</span>
                         <span>MiSitio</span>
                     </a>
-                    <p>Transformamos ideas en experiencias digitales excepcionales.</p>
+                    <p>Del concepto a la realización. Transformamos ideas en espacios que inspiran.</p>
                 </div>
 
                 <div class="footer-col">
                     <h4>Navegación</h4>
                     <a href="#inicio">Inicio</a>
-                    <a href="#servicios">Servicios</a>
                     <a href="#nosotros">Nosotros</a>
+                    <a href="#servicios">Servicios</a>
                     <a href="#contacto">Contacto</a>
                 </div>
 
                 <div class="footer-col">
                     <h4>Servicios</h4>
-                    <a href="#">Diseño Web</a>
-                    <a href="#">Desarrollo</a>
-                    <a href="#">Marketing</a>
-                    <a href="#">Consultoría</a>
+                    <a href="#">Construcción Residencial</a>
+                    <a href="#">Diseño Arquitectónico</a>
+                    <a href="#">Remodelaciones</a>
+                    <a href="#">Gestión de Proyectos</a>
                 </div>
 
                 <div class="footer-col">
