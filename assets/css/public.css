@@ -5,6 +5,16 @@
    Focused on lead generation and conversions.
 */
 
+/* ── DYNAMIC LOGO SWAP ── */
+/* Dark backgrounds: show negative (white) logo, hide normal */
+.brand-logo-normal { display: none; }
+.brand-logo-negative { display: block; }
+/* If header becomes light on scroll: swap logos */
+.site-header.scrolled.light-header .brand-logo-normal { display: block; }
+.site-header.scrolled.light-header .brand-logo-negative { display: none; }
+/* Logo sizing */
+.brand-logo { object-fit: contain; transition: opacity 0.3s; }
+
 /* ── HEADER / NAVBAR ── */
 .site-header {
     position: fixed;

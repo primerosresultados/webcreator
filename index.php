@@ -35,11 +35,21 @@ try {
             }
         }
     }
+    // Load logos
+    $logoStmt = $db->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('logo_normal','logo_negative')");
+    $logoStmt->execute();
+    while ($lr = $logoStmt->fetch(PDO::FETCH_ASSOC)) {
+        $S[$lr['setting_key']] = $lr['setting_value'];
+    }
 } catch (Exception $e) {}
 
 // Helpers
 $phoneClean = preg_replace('/[^0-9+]/', '', $S['phone']);
 $h = function($v) { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); };
+$logoNormal   = !empty($S['logo_normal'])   ? $S['logo_normal']   : '';
+$logoNegative = !empty($S['logo_negative']) ? $S['logo_negative'] : '';
+// Default SVG logo fallback
+$svgLogo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>';
 
 // Collect social links for footer
 $socials = [];
@@ -91,8 +101,13 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <header class="site-header" id="header">
         <nav class="nav container">
             <a href="/" class="nav-brand">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>
-                <span><?=$h($S['siteName'])?></span>
+                <?php if ($logoNegative || $logoNormal): ?>
+                    <?php if ($logoNegative): ?><img src="<?=$h($logoNegative)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-negative" style="height:40px;width:auto;"><?php endif; ?>
+                    <?php if ($logoNormal): ?><img src="<?=$h($logoNormal)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-normal" style="height:40px;width:auto;"><?php endif; ?>
+                <?php else: ?>
+                    <?=$svgLogo?>
+                    <span><?=$h($S['siteName'])?></span>
+                <?php endif; ?>
             </a>
 
             <div class="nav-links" id="nav-links">
@@ -394,8 +409,14 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
             <div class="footer-grid">
                 <div class="footer-brand">
                     <a href="/" class="nav-brand">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>
-                        <span><?=$h($S['siteName'])?></span>
+                        <?php if ($logoNegative): ?>
+                            <img src="<?=$h($logoNegative)?>" alt="<?=$h($S['siteName'])?>" style="height:36px;width:auto;">
+                        <?php elseif ($logoNormal): ?>
+                            <img src="<?=$h($logoNormal)?>" alt="<?=$h($S['siteName'])?>" style="height:36px;width:auto;">
+                        <?php else: ?>
+                            <?=$svgLogo?>
+                            <span><?=$h($S['siteName'])?></span>
+                        <?php endif; ?>
                     </a>
                     <p><?=$h($S['siteDescription'])?>. Transformamos ideas en espacios que inspiran.</p>
                 </div>
