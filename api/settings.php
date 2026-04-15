@@ -68,6 +68,20 @@ switch ($method) {
             jsonError('No se recibieron datos.');
         }
 
+        // Auto-create settings table if it doesn't exist (defensive)
+        try {
+            $db->exec("CREATE TABLE IF NOT EXISTS `settings` (
+                `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                `setting_key` VARCHAR(100) NOT NULL UNIQUE,
+                `setting_value` LONGTEXT,
+                `setting_type` ENUM('string','number','boolean','json') DEFAULT 'string',
+                `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (Exception $e) {
+            // Table probably already exists, continue
+        }
+
         $updated = 0;
 
         foreach ($data as $key => $value) {
