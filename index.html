@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Descripción de tu sitio web. Cámbiala por la de tu proyecto.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Mi Sitio Web">
+    <meta property="og:description" content="Descripción de tu sitio web.">
+    <meta property="og:type" content="website">
+    
+    <title>Mi Sitio Web — Inicio</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/public.css">
+</head>
+<body>
+
+    <!-- ============================================ -->
+    <!-- HEADER / NAVIGATION -->
+    <!-- ============================================ -->
+    <header class="site-header" id="header">
+        <nav class="nav container">
+            <a href="/" class="nav-brand">
+                <span>🚀</span>
+                <span>MiSitio</span>
+            </a>
+
+            <div class="nav-links" id="nav-links">
+                <a href="#inicio" class="active">Inicio</a>
+                <a href="#servicios">Servicios</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#contacto">Contacto</a>
+                <a href="/admin/" class="btn btn-primary btn-sm">Acceso Admin</a>
+            </div>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- HERO SECTION -->
+    <!-- ============================================ -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content" data-animate="fadeInUp">
+                <div class="hero-badge">
+                    ✨ Bienvenido a tu nuevo sitio
+                </div>
+                <h1>
+                    Soluciones digitales <br>
+                    <span class="highlight">que transforman</span>
+                </h1>
+                <p>
+                    Creamos experiencias digitales excepcionales que impulsan tu negocio al siguiente nivel. Innovación, diseño y tecnología al servicio de tus metas.
+                </p>
+                <div class="hero-actions">
+                    <a href="#contacto" class="btn btn-primary btn-lg">Contáctanos →</a>
+                    <a href="#servicios" class="btn btn-secondary btn-lg">Ver Servicios</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SERVICES / FEATURES -->
+    <!-- ============================================ -->
+    <section class="section" id="servicios">
+        <div class="container">
+            <div class="section-header" data-animate="fadeInUp">
+                <span class="overline">Lo que hacemos</span>
+                <h2>Nuestros Servicios</h2>
+                <p>Soluciones integrales adaptadas a las necesidades de tu negocio.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="0">
+                    <div class="icon">🎨</div>
+                    <h3>Diseño Web</h3>
+                    <p>Interfaces modernas y atractivas que cautivan a tus usuarios desde el primer momento.</p>
+                </div>
+
+                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="100">
+                    <div class="icon">⚡</div>
+                    <h3>Desarrollo</h3>
+                    <p>Código limpio y optimizado para garantizar velocidad, seguridad y escalabilidad.</p>
+                </div>
+
+                <div class="card card-hover feature-card" data-animate="fadeInUp" data-delay="200">
+                    <div class="icon">📈</div>
+                    <h3>Marketing Digital</h3>
+                    <p>Estrategias para posicionar tu marca y generar resultados medibles.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ABOUT -->
+    <!-- ============================================ -->
+    <section class="section" id="nosotros" style="background:var(--bg-secondary);border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);">
+        <div class="container">
+            <div class="section-header" data-animate="fadeInUp">
+                <span class="overline">Sobre Nosotros</span>
+                <h2>¿Por qué elegirnos?</h2>
+                <p>Combinamos experiencia, creatividad y tecnología para ofrecer resultados excepcionales.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="card stat-card" data-animate="fadeInUp" data-delay="0">
+                    <span class="stat-value">+100</span>
+                    <span class="stat-label">Proyectos completados</span>
+                </div>
+                <div class="card stat-card" data-animate="fadeInUp" data-delay="100">
+                    <span class="stat-value">98%</span>
+                    <span class="stat-label">Clientes satisfechos</span>
+                </div>
+                <div class="card stat-card" data-animate="fadeInUp" data-delay="200">
+                    <span class="stat-value">24/7</span>
+                    <span class="stat-label">Soporte disponible</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CONTACT SECTION -->
+    <!-- ============================================ -->
+    <section class="section contact-section" id="contacto">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info" data-animate="slideInLeft">
+                    <h2>Hablemos de tu <span style="color:var(--color-primary);">proyecto</span></h2>
+                    <p>Estamos listos para ayudarte a llevar tu negocio al siguiente nivel.</p>
+
+                    <div class="contact-detail">
+                        <div class="icon">📧</div>
+                        <div>
+                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Email</strong>
+                            <span>contacto@tusitio.com</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="icon">📱</div>
+                        <div>
+                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Teléfono</strong>
+                            <span>+56 9 1234 5678</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="icon">📍</div>
+                        <div>
+                            <strong style="display:block;color:var(--text-primary);font-size:var(--text-sm);">Ubicación</strong>
+                            <span>Santiago, Chile</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form" data-animate="slideInRight">
+                    <h3>Envíanos un mensaje</h3>
+                    <form id="contact-form">
+                        <!-- Honeypot anti-spam (hidden field) -->
+                        <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                            <input type="text" name="website_url" tabindex="-1" autocomplete="off">
+                        </div>
+                        <!-- Anti-spam: form load time -->
+                        <input type="hidden" name="_form_time" value="">
+                        <!-- Source tracking -->
+                        <input type="hidden" name="source" value="website-contacto">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="name">Nombre <span class="required">*</span></label>
+                                <input type="text" id="name" name="name" class="form-input" placeholder="Tu nombre" required minlength="2">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email <span class="required">*</span></label>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="tu@email.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Teléfono</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="+56 9 1234 5678">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="message">Mensaje</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="Cuéntanos sobre tu proyecto..." rows="4"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            Enviar Mensaje →
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FOOTER -->
+    <!-- ============================================ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="/" class="nav-brand">
+                        <span>🚀</span>
+                        <span>MiSitio</span>
+                    </a>
+                    <p>Transformamos ideas en experiencias digitales excepcionales.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Navegación</h4>
+                    <a href="#inicio">Inicio</a>
+                    <a href="#servicios">Servicios</a>
+                    <a href="#nosotros">Nosotros</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Servicios</h4>
+                    <a href="#">Diseño Web</a>
+                    <a href="#">Desarrollo</a>
+                    <a href="#">Marketing</a>
+                    <a href="#">Consultoría</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <a href="#">Términos de Uso</a>
+                    <a href="#">Privacidad</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; 2026 MiSitio. Todos los derechos reservados.</span>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Instagram">📸</a>
+                    <a href="#" aria-label="LinkedIn">💼</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/assets/js/app.js"></script>
+</body>
+</html>

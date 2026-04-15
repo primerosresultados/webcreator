@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin — Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+
+        <!-- ============================================ -->
+        <!-- SIDEBAR -->
+        <!-- ============================================ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="icon">🚀</span>
+                <div>
+                    <h2>WebCreator</h2>
+                    <small>Panel Admin</small>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Principal</div>
+                    <a class="sidebar-link active" data-view="dashboard" href="#">
+                        <span>📊</span> Dashboard
+                    </a>
+                    <a class="sidebar-link" data-view="leads" href="#">
+                        <span>👥</span> Leads / CRM
+                        <span class="badge-count" id="leads-count">0</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Herramientas</div>
+                    <a class="sidebar-link" href="#" onclick="exportLeadsCSV(); return false;">
+                        <span>📥</span> Exportar CSV
+                    </a>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Sitio</div>
+                    <a class="sidebar-link" href="/" target="_blank">
+                        <span>🌐</span> Ver Sitio Público
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user" onclick="document.getElementById('user-dropdown').classList.toggle('active')">
+                    <div class="avatar">A</div>
+                    <div class="info">
+                        <span class="name">Admin</span>
+                        <span class="role">Super Admin</span>
+                    </div>
+                    <span style="color:var(--text-tertiary);">⋮</span>
+                </div>
+                <div class="dropdown-menu" id="user-dropdown" style="bottom:100%;top:auto;margin-bottom:var(--space-2);">
+                    <button class="dropdown-item" onclick="logout()">
+                        <span>🚪</span> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============================================ -->
+        <!-- MAIN CONTENT -->
+        <!-- ============================================ -->
+        <main class="admin-main">
+
+            <!-- Header bar -->
+            <div class="admin-header">
+                <div class="flex items-center gap-4">
+                    <button class="btn btn-ghost btn-icon" id="sidebar-toggle" style="display:none;">☰</button>
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="admin-header-actions">
+                    <span style="font-size:var(--text-sm);color:var(--text-tertiary);" id="current-date"></span>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VIEW: DASHBOARD -->
+            <!-- ============================================ -->
+            <div class="admin-content admin-view" id="view-dashboard">
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <span class="stat-label">Total Leads</span>
+                        <span class="stat-value" id="stat-total">0</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-label">Nuevos</span>
+                        <span class="stat-value" id="stat-new" style="color:var(--color-info);">0</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-label">Contactados</span>
+                        <span class="stat-value" id="stat-contacted" style="color:var(--color-warning);">0</span>
+                    </div>
+                    <div class="card stat-card">
+                        <span class="stat-label">Convertidos</span>
+                        <span class="stat-value" id="stat-converted" style="color:var(--color-success);">0</span>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-8);">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📅 Hoy</span>
+                        </div>
+                        <span class="stat-value" id="stat-today" style="font-size:var(--text-4xl);">0</span>
+                        <span class="stat-label">leads recibidos</span>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📊 Esta Semana</span>
+                        </div>
+                        <span class="stat-value" id="stat-week" style="font-size:var(--text-4xl);">0</span>
+                        <span class="stat-label">leads recibidos</span>
+                    </div>
+                </div>
+
+                <!-- Trend Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📈 Tendencia (Últimos 7 días)</span>
+                    </div>
+                    <div id="trend-chart" style="min-height:180px;display:flex;align-items:center;justify-content:center;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VIEW: LEADS / CRM -->
+            <!-- ============================================ -->
+            <div class="admin-content admin-view hidden" id="view-leads">
+
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-search">
+                        <div class="search-wrapper">
+                            <input type="text" class="search-input" id="leads-search" placeholder="Buscar leads...">
+                        </div>
+                    </div>
+
+                    <div class="toolbar-filters">
+                        <button class="filter-btn active" data-status="">Todos</button>
+                        <button class="filter-btn" data-status="new">Nuevos</button>
+                        <button class="filter-btn" data-status="contacted">Contactados</button>
+                        <button class="filter-btn" data-status="qualified">Calificados</button>
+                        <button class="filter-btn" data-status="converted">Convertidos</button>
+                        <button class="filter-btn" data-status="lost">Perdidos</button>
+                    </div>
+                </div>
+
+                <!-- Leads Table -->
+                <div class="card" style="padding:0;overflow:hidden;">
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th>Fuente</th>
+                                    <th>Fecha</th>
+                                    <th style="width:120px;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:3rem;">
+                                        <div class="spinner" style="margin:0 auto;"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="leads-pagination"></div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL: Lead Detail -->
+    <!-- ============================================ -->
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal" id="lead-modal">
+        <div class="modal-header">
+            <h3 id="lead-modal-title">Detalle del Lead</h3>
+            <button class="modal-close" onclick="closeModal('lead-modal')">✕</button>
+        </div>
+        <div class="modal-body" id="lead-modal-body">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('lead-modal')">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Current date script -->
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        // Show mobile toggle on small screens
+        if (window.innerWidth <= 1024) {
+            document.getElementById('sidebar-toggle').style.display = 'flex';
+        }
+        window.addEventListener('resize', () => {
+            document.getElementById('sidebar-toggle').style.display = window.innerWidth <= 1024 ? 'flex' : 'none';
+        });
+    </script>
+    <script src="/assets/js/admin.js"></script>
+</body>
+</html>

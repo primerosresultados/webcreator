@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin — Iniciar Sesión</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+    <link rel="stylesheet" href="/assets/css/variables.css">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="icon">🔐</div>
+                <h1>Panel de Administración</h1>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="admin@tusitio.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:var(--space-6);">
+                    Iniciar Sesión →
+                </button>
+            </form>
+
+            <p style="text-align:center;margin-top:var(--space-6);font-size:var(--text-xs);color:var(--text-tertiary);">
+                <a href="/" style="color:var(--text-tertiary);">← Volver al sitio</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/assets/js/admin.js"></script>
+</body>
+</html>

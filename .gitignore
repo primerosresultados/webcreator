@@ -1,0 +1,9 @@
+# WebCreator Starter Kit
+/config/database.php
+/install/.installed.lock
+/uploads/*
+!/uploads/.htaccess
+!/uploads/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
