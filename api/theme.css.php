@@ -8,7 +8,6 @@
  * Loaded by the public site as a stylesheet.
  */
 
-// Load config
 $configPath = __DIR__ . '/../config/database.php';
 if (!file_exists($configPath)) { 
     header('Content-Type: text/css');
@@ -43,12 +42,26 @@ try {
         exit;
     }
 
-    // Helper to safely output a CSS value
     function cssVal($val, $fallback = '') {
         return htmlspecialchars($val ?: $fallback, ENT_QUOTES, 'UTF-8');
     }
 
-    // Generate :root overrides
+    // --- Google Fonts Import ---
+    $fonts = [];
+    if (!empty($theme['fontHeadings'])) $fonts[] = $theme['fontHeadings'];
+    if (!empty($theme['fontMenu']) && !in_array($theme['fontMenu'], $fonts)) $fonts[] = $theme['fontMenu'];
+    if (!empty($theme['fontBody']) && !in_array($theme['fontBody'], $fonts)) $fonts[] = $theme['fontBody'];
+
+    if (!empty($fonts)) {
+        $fontFamilies = [];
+        foreach ($fonts as $f) {
+            $fontFamilies[] = 'family=' . str_replace(' ', '+', $f) . ':wght@300;400;500;600;700;800';
+        }
+        $googleUrl = 'https://fonts.googleapis.com/css2?' . implode('&', $fontFamilies) . '&display=swap';
+        echo "@import url('{$googleUrl}');\n\n";
+    }
+
+    // --- :root overrides ---
     echo "/* Auto-generated theme — " . date('Y-m-d H:i:s') . " */\n";
     echo ":root {\n";
 
@@ -56,7 +69,6 @@ try {
     if (!empty($theme['colorPrimary'])) {
         $hex = $theme['colorPrimary'];
         echo "    --color-primary: {$hex};\n";
-        // Generate RGB version
         $r = hexdec(substr($hex, 1, 2));
         $g = hexdec(substr($hex, 3, 2));
         $b = hexdec(substr($hex, 5, 2));
@@ -67,7 +79,12 @@ try {
         echo "    --color-primary-hover: " . cssVal($theme['colorPrimaryHover']) . ";\n";
     }
     if (!empty($theme['colorSecondary'])) {
-        echo "    --color-secondary: " . cssVal($theme['colorSecondary']) . ";\n";
+        $hex = $theme['colorSecondary'];
+        echo "    --color-secondary: {$hex};\n";
+        $r = hexdec(substr($hex, 1, 2));
+        $g = hexdec(substr($hex, 3, 2));
+        $b = hexdec(substr($hex, 5, 2));
+        echo "    --color-secondary-rgb: {$r}, {$g}, {$b};\n";
     }
     if (!empty($theme['colorSecondaryHover'])) {
         echo "    --color-secondary-hover: " . cssVal($theme['colorSecondaryHover']) . ";\n";
@@ -88,36 +105,35 @@ try {
 
     // Typography - Headings font
     if (!empty($theme['fontHeadings'])) {
-        echo "    --font-headings: " . cssVal($theme['fontHeadings']) . ", system-ui, sans-serif;\n";
+        echo "    --font-headings: '" . cssVal($theme['fontHeadings']) . "', system-ui, sans-serif;\n";
     }
 
     // Typography - Body font
     if (!empty($theme['fontBody'])) {
-        echo "    --font-primary: " . cssVal($theme['fontBody']) . ", system-ui, sans-serif;\n";
+        echo "    --font-primary: '" . cssVal($theme['fontBody']) . "', system-ui, sans-serif;\n";
     }
 
     // Typography - Menu font
     if (!empty($theme['fontMenu'])) {
-        echo "    --font-menu: " . cssVal($theme['fontMenu']) . ", system-ui, sans-serif;\n";
+        echo "    --font-menu: '" . cssVal($theme['fontMenu']) . "', system-ui, sans-serif;\n";
     }
 
     echo "}\n\n";
 
-    // Apply heading fonts if set
+    // --- Apply font families ---
+    if (!empty($theme['fontBody'])) {
+        echo "body { font-family: var(--font-primary); }\n\n";
+    }
+
     if (!empty($theme['fontHeadings'])) {
-        echo "h1, h2, h3, h4, h5, h6 {\n";
-        echo "    font-family: var(--font-headings);\n";
-        echo "}\n\n";
+        echo "h1, h2, h3, h4, h5, h6 { font-family: var(--font-headings); }\n\n";
     }
 
-    // Apply menu font if set
     if (!empty($theme['fontMenu'])) {
-        echo ".nav-links, .nav-links a {\n";
-        echo "    font-family: var(--font-menu);\n";
-        echo "}\n\n";
+        echo ".nav-links, .nav-links a, .nav-brand { font-family: var(--font-menu); }\n\n";
     }
 
-    // Individual heading styles
+    // --- Individual heading styles ---
     for ($i = 1; $i <= 6; $i++) {
         $rules = [];
         if (!empty($theme["h{$i}Size"])) $rules[] = "font-size: " . cssVal($theme["h{$i}Size"]);
@@ -133,18 +149,38 @@ try {
         }
     }
 
-    // Body text customization
-    if (!empty($theme['bodySize'])) {
-        echo "body { font-size: " . cssVal($theme['bodySize']) . "; }\n";
-    }
-    if (!empty($theme['bodyColor'])) {
-        echo "body { --text-primary: " . cssVal($theme['bodyColor']) . "; }\n";
+    // --- Button radius ---
+    if (!empty($theme['btnRadius'])) {
+        echo ".btn, .btn-outline-light, .btn-dark, .btn-accent { border-radius: " . cssVal($theme['btnRadius']) . "; }\n\n";
     }
 
-    // Button styles
-    if (!empty($theme['btnRadius'])) {
-        echo ".btn { border-radius: " . cssVal($theme['btnRadius']) . "; }\n";
+    // --- Apply secondary color to all accent elements on public site ---
+    if (!empty($theme['colorSecondary'])) {
+        $s = cssVal($theme['colorSecondary']);
+        echo "/* Secondary/accent color overrides for public site */\n";
+        echo ".nav-links a.active::after { background: {$s}; }\n";
+        echo ".nav-phone { color: {$s} !important; }\n";
+        echo ".btn-accent { background: {$s}; }\n";
+        echo ".btn-accent:hover { background: {$s}; filter: brightness(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }\n";
+        echo ".hero-form-card::before { background: linear-gradient(90deg, {$s}, rgba(255,255,255,0.4), {$s}); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }\n";
+        echo ".hero-form-card .form-input:focus, .hero-form-card .form-textarea:focus, .hero-form-card select.form-input:focus { border-color: {$s}; box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15); }\n";
+        echo ".welcome-badge { border-color: {$s}; color: {$s}; }\n";
+        echo ".trust-card:hover { border-color: {$s}; }\n";
+        echo ".trust-icon { color: {$s}; }\n";
+        echo ".stat-number, .stat-suffix { color: {$s}; }\n";
+        echo ".text-accent { color: {$s}; }\n";
+        echo ".contact-icon { background: rgba(var(--color-secondary-rgb), 0.1); border-color: rgba(var(--color-secondary-rgb), 0.2); }\n";
+        echo ".contact-form-wrap .form-input:focus, .contact-form-wrap .form-textarea:focus { border-color: {$s}; box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.12); }\n";
+        echo ".contact-form-wrap .form-label .required { color: {$s}; }\n";
+        echo ".footer-col a:hover { color: {$s}; }\n";
+        echo ".footer-social a:hover { color: {$s}; }\n\n";
     }
+
+    // --- Logo URLs from settings ---
+    $logoStmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'logo_normal'");
+    $logoStmt->execute();
+    $logoRow = $logoStmt->fetch();
+    // Logos are handled via JS, not CSS
 
 } catch (Exception $e) {
     echo "/* Theme error: " . htmlspecialchars($e->getMessage()) . " */\n";

@@ -634,7 +634,7 @@ async function exportLeadsCSV() {
 }
 
 // ============================================
-// LOGO MANAGEMENT
+// LOGO MANAGEMENT (stored in DB via settings API)
 // ============================================
 function previewLogo(input, type) {
     const file = input.files[0];
@@ -659,10 +659,8 @@ function previewLogo(input, type) {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-        // Show preview
         if (placeholder) placeholder.style.display = 'none';
         
-        // Remove existing img if any
         const existingImg = previewArea.querySelector('img');
         if (existingImg) existingImg.remove();
 
@@ -673,7 +671,7 @@ function previewLogo(input, type) {
 
         if (removeBtn) removeBtn.style.display = 'inline-flex';
 
-        // Upload to server
+        // Upload to server and save path in DB
         uploadLogo(file, type);
     };
     reader.readAsDataURL(file);
@@ -693,15 +691,19 @@ async function uploadLogo(file, type) {
         const result = await response.json();
 
         if (result.success) {
-            // Save the logo path in site settings
             const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
             const logoUrl = result.media.url || '/' + result.media.path;
             
-            // Store in localStorage for now (could be saved to DB settings table)
-            localStorage.setItem(logoKey, logoUrl);
-            localStorage.setItem(`${logoKey}_id`, result.media.id);
+            // Save to database settings
+            const settingsData = {};
+            settingsData[logoKey] = logoUrl;
             
-            Toast.success(`Logo ${type === 'normal' ? 'principal' : 'negativo'} actualizado.`);
+            await api('/api/settings.php', {
+                method: 'PUT',
+                body: JSON.stringify(settingsData)
+            });
+            
+            Toast.success(`Logo ${type === 'normal' ? 'principal' : 'negativo'} actualizado y guardado.`);
         } else {
             Toast.error(result.error || 'Error al subir el logo.');
         }
@@ -710,33 +712,41 @@ async function uploadLogo(file, type) {
     }
 }
 
-function removeLogo(type) {
+async function removeLogo(type) {
     const previewArea = document.getElementById(`logo-${type}-preview`);
     const placeholder = document.getElementById(`logo-${type}-placeholder`);
     const removeBtn = document.getElementById(`logo-${type}-remove`);
     const fileInput = document.getElementById(`logo-${type}-input`);
 
-    // Remove preview image
     const img = previewArea.querySelector('img');
     if (img) img.remove();
 
-    // Show placeholder
     if (placeholder) placeholder.style.display = 'flex';
     if (removeBtn) removeBtn.style.display = 'none';
     if (fileInput) fileInput.value = '';
 
-    // Clear storage
+    // Clear from database
     const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
-    localStorage.removeItem(logoKey);
-    localStorage.removeItem(`${logoKey}_id`);
+    const settingsData = {};
+    settingsData[logoKey] = '';
+    
+    await api('/api/settings.php', {
+        method: 'PUT',
+        body: JSON.stringify(settingsData)
+    });
 
     Toast.info(`Logo ${type === 'normal' ? 'principal' : 'negativo'} eliminado.`);
 }
 
-function loadSavedLogos() {
+async function loadSavedLogos() {
+    const result = await api('/api/settings.php');
+    if (!result || !result.success) return;
+
+    const settings = result.settings || {};
+
     ['normal', 'negative'].forEach(type => {
         const logoKey = type === 'normal' ? 'logo_normal' : 'logo_negative';
-        const savedUrl = localStorage.getItem(logoKey);
+        const savedUrl = settings[logoKey];
         
         if (savedUrl) {
             const previewArea = document.getElementById(`logo-${type}-preview`);
