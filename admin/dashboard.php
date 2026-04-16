@@ -1,4 +1,13 @@
-<?php $v = time(); ?>
+<?php 
+$v = time(); 
+$gitCommit = 'Unknown';
+if (function_exists('exec')) {
+    $commit = @exec('git rev-parse --short HEAD 2>/dev/null');
+    if ($commit) {
+        $gitCommit = $commit;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -100,8 +109,8 @@
                 </div>
             </nav>
 
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
+            <div class="sidebar-footer" style="flex-direction:column;gap:12px;align-items:stretch;">
+                <div class="sidebar-user" style="margin-bottom:0;">
                     <div class="avatar">A</div>
                     <div class="info">
                         <span class="name">Admin</span>
@@ -110,6 +119,9 @@
                     <button onclick="logout()" title="Cerrar Sesión" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);padding:6px;border-radius:8px;transition:all 0.2s;" onmouseover="this.style.color='#ef4444';this.style.background='rgba(239,68,68,0.08)'" onmouseout="this.style.color='var(--text-tertiary)';this.style.background='none'">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     </button>
+                </div>
+                <div style="font-size:10px;text-align:center;color:var(--text-tertiary);font-family:var(--font-mono, monospace);opacity:0.7;">
+                    Commit: <?=$gitCommit?>
                 </div>
             </div>
         </aside>
