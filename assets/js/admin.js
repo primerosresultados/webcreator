@@ -417,7 +417,8 @@ async function deleteLead(id) {
     if (!confirm('¿Estás seguro de eliminar este lead? Esta acción no se puede deshacer.')) return;
 
     const result = await api(`/api/leads.php?id=${id}`, {
-        method: 'DELETE'
+        method: 'POST',
+        body: JSON.stringify({ _method: 'DELETE' })
     });
 
     if (result && result.success) {
@@ -565,7 +566,7 @@ function switchView(viewName) {
     if (targetView) targetView.classList.remove('hidden');
 
     // Update header title
-    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads', settings: 'Configuración del Sitio' };
+    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads', settings: 'Configuración del Sitio', plugins: 'Gestionar Plugins' };
     const headerTitle = document.querySelector('.admin-header h1');
     if (headerTitle) headerTitle.textContent = titles[viewName] || viewName;
 
@@ -575,6 +576,13 @@ function switchView(viewName) {
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
     if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); }
+    if (viewName === 'plugins') PluginManager.loadPlugins();
+
+    // Handle dynamic plugin views (e.g., view-plugin-portfolio)
+    if (viewName.startsWith('plugin-')) {
+        const pluginId = viewName.replace('plugin-', '');
+        PluginManager.loadPluginView(pluginId);
+    }
 }
 
 // ============================================
@@ -1054,6 +1062,300 @@ function initThemeConfigControls() {
 }
 
 // ============================================
+// PLUGIN MANAGER
+// ============================================
+const PluginManager = {
+    plugins: [],
+    loadedAssets: new Set(),
+
+    // Icons for plugins (SVG paths by icon name)
+    icons: {
+        briefcase: '<path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',
+        box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+        layers: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>',
+        image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+        default: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'
+    },
+
+    getIcon(name) {
+        return this.icons[name] || this.icons.default;
+    },
+
+    // ── Load all plugins ──
+    async loadPlugins() {
+        const result = await api('/api/plugins.php?action=list');
+        if (!result || !result.success) return;
+
+        this.plugins = result.plugins;
+        this.renderGrid();
+        this.injectSidebarLinks();
+        this.loadActivePluginAssets();
+    },
+
+    // ── Render plugin cards ──
+    renderGrid() {
+        const grid = document.getElementById('plugins-grid');
+        if (!grid) return;
+
+        if (this.plugins.length === 0) {
+            grid.innerHTML = `
+                <div style="text-align:center;padding:4rem 2rem;grid-column:1/-1;">
+                    <div style="font-size:3rem;margin-bottom:1rem;">🧩</div>
+                    <h3 style="color:#1a1d2e;margin-bottom:0.5rem;">Sin plugins instalados</h3>
+                    <p style="color:#8b90a6;font-size:var(--text-sm);">Arrastra un archivo ZIP de plugin arriba o coloca la carpeta del plugin en <code>/plugins/</code>.</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = this.plugins.map(p => `
+            <div class="plugin-card ${p.is_active ? 'plugin-active' : ''}">
+                <div class="plugin-card-header">
+                    <div class="plugin-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            ${this.getIcon(p.icon || 'default')}
+                        </svg>
+                    </div>
+                    <span class="plugin-badge ${p.is_active ? 'plugin-badge-active' : 'plugin-badge-inactive'}">
+                        ${p.is_active ? 'Activo' : 'Inactivo'}
+                    </span>
+                </div>
+                <h3 class="plugin-name">${escapeHtml(p.name)}</h3>
+                <p class="plugin-desc">${escapeHtml(p.description || '')}</p>
+                <div class="plugin-meta">
+                    <span>v${escapeHtml(p.version || '1.0')}</span>
+                    <span>por ${escapeHtml(p.author || 'Desconocido')}</span>
+                </div>
+                <div class="plugin-actions">
+                    ${p.is_active 
+                        ? `<button class="btn btn-danger btn-sm" onclick="PluginManager.deactivate('${escapeHtml(p.id)}', '${escapeHtml(p.name)}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                            Desactivar
+                           </button>
+                           <button class="btn btn-primary btn-sm" onclick="switchView('plugin-${escapeHtml(p.id)}')">
+                            Configurar →
+                           </button>`
+                        : `<button class="btn btn-primary btn-sm" onclick="PluginManager.activate('${escapeHtml(p.id)}', '${escapeHtml(p.name)}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
+                            Activar
+                           </button>`
+                    }
+                </div>
+            </div>
+        `).join('');
+    },
+
+    // ── Inject active plugin links into sidebar ──
+    injectSidebarLinks() {
+        const container = document.getElementById('plugin-sidebar-links');
+        if (!container) return;
+
+        const activePlugins = this.plugins.filter(p => p.is_active);
+        
+        container.innerHTML = activePlugins.map(p => `
+            <a class="sidebar-link" data-view="plugin-${p.id}" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    ${this.getIcon(p.icon || 'default')}
+                </svg>
+                ${escapeHtml(p.sidebar_label || p.name)}
+            </a>
+        `).join('');
+
+        // Re-bind click events for new links
+        container.querySelectorAll('.sidebar-link[data-view]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(link.dataset.view);
+            });
+        });
+    },
+
+    // ── Load CSS and JS for active plugins ──
+    loadActivePluginAssets() {
+        const activePlugins = this.plugins.filter(p => p.is_active);
+        
+        activePlugins.forEach(p => {
+            const cssKey = `css-${p.id}`;
+            const jsKey = `js-${p.id}`;
+
+            if (!this.loadedAssets.has(cssKey)) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = `/plugins/${p.folder || p.id}/admin.css?v=${Date.now()}`;
+                link.id = `plugin-css-${p.id}`;
+                document.head.appendChild(link);
+                this.loadedAssets.add(cssKey);
+            }
+
+            if (!this.loadedAssets.has(jsKey)) {
+                const script = document.createElement('script');
+                script.src = `/plugins/${p.folder || p.id}/admin.js?v=${Date.now()}`;
+                script.id = `plugin-js-${p.id}`;
+                document.body.appendChild(script);
+                this.loadedAssets.add(jsKey);
+            }
+        });
+    },
+
+    // ── Load a plugin's admin view ──
+    async loadPluginView(pluginId) {
+        const viewId = `view-plugin-${pluginId}`;
+        let viewEl = document.getElementById(viewId);
+
+        // Create view container if it doesn't exist
+        if (!viewEl) {
+            viewEl = document.createElement('div');
+            viewEl.id = viewId;
+            viewEl.className = 'admin-content admin-view';
+            document.getElementById('plugin-views-container').appendChild(viewEl);
+
+            // Fetch admin-view.php content
+            try {
+                const response = await fetch(`/plugins/${pluginId}/admin-view.php?v=${Date.now()}`);
+                if (response.ok) {
+                    viewEl.innerHTML = await response.text();
+                } else {
+                    viewEl.innerHTML = '<div style="text-align:center;padding:4rem;"><p style="color:#8b90a6;">No se pudo cargar la vista del plugin.</p></div>';
+                }
+            } catch (err) {
+                viewEl.innerHTML = '<div style="text-align:center;padding:4rem;"><p style="color:#dc2626;">Error al cargar el plugin.</p></div>';
+            }
+        }
+
+        // Show this view, hide others
+        document.querySelectorAll('.admin-view').forEach(v => v.classList.add('hidden'));
+        viewEl.classList.remove('hidden');
+
+        // Update header title
+        const plugin = this.plugins.find(p => p.id === pluginId);
+        const headerTitle = document.querySelector('.admin-header h1');
+        if (headerTitle && plugin) headerTitle.textContent = plugin.sidebar_label || plugin.name;
+
+        // Initialize plugin JS if available
+        if (pluginId === 'portfolio' && typeof PortfolioAdmin !== 'undefined') {
+            PortfolioAdmin.init();
+        }
+    },
+
+    // ── Activate plugin ──
+    async activate(pluginId, name) {
+        if (!confirm(`¿Activar el plugin "${name}"?\nSe crearán las tablas necesarias en la base de datos.`)) return;
+
+        const result = await api(`/api/plugins.php?action=activate&plugin=${encodeURIComponent(pluginId)}`, {
+            method: 'POST',
+            body: JSON.stringify({})
+        });
+
+        if (result && result.success) {
+            Toast.success(result.message || 'Plugin activado.');
+            await this.loadPlugins();
+        } else {
+            Toast.error(result?.error || 'Error al activar plugin.');
+        }
+    },
+
+    // ── Deactivate plugin ──
+    async deactivate(pluginId, name) {
+        if (!confirm(`⚠️ ¿Desactivar el plugin "${name}"?\n\nEsta acción ELIMINARÁ todas las tablas y datos del plugin.\nEsta acción NO se puede deshacer.`)) return;
+
+        const result = await api(`/api/plugins.php?action=deactivate&plugin=${encodeURIComponent(pluginId)}`, {
+            method: 'POST',
+            body: JSON.stringify({})
+        });
+
+        if (result && result.success) {
+            Toast.success(result.message || 'Plugin desactivado.');
+            
+            // Remove plugin view
+            const viewEl = document.getElementById(`view-plugin-${pluginId}`);
+            if (viewEl) viewEl.remove();
+
+            // Remove loaded assets
+            const cssEl = document.getElementById(`plugin-css-${pluginId}`);
+            const jsEl = document.getElementById(`plugin-js-${pluginId}`);
+            if (cssEl) cssEl.remove();
+            if (jsEl) jsEl.remove();
+            this.loadedAssets.delete(`css-${pluginId}`);
+            this.loadedAssets.delete(`js-${pluginId}`);
+
+            await this.loadPlugins();
+        } else {
+            Toast.error(result?.error || 'Error al desactivar plugin.');
+        }
+    },
+
+    // ── Upload ZIP ──
+    async uploadZip(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        if (!file.name.endsWith('.zip')) {
+            Toast.error('Solo se permiten archivos ZIP.');
+            input.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('plugin_zip', file);
+        formData.append('csrf_token', AdminApp.csrfToken);
+
+        try {
+            const response = await fetch('/api/plugins.php?action=upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                Toast.success(result.message || 'Plugin subido.');
+                await this.loadPlugins();
+            } else {
+                Toast.error(result.error || 'Error al subir plugin.');
+            }
+        } catch (err) {
+            Toast.error('Error de conexión al subir plugin.');
+        }
+
+        input.value = '';
+    },
+
+    // ── Init upload zone drag & drop ──
+    initUploadZone() {
+        const zone = document.getElementById('plugin-upload-zone');
+        if (!zone) return;
+
+        zone.addEventListener('click', () => {
+            document.getElementById('plugin-zip-input').click();
+        });
+
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.style.borderColor = '#6366f1';
+            zone.style.background = 'rgba(99,102,241,0.04)';
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.style.borderColor = '';
+            zone.style.background = '';
+        });
+
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.style.borderColor = '';
+            zone.style.background = '';
+
+            if (e.dataTransfer.files.length > 0) {
+                const input = document.getElementById('plugin-zip-input');
+                const dt = new DataTransfer();
+                dt.items.add(e.dataTransfer.files[0]);
+                input.files = dt.files;
+                this.uploadZip(input);
+            }
+        });
+    }
+};
+
+// ============================================
 // INITIALIZE DASHBOARD PAGE
 // ============================================
 async function initDashboard() {
@@ -1065,6 +1367,10 @@ async function initDashboard() {
     loadSavedLogos();
     initLogoDragDrop();
     initThemeConfigControls();
+    
+    // Init Plugin Manager
+    PluginManager.initUploadZone();
+    PluginManager.loadPlugins();
     
     // Load initial view
     loadDashboard();

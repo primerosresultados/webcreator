@@ -103,10 +103,15 @@ switch ($method) {
                 LEFT JOIN users u ON l.assigned_to = u.id 
                 {$whereClause} 
                 ORDER BY l.{$sortBy} {$sortDir} 
-                LIMIT {$limit} OFFSET {$offset}";
+                LIMIT :limit OFFSET :offset";
         
         $stmt = $db->prepare($sql);
-        $stmt->execute($params);
+        foreach ($params as $i => $param) {
+            $stmt->bindValue($i + 1, $param);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $leads = $stmt->fetchAll();
 
         jsonSuccess([

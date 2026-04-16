@@ -19,17 +19,21 @@ switch ($method) {
         // Public theme settings (no auth required)
         if (isset($_GET['public']) && $_GET['public'] == '1') {
             $db = getDB();
-            $stmt = $db->prepare("SELECT setting_value FROM settings WHERE setting_key = 'theme_config'");
+            $stmt = $db->prepare("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('theme_config', 'site_info')");
             $stmt->execute();
-            $row = $stmt->fetch();
-
-            if ($row && $row['setting_value']) {
-                header('Content-Type: application/json');
-                header('Cache-Control: public, max-age=300');
-                echo json_encode(['success' => true, 'theme' => json_decode($row['setting_value'], true)]);
-            } else {
-                jsonSuccess(['theme' => null]);
+            $response = ['theme' => null, 'site_info' => null];
+            while ($row = $stmt->fetch()) {
+                if ($row['setting_key'] === 'theme_config' && $row['setting_value']) {
+                    $response['theme'] = json_decode($row['setting_value'], true);
+                }
+                if ($row['setting_key'] === 'site_info' && $row['setting_value']) {
+                    $response['site_info'] = json_decode($row['setting_value'], true);
+                }
             }
+
+            header('Content-Type: application/json');
+            header('Cache-Control: public, max-age=300');
+            echo json_encode(['success' => true] + $response);
             exit;
         }
 

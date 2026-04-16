@@ -146,9 +146,6 @@ switch ($method) {
             $params[] = "{$typeFilter}%";
         }
 
-        $total = (int)$db->prepare("SELECT COUNT(*) FROM media {$where}")->execute($params) 
-            ? $db->prepare("SELECT COUNT(*) FROM media {$where}") : null;
-        
         $countStmt = $db->prepare("SELECT COUNT(*) FROM media {$where}");
         $countStmt->execute($params);
         $total = (int)$countStmt->fetchColumn();

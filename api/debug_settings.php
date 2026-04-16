@@ -5,6 +5,13 @@
  */
 require_once __DIR__ . '/init.php';
 
+// Security: Only superadmins can access diagnostics
+$user = requireAuth();
+if ($user['role'] !== 'superadmin') {
+    http_response_code(403);
+    die('Acceso denegado.');
+}
+
 echo "<h2>Settings Diagnostic</h2>";
 echo "<pre>";
 

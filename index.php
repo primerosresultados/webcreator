@@ -117,6 +117,7 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <a href="#inicio" class="active">Inicio</a>
                 <a href="#nosotros">Nosotros</a>
                 <a href="#servicios">Servicios</a>
+                <a href="/portafolio">Portafolio</a>
                 <a href="#contacto">Contacto</a>
                 <a href="tel:<?=$phoneClean?>" class="nav-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><?=$h($S['phone'])?></a>
                 <a href="#inicio" class="btn btn-primary btn-sm">Cotizar Proyecto</a>
@@ -326,6 +327,16 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
             </div>
         </div>
     </section>
+
+    <!-- ============================================ -->
+    <!-- PORTFOLIO COMPONENT (Plugin — auto-detected) -->
+    <!-- ============================================ -->
+    <?php
+    $portfolioComponentPath = __DIR__ . '/plugins/portfolio/public-component.php';
+    if (file_exists($portfolioComponentPath)) {
+        include $portfolioComponentPath;
+    }
+    ?>
 
     <!-- ============================================ -->
     <!-- CONTACT / CTA FINAL -->

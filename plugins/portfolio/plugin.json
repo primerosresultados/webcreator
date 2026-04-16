@@ -1,0 +1,18 @@
+{
+    "id": "portfolio",
+    "name": "Portafolio de Proyectos",
+    "description": "Galería de proyectos arquitectónicos con categorías, imágenes y fichas detalladas. Ideal para estudios de arquitectura, constructoras y diseñadores.",
+    "version": "1.0.0",
+    "author": "WebCreator",
+    "icon": "briefcase",
+    "sidebar_label": "Portafolio",
+    "sidebar_section": "Plugins",
+    "public_routes": [
+        { "path": "/portafolio", "label": "Portafolio" },
+        { "path": "/portafolio/proyecto", "label": "Detalle Proyecto" }
+    ],
+    "has_homepage_component": true,
+    "nav_label": "Portafolio",
+    "nav_href": "/portafolio",
+    "requires": []
+}

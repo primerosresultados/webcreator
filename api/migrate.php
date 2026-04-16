@@ -12,8 +12,13 @@
 
 require_once __DIR__ . '/init.php';
 
-// Only admins can run migrations
+// Only superadmin can run migrations, and only via POST with CSRF
+if (getMethod() !== 'POST') {
+    jsonError('Las migraciones deben ejecutarse via POST.', 405);
+}
+
 $user = requireAuth();
+requireCSRF();
 
 if ($user['role'] !== 'superadmin') {
     jsonError('Solo el superadmin puede ejecutar migraciones.', 403);
@@ -38,7 +43,8 @@ if (!is_dir($migrationsDir)) {
     jsonSuccess(['message' => 'No hay migraciones. Carpeta /migrations/ creada.', 'executed' => []]);
 }
 
-$files = glob($migrationsDir . '*.sql');
+// Exclude example files prefixed with _ (same pattern as auto-migration)
+$files = glob($migrationsDir . '[!_]*.sql');
 sort($files); // Execute in order
 
 $results = [];

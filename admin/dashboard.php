@@ -82,6 +82,16 @@
                 </div>
 
                 <div class="sidebar-section">
+                    <div class="sidebar-section-title">Plugins</div>
+                    <a class="sidebar-link" data-view="plugins" href="#">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        Gestionar Plugins
+                    </a>
+                    <!-- Dynamic plugin links injected here by JS -->
+                    <div id="plugin-sidebar-links"></div>
+                </div>
+
+                <div class="sidebar-section">
                     <div class="sidebar-section-title">Sitio</div>
                     <a class="sidebar-link" href="/" target="_blank">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -644,6 +654,39 @@
                 </div>
             </div>
 
+            <!-- ============================================ -->
+            <!-- VIEW: PLUGINS MANAGER -->
+            <!-- ============================================ -->
+            <div class="admin-content admin-view hidden" id="view-plugins">
+
+                <!-- Upload Zone -->
+                <div class="admin-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <span>Plugins Instalados</span>
+                </div>
+
+                <div class="plugin-upload-zone" id="plugin-upload-zone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;color:#aaa;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span style="font-weight:600;color:var(--text-secondary);">Arrastra un archivo ZIP de plugin aquí</span>
+                    <span style="font-size:12px;color:#aaa;">o haz click para seleccionar</span>
+                    <input type="file" id="plugin-zip-input" accept=".zip" style="display:none;" onchange="PluginManager.uploadZip(this)">
+                </div>
+
+                <!-- Plugins Grid -->
+                <div class="plugin-grid" id="plugins-grid">
+                    <div style="text-align:center;padding:3rem;grid-column:1/-1;">
+                        <div class="spinner" style="margin:0 auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- DYNAMIC PLUGIN VIEWS CONTAINER -->
+            <!-- ============================================ -->
+            <div id="plugin-views-container">
+                <!-- Plugin admin views are injected here dynamically -->
+            </div>
+
         </main>
     </div>
 
@@ -676,5 +719,6 @@
         });
     </script>
     <script src="/assets/js/admin.js?v=<?=$v?>"></script>
+    <!-- Plugin JS files are loaded dynamically by PluginManager -->
 </body>
 </html>

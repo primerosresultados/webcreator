@@ -329,15 +329,13 @@ function initSmoothScroll() {
 // WHATSAPP FLOATING BUTTON WITH LEAD CAPTURE
 // ============================================
 function initWhatsApp() {
-    // Load site info to get WhatsApp number
-    fetch('/api/settings.php?key=site_info')
+    // Load site info from public endpoint (no auth required)
+    fetch('/api/settings.php?public=1')
         .then(r => r.json())
         .then(d => {
-            if (!d.success || !d.setting || !d.setting.setting_value) return;
-            const info = JSON.parse(d.setting.setting_value);
-            if (!info.whatsapp) return;
+            if (!d.success || !d.site_info || !d.site_info.whatsapp) return;
 
-            const waNumber = info.whatsapp.replace(/[^0-9]/g, '');
+            const waNumber = d.site_info.whatsapp.replace(/[^0-9]/g, '');
             const btn = document.getElementById('whatsapp-btn');
             if (!btn) return;
 
@@ -380,12 +378,15 @@ function initWhatsApp() {
                 const phone = document.getElementById('wa-phone').value.trim();
                 if (!name || !phone) return;
 
-                // Save lead in background
+                // Save lead in background — generate placeholder email since backend requires it
+                const phoneClean = phone.replace(/[^0-9]/g, '');
+                const placeholderEmail = `whatsapp-${phoneClean}@lead.local`;
+
                 try {
                     await fetch('/api/leads.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, phone, source: 'whatsapp-button', message: 'Contacto vía WhatsApp' })
+                        body: JSON.stringify({ name, phone, email: placeholderEmail, source: 'whatsapp-button', message: 'Contacto vía WhatsApp' })
                     });
                 } catch(err) {}
 

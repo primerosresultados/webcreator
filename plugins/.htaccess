@@ -1,0 +1,8 @@
+# Protect direct access to plugin PHP files
+# Only public-page.php, public-detail.php and public-component.php should be accessed directly
+# API access goes through /api/plugins.php router
+
+<FilesMatch "^(install|uninstall)\.sql$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
