@@ -144,22 +144,22 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <!-- Left: Text content -->
                 <div class="hero-content" data-animate="fadeInUp">
                     <div class="hero-subtitle-row">
-                        <span class="hero-step">CALIDAD</span>
+                        <span class="hero-step">DISEÑO</span>
                         <span class="hero-step-divider"></span>
-                        <span class="hero-step">COMPROMISO</span>
+                        <span class="hero-step">ARQUITECTURA</span>
                         <span class="hero-step-divider"></span>
-                        <span class="hero-step">RESULTADOS</span>
+                        <span class="hero-step">NATURALEZA</span>
                     </div>
 
-                    <h1>Llevamos tu negocio<br>al siguiente nivel</h1>
+                    <h1>Tu Casa<br>Tus Sueños<br>Diseño Único</h1>
 
                     <p class="hero-desc">
-                        <?=$h($S['siteDescription'])?>. Combinamos experiencia y dedicación para ofrecerte soluciones a la medida.
+                        <?=$h($S['siteDescription'])?>. Diseñamos casas en el sur de Chile donde la naturaleza y la arquitectura se encuentran en perfecta armonía.
                     </p>
 
                     <div class="hero-actions">
-                        <a href="#servicios" class="btn btn-outline-light btn-lg">Nuestros Servicios</a>
-                        <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
+                        <a href="#servicios" class="btn btn-outline-light btn-lg">Conoce Nuestros Servicios</a>
+                        <a href="#contacto" class="btn btn-outline-light btn-lg">Solicitar Cotización</a>
                     </div>
                 </div>
 
@@ -167,8 +167,8 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <div class="hero-form" data-animate="fadeInUp" data-delay="200">
                     <div class="hero-form-card">
                         <div class="hero-form-header">
-                            <h3>Solicita una cotización</h3>
-                            <p>Responderemos en menos de 24 horas</p>
+                            <h3>Consulta tu proyecto</h3>
+                            <p>Te asesoramos sin compromiso</p>
                         </div>
                         <form id="hero-contact-form">
                             <!-- Honeypot anti-spam -->
@@ -192,16 +192,18 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
 
                             <div class="form-group">
                                 <select id="hero-service" name="service" class="form-input">
-                                    <option value="">¿En qué te podemos ayudar?</option>
-                                    <option value="servicio-1">Servicio 1</option>
-                                    <option value="servicio-2">Servicio 2</option>
-                                    <option value="servicio-3">Servicio 3</option>
+                                    <option value="">¿Qué tipo de proyecto necesitas?</option>
+                                    <option value="diseño-proyecto">Diseño de Proyecto</option>
+                                    <option value="obra-nueva">Obra Nueva</option>
+                                    <option value="ampliacion">Ampliación / Remodelación</option>
+                                    <option value="tramitacion">Tramitación Municipal</option>
+                                    <option value="visualizacion-3d">Visualización 3D</option>
                                     <option value="otro">Otro</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <textarea id="hero-message" name="message" class="form-textarea" placeholder="Cuéntanos sobre tu proyecto..." rows="3"></textarea>
+                                <textarea id="hero-message" name="message" class="form-textarea" placeholder="Cuéntanos sobre tu proyecto: ubicación, tipo de terreno, ideas..." rows="3"></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-accent btn-block btn-lg" id="hero-submit-btn">
@@ -222,42 +224,42 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <section class="section welcome-section" id="nosotros">
         <div class="container">
             <div class="welcome-content" data-animate="fadeInUp">
-                <span class="welcome-badge">BIENVENIDOS A <?=strtoupper($h($S['siteName']))?></span>
+                <span class="welcome-badge"><?=strtoupper($h($S['siteName']))?></span>
                 <h2>
-                    Trabajamos con pasión y dedicación para ofrecer soluciones profesionales que marquen la diferencia. Tu éxito es nuestra prioridad.
+                    Nos enfocamos en el diseño de casas en el sur de Chile, donde cada proyecto nace del respeto por el entorno natural y la visión de quienes lo habitarán.
                 </h2>
-                <a href="#contacto" class="btn btn-dark btn-lg">Hablar con un Experto</a>
+                <a href="#contacto" class="btn btn-dark btn-lg">Conversemos sobre tu Proyecto</a>
             </div>
 
             <!-- Trust signals -->
             <div class="trust-grid" data-animate="fadeInUp" data-delay="200">
                 <div class="trust-card">
                     <div class="trust-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     </div>
-                    <h4>Equipo Profesional</h4>
-                    <p>Profesionales con amplia experiencia y trayectoria comprobada en el rubro.</p>
+                    <h4>Diseño Residencial</h4>
+                    <p>Casas diseñadas para integrarse con el paisaje del sur de Chile, respetando cada entorno.</p>
                 </div>
                 <div class="trust-card">
                     <div class="trust-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
-                    <h4>Compromiso Total</h4>
-                    <p>Cumplimiento en plazos y resultados con responsabilidad y transparencia.</p>
-                </div>
-                <div class="trust-card">
-                    <div class="trust-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
-                    <h4>Calidad Garantizada</h4>
-                    <p>Trabajamos bajo los más altos estándares de calidad en cada detalle.</p>
+                    <h4>Gestión Integral</h4>
+                    <p>Tramitaciones municipales, permisos de edificación y recepción final de obras.</p>
                 </div>
                 <div class="trust-card">
                     <div class="trust-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     </div>
-                    <h4>Atención Personalizada</h4>
-                    <p>Cada cliente recibe un trato único, adaptado a sus necesidades específicas.</p>
+                    <h4>Visualización 3D</h4>
+                    <p>Renders fotorrealistas para que visualices tu proyecto antes de construir.</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h4>Compromiso Total</h4>
+                    <p>Acompañamiento desde la primera idea hasta la entrega de llaves de tu hogar.</p>
                 </div>
             </div>
         </div>
@@ -268,29 +270,29 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- ============================================ -->
     <section class="services-split" id="servicios">
         <div class="split-card" data-animate="fadeIn">
-            <img src="/assets/img/construction.png" alt="Servicio 1" loading="lazy">
+            <img src="/assets/img/construction.png" alt="Diseño y Gestión de Proyectos" loading="lazy">
             <div class="split-overlay"></div>
             <div class="split-content">
-                <h3>Servicio 1</h3>
+                <h3>Diseño y Gestión de Proyectos</h3>
                 <div class="split-tags">
-                    <span class="split-tag"># Detalle del servicio</span>
-                    <span class="split-tag"># Característica principal</span>
-                    <span class="split-tag"># Valor agregado</span>
+                    <span class="split-tag"># Diseño Arquitectónico</span>
+                    <span class="split-tag"># Planimetría Completa</span>
+                    <span class="split-tag"># Gestión de Obra</span>
                 </div>
-                <a href="#contacto" class="btn btn-outline-light">Más Información</a>
+                <a href="#contacto" class="btn btn-outline-light">Consultar</a>
             </div>
         </div>
         <div class="split-card" data-animate="fadeIn" data-delay="200">
-            <img src="/assets/img/architecture.png" alt="Servicio 2" loading="lazy">
+            <img src="/assets/img/architecture.png" alt="Ampliaciones y Obra Nueva" loading="lazy">
             <div class="split-overlay"></div>
             <div class="split-content">
-                <h3>Servicio 2</h3>
+                <h3>Obra Nueva y Ampliaciones</h3>
                 <div class="split-tags">
-                    <span class="split-tag"># Detalle del servicio</span>
-                    <span class="split-tag"># Característica principal</span>
-                    <span class="split-tag"># Valor agregado</span>
+                    <span class="split-tag"># Permisos de Edificación</span>
+                    <span class="split-tag"># Viviendas y Terrazas</span>
+                    <span class="split-tag"># Quinchos y Espacios Exteriores</span>
                 </div>
-                <a href="#contacto" class="btn btn-outline-light">Más Información</a>
+                <a href="#contacto" class="btn btn-outline-light">Consultar</a>
             </div>
         </div>
     </section>
@@ -302,14 +304,14 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
         <div class="container">
             <div class="stats-grid" data-animate="fadeInUp">
                 <div class="stat-item">
-                    <span class="stat-number" data-count="100">0</span>
+                    <span class="stat-number" data-count="50">0</span>
                     <span class="stat-suffix">+</span>
-                    <span class="stat-label">Clientes Atendidos</span>
+                    <span class="stat-label">Proyectos Diseñados</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-count="98">0</span>
+                    <span class="stat-number" data-count="100">0</span>
                     <span class="stat-suffix">%</span>
-                    <span class="stat-label">Satisfacción</span>
+                    <span class="stat-label">Compromiso</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-count="10">0</span>
@@ -317,9 +319,9 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                     <span class="stat-label">Años de Experiencia</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-count="24">0</span>
-                    <span class="stat-suffix">/7</span>
-                    <span class="stat-label">Soporte Disponible</span>
+                    <span class="stat-number" data-count="5">0</span>
+                    <span class="stat-suffix"></span>
+                    <span class="stat-label">Servicios Especializados</span>
                 </div>
             </div>
         </div>
@@ -342,8 +344,8 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
         <div class="container">
             <div class="contact-grid">
                 <div class="contact-info" data-animate="slideInLeft">
-                    <h2>Hablemos de tu <span class="text-accent">próximo paso</span></h2>
-                    <p>Estamos listos para ayudarte. Escríbenos y te responderemos a la brevedad.</p>
+                    <h2>Hablemos de tu <span class="text-accent">próximo proyecto</span></h2>
+                    <p>Contáctanos y conversemos sobre la casa que siempre has soñado. Estamos en Pucón, Chile.</p>
 
                     <div class="contact-detail">
                         <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
@@ -442,10 +444,10 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
 
                 <div class="footer-col">
                     <h4>Servicios</h4>
-                    <a href="#servicios">Servicio 1</a>
-                    <a href="#servicios">Servicio 2</a>
-                    <a href="#contacto">Consultoría</a>
-                    <a href="#contacto">Soporte</a>
+                    <a href="#servicios">Diseño de Proyectos</a>
+                    <a href="#servicios">Obra Nueva</a>
+                    <a href="#servicios">Ampliaciones</a>
+                    <a href="#contacto">Tramitaciones</a>
                 </div>
 
                 <div class="footer-col">
