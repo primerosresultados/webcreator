@@ -1,201 +1,164 @@
-# 📐 Guía para Nuevas Páginas — WebCreator
+# Guía de Desarrollo — WebCreator v1.0.0
 
-> **IMPORTANTE:** Sigue estas reglas al crear cualquier página nueva para que herede
-> automáticamente los colores, tipografía y diseño configurados desde el panel admin.
+> **Esta guía es para desarrolladores** que extienden o personalizan el sistema.
+> Para instalación, ver [`COMO_INSTALAR.md`](COMO_INSTALAR.md).
+> Para referencia general, ver [`README.md`](README.md).
 
 ---
 
-## ✅ Checklist para cada página nueva
+## Arquitectura General
 
-### 1. Incluir los CSS en orden correcto
-
-```html
-<head>
-    <!-- 1. Variables (tokens de diseño) -->
-    <link rel="stylesheet" href="/assets/css/variables.css">
-    <!-- 2. Reset y estilos base -->
-    <link rel="stylesheet" href="/assets/css/base.css">
-    <!-- 3. Componentes reutilizables (botones, cards, modales, etc.) -->
-    <link rel="stylesheet" href="/assets/css/components.css">
-    <!-- 4. Estilos del sitio público -->
-    <link rel="stylesheet" href="/assets/css/public.css">
-    <!-- 5. OBLIGATORIO: Tema dinámico (lee la BD y genera CSS) -->
-    <link rel="stylesheet" href="/api/theme.css.php">
-</head>
+```
+┌─────────────────────────────────────────────────────┐
+│                   FRONTEND PÚBLICO                   │
+│  index.php → CSS (variables → base → components →   │
+│  public → theme.css.php) + app.js                   │
+└──────────────────────┬──────────────────────────────┘
+                       │ fetch()
+┌──────────────────────▼──────────────────────────────┐
+│                      API LAYER                       │
+│  api/init.php (bootstrap) → auth │ leads │ settings │
+│  │ upload │ plugins │ migrate │ theme.css            │
+└──────────────────────┬──────────────────────────────┘
+                       │ PDO
+┌──────────────────────▼──────────────────────────────┐
+│                    MySQL / MariaDB                    │
+│  users │ leads │ media │ settings │ activity_log     │
+│  + tablas de plugins activos                         │
+└─────────────────────────────────────────────────────┘
 ```
 
-> ⚠️ **Sin `theme.css.php`** la página NO heredará los colores, fuentes ni bordes
-> configurados desde el panel de administración.
-
 ---
 
-### 2. Usar variables CSS, NUNCA colores hardcoded
+## Reglas de CSS — Tema Dinámico
+
+### Orden de carga obligatorio
+
+```html
+<link rel="stylesheet" href="/assets/css/variables.css">  <!-- 1. Tokens -->
+<link rel="stylesheet" href="/assets/css/base.css">        <!-- 2. Reset -->
+<link rel="stylesheet" href="/assets/css/components.css">  <!-- 3. Componentes -->
+<link rel="stylesheet" href="/assets/css/public.css">      <!-- 4. Sitio público -->
+<link rel="stylesheet" href="/api/theme.css.php">          <!-- 5. ⚡ Tema dinámico -->
+```
+
+> ⚠️ Sin `theme.css.php` la página NO heredará los colores/fuentes del admin.
+
+### Variables CSS disponibles
+
+#### Colores
+| Variable | Uso |
+|----------|-----|
+| `--color-primary` | Color principal (botones, links, CTAs) |
+| `--color-primary-hover` | Hover del primario |
+| `--color-secondary` | Color secundario/acento |
+| `--color-accent` | Color terciario |
+| `rgba(--color-primary-rgb, 0.1)` | Primario con transparencia |
+| `rgba(--color-secondary-rgb, 0.1)` | Secundario con transparencia |
+
+#### Tipografía
+| Variable | Uso |
+|----------|-----|
+| `--font-primary` | Fuente del body |
+| `--font-headings` | Fuente de H1-H6 (si se configura) |
+| `--font-menu` | Fuente del menú (si se configura) |
+
+#### Bordes
+| Variable | Uso |
+|----------|-----|
+| `--radius-sm` | ~4px |
+| `--radius-md` | Bordes medianos |
+| `--radius-lg` | Valor base del admin |
+| `--radius-xl` | Grandes |
+| `--radius-2xl` | Muy redondeados |
+| `--radius-full` | Píldora (9999px) |
+
+### Regla de oro
 
 ```css
-/* ❌ MAL — color fijo, no cambia con el admin */
+/* ❌ MAL — hardcoded */
 .mi-boton { background: #c9a96e; }
 
-/* ✅ BIEN — usa la variable, se actualiza desde el panel */
+/* ✅ BIEN — dinámico */
 .mi-boton { background: var(--color-secondary); }
 ```
 
-#### Variables de color disponibles:
-| Variable | Uso |
-|----------|-----|
-| `var(--color-primary)` | Color principal (botones, links, CTAs) |
-| `var(--color-primary-hover)` | Hover del primario |
-| `var(--color-secondary)` | Color secundario/acento (dorado por defecto) |
-| `var(--color-accent)` | Color terciario de acento |
-| `rgba(var(--color-primary-rgb), 0.1)` | Primario con transparencia |
-| `rgba(var(--color-secondary-rgb), 0.1)` | Secundario con transparencia |
-
-#### Variables de tipografía:
-| Variable | Uso |
-|----------|-----|
-| `var(--font-primary)` | Fuente del cuerpo (body) |
-| `var(--font-headings)` | Fuente de títulos (H1-H6) — solo si se configura |
-| `var(--font-menu)` | Fuente del menú — solo si se configura |
-
-#### Variables de bordes:
-| Variable | Uso |
-|----------|-----|
-| `var(--radius-sm)` | Bordes suaves (4px aprox) |
-| `var(--radius-md)` | Bordes medianos |
-| `var(--radius-lg)` | Bordes grandes (el valor base del admin) |
-| `var(--radius-xl)` | Bordes extra grandes |
-| `var(--radius-2xl)` | Bordes muy redondeados |
-| `var(--radius-full)` | Totalmente redondo (píldora) |
-
 ---
 
-### 3. Incluir el JS público si hay formularios
+## Crear Páginas Nuevas
 
-```html
-<!-- Antes del cierre de </body> -->
-<script src="/assets/js/app.js"></script>
-```
+### Checklist
 
-El `app.js` maneja:
-- Envío de formularios a `/api/leads.php`
-- Notificaciones Toast
-- Animaciones on-scroll
-- Menú móvil
+1. ✅ Incluir los 5 CSS en orden correcto
+2. ✅ Usar variables CSS, nunca colores hardcoded
+3. ✅ Copiar header y footer de `index.php`
+4. ✅ Incluir `app.js` antes del `</body>`
+5. ✅ Usar clases reutilizables (`.container`, `.btn`, `.card`, etc.)
+6. ✅ Formularios con honeypot + `_form_time` + `source`
 
----
-
-### 4. Mantener la estructura HTML del header y footer
-
-Copiar el `<header>` y `<footer>` de `index.html` para mantener consistencia en navegación.
-
----
-
-### 5. Formularios: campos ocultos obligatorios
-
-Todo formulario que envíe leads debe incluir:
-
-```html
-<form id="mi-formulario">
-    <!-- Anti-spam: honeypot -->
-    <div style="position:absolute;left:-9999px;" aria-hidden="true">
-        <input type="text" name="website_url" tabindex="-1" autocomplete="off">
-    </div>
-    <!-- Anti-spam: tiempo de carga -->
-    <input type="hidden" name="_form_time" value="">
-    <!-- Trazabilidad: de dónde viene el lead -->
-    <input type="hidden" name="source" value="pagina-nueva">
-
-    <!-- Tus campos aquí... -->
-</form>
-```
-
----
-
-### 6. Clases CSS reutilizables (ya definidas)
+### Clases CSS reutilizables
 
 | Clase | Qué hace |
 |-------|----------|
 | `.container` | Centra el contenido (max 1280px) |
 | `.btn .btn-primary` | Botón principal |
-| `.btn .btn-accent` | Botón con color secundario |
-| `.btn-outline-light` | Botón borde blanco (para fondos oscuros) |
-| `.btn-lg` / `.btn-sm` | Tamaños de botón |
-| `.btn-block` | Botón ancho 100% |
+| `.btn .btn-accent` | Botón secundario |
+| `.btn-outline-light` | Botón borde blanco (fondos oscuros) |
+| `.btn-lg` / `.btn-sm` | Tamaños |
+| `.btn-block` | 100% ancho |
 | `.card` | Tarjeta con borde y sombra |
 | `.form-input` | Input estilizado |
 | `.form-textarea` | Textarea estilizado |
 | `.form-label` | Label de formulario |
-| `.form-group` | Wrapper de campo (con margin-bottom) |
-| `.form-row` | Grid de 2 columnas para campos |
-| `.section` | Padding vertical estándar (6rem) |
+| `.form-group` | Wrapper (margin-bottom) |
+| `.form-row` | Grid 2 columnas |
+| `.section` | Padding vertical estándar |
 
 ---
 
-### 7. Ejemplo: Página nueva completa
+## Formularios de Contacto
+
+Todo formulario que capture leads debe incluir:
 
 ```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Descripción de esta página">
-    <title>MiSitio — Nombre de Página</title>
+<form id="mi-formulario">
+    <!-- Anti-spam: honeypot (oculto) -->
+    <div style="position:absolute;left:-9999px;" aria-hidden="true">
+        <input type="text" name="website_url" tabindex="-1" autocomplete="off">
+    </div>
+    <!-- Anti-spam: tiempo de carga -->
+    <input type="hidden" name="_form_time" value="">
+    <!-- Trazabilidad -->
+    <input type="hidden" name="source" value="pagina-nueva">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="/assets/css/variables.css">
-    <link rel="stylesheet" href="/assets/css/base.css">
-    <link rel="stylesheet" href="/assets/css/components.css">
-    <link rel="stylesheet" href="/assets/css/public.css">
-    <link rel="stylesheet" href="/api/theme.css.php">
-</head>
-<body>
-    <!-- Copiar header de index.html -->
-    <header class="site-header" id="header">
-        <!-- ... navegación ... -->
-    </header>
-
-    <!-- Tu contenido -->
-    <section class="section" style="padding-top:calc(var(--header-height) + 3rem);">
-        <div class="container">
-            <h1>Título de la Página</h1>
-            <p>Contenido aquí...</p>
-        </div>
-    </section>
-
-    <!-- Copiar footer de index.html -->
-    <footer class="site-footer">
-        <!-- ... footer ... -->
-    </footer>
-
-    <script src="/assets/js/app.js"></script>
-</body>
-</html>
+    <!-- Campos visibles -->
+    <input type="text" name="name" class="form-input" required>
+    <input type="email" name="email" class="form-input" required>
+    <textarea name="message" class="form-textarea"></textarea>
+    <button type="submit" class="btn btn-primary btn-block">Enviar</button>
+</form>
 ```
+
+El `app.js` intercepta automáticamente el submit y envía a `/api/leads.php`.
 
 ---
 
-## Migraciones de Base de Datos
+## Sistema de Migraciones
 
-El sistema ejecuta migraciones **automáticamente** cuando un admin inicia sesión.
+### Cómo agregar tablas
 
-### Cómo agregar una tabla nueva
-
-1. Crear un archivo `.sql` en `/migrations/`:
+1. Crear archivo en `/migrations/`:
 
 ```
 migrations/
 ├── 001_create_settings.sql     ← Ya ejecutada
 ├── 002_create_products.sql     ← Nueva (se ejecutará sola)
-└── _ejemplo_products.sql       ← Ignorada (empieza con _)
+└── _ejemplo_products.sql       ← Ignorada (prefijo _)
 ```
 
-2. El archivo debe usar `CREATE TABLE IF NOT EXISTS`:
+2. Usar `CREATE TABLE IF NOT EXISTS`:
 
 ```sql
--- migrations/002_create_products.sql
 CREATE TABLE IF NOT EXISTS `products` (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(255) NOT NULL,
@@ -204,52 +167,199 @@ CREATE TABLE IF NOT EXISTS `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
-3. Hacer deploy — la próxima vez que un admin acceda al panel, la tabla se creará sola.
+3. Deploy → se ejecuta automáticamente al login de admin.
 
-### Reglas de migraciones
-
-| Regla | Detalle |
-|-------|---------|
-| Archivos que empiezan con `_` | Son **ignorados** (plantillas de ejemplo) |
-| Orden de ejecución | Alfabético por nombre de archivo |
-| Idempotencia | Usar `IF NOT EXISTS` / `ON DUPLICATE KEY` |
-| Se ejecutan una sola vez | La tabla `migrations` registra qué archivos ya corrieron |
-| Trigger | Automático al login de admin, o manual vía `/api/migrate.php` |
+### Reglas
+- Archivos con prefijo `_` son **ignorados**
+- Orden: alfabético
+- Tabla `migrations` registra cuáles ya se ejecutaron
+- Trigger: automático al login, o manual vía `/api/migrate.php`
 
 ---
 
-## Estructura de archivos
+## Sistema de Plugins
+
+### Estructura de un plugin
 
 ```
-webcreator/
-├── index.html              <- Landing page principal
-├── pagina-nueva.html       <- Tus paginas nuevas aqui
-├── admin/
-│   ├── index.html          <- Login admin
-│   └── dashboard.html      <- Panel admin
-├── api/
-│   ├── init.php            <- Bootstrap de API + auto-migraciones
-│   ├── leads.php           <- CRUD de leads
-│   ├── auth.php            <- Autenticación
-│   ├── upload.php          <- Subida de archivos
-│   ├── settings.php        <- Configuraciones (tema, logos)
-│   ├── theme.css.php       <- CSS dinámico desde BD
-│   └── migrate.php         <- Migraciones manuales (backup)
-├── assets/
-│   ├── css/
-│   │   ├── variables.css   <- Tokens de diseño (NO tocar en proyectos)
-│   │   ├── base.css        <- Reset y estilos base
-│   │   ├── components.css  <- Botones, cards, modales, etc.
-│   │   ├── public.css      <- Estilos del sitio público
-│   │   └── admin.css       <- Estilos del panel admin
-│   ├── js/
-│   │   ├── app.js          <- JS del sitio público
-│   │   └── admin.js        <- JS del panel admin
-│   └── img/                <- Imagenes del proyecto
-├── config/
-│   └── database.php        <- Credenciales (NO subir a Git)
-├── migrations/             <- Archivos .sql auto-ejecutables
-├── uploads/                <- Archivos subidos por el admin
-└── install/                <- Instalador (se bloquea después)
+plugins/mi-plugin/
+├── plugin.json             # Metadata (requerido)
+├── install.sql             # Tablas a crear (requerido)
+├── uninstall.sql           # DROP tables (requerido)
+├── api.php                 # API del plugin (requerido si has_admin)
+├── admin-view.php          # HTML del panel admin
+├── admin.js                # JS del admin
+├── admin.css               # Estilos del admin
+├── public-page.php         # Página pública (opcional)
+├── public-detail.php       # Detalle público (opcional)
+├── public-component.php    # Componente embebible (opcional)
+└── public.css              # Estilos públicos (opcional)
 ```
 
+### plugin.json
+
+```json
+{
+    "id": "mi-plugin",
+    "name": "Mi Plugin",
+    "version": "1.0.0",
+    "description": "Descripción corta del plugin",
+    "author": "Tu nombre",
+    "icon": "box",
+    "sidebar_label": "Mi Plugin",
+    "has_admin": true,
+    "has_public": true
+}
+```
+
+### Ciclo de vida
+
+1. **Discovery**: Carpeta existe en `/plugins/` con `plugin.json` válido
+2. **Activación**: `install.sql` se ejecuta → tablas creadas → aparece en sidebar
+3. **Uso**: Admin y frontend cargan archivos del plugin dinámicamente
+4. **Desactivación**: `uninstall.sql` se ejecuta → ⚠️ **datos eliminados**
+
+### API del plugin
+
+El `api.php` recibe las peticiones vía router centralizado:
+
+```
+/api/plugins.php?action=api&plugin=ID&route=RUTA
+```
+
+Dentro del `api.php`:
+
+```php
+<?php
+// El router ya hizo require de init.php y verificó auth
+$action = $_GET['route'] ?? '';
+$method = $_SERVER['REQUEST_METHOD'];
+
+switch ("$method $action") {
+    case 'GET projects':
+        // listar...
+        break;
+    case 'POST projects':
+        // crear...
+        break;
+}
+```
+
+### Rutas públicas
+
+Agregar en `.htaccess` raíz:
+
+```apache
+# Plugin routes
+RewriteRule ^mi-ruta/?$ /plugins/mi-plugin/public-page.php [L]
+```
+
+### Componente embebible
+
+Para que un componente se muestre en `index.php`:
+
+```php
+<!-- En index.php -->
+<?php
+$path = __DIR__ . '/plugins/mi-plugin/public-component.php';
+if (file_exists($path)) include $path;
+?>
+```
+
+El componente debe verificar internamente si el plugin está activo.
+
+---
+
+## Convenciones del Backend
+
+### Respuestas API
+
+```php
+// Éxito
+jsonSuccess(['data' => $data]);              // 200
+jsonSuccess(['data' => $data], 201);         // 201 Created
+
+// Error
+jsonError('Mensaje de error');               // 400
+jsonError('No autorizado', 401);             // 401
+jsonError('No encontrado', 404);             // 404
+```
+
+### Leer body JSON
+
+```php
+$body = getJSONBody();
+$name = $body['name'] ?? '';
+```
+
+### Log de actividad
+
+```php
+logActivity('create', 'project', $projectId, ['title' => $title]);
+```
+
+### Proteger endpoint
+
+```php
+require_once __DIR__ . '/init.php';  // incluye todo
+requireAuth();                        // requiere sesión activa
+```
+
+---
+
+## Flujo de Instalación
+
+```
+┌─ Visitar /install/ ─────────────────────────────────┐
+│                                                       │
+│  ¿Existe .installed.lock?                            │
+│  ├─ SÍ → Muestra "Ya instalado" + link al admin     │
+│  └─ NO → Continúa...                                │
+│                                                       │
+│  Step 1: Verifica requisitos (PHP, PDO, permisos)    │
+│  Step 2: Form (BD + admin)                           │
+│  Procesa:                                            │
+│    1. Conecta a MySQL                                │
+│    2. CREATE DATABASE IF NOT EXISTS                   │
+│    3. Ejecuta schema.sql (tablas + defaults)         │
+│    4. INSERT admin en users                          │
+│    5. Genera config/database.php                     │
+│    6. Crea uploads/ + .htaccess                      │
+│    7. Escribe .installed.lock                        │
+│                                                       │
+│  ✅ Éxito → Link al panel admin                      │
+└──────────────────────────────────────────────────────┘
+```
+
+### ¿Para reinstalar?
+1. Eliminar `install/.installed.lock`
+2. Eliminar `config/database.php`
+3. Visitar `/install/` de nuevo
+
+### ¿Segunda instalación del wizard?
+Si el lock file existe, se detiene inmediatamente. El archivo **NO se borra** — se bloquea.
+
+---
+
+## Versionado
+
+| Archivo | Propósito |
+|---------|-----------|
+| `VERSION` | Número de versión actual (ej: `1.0.0`) |
+| `CHANGELOG.md` | Historial detallado de cada versión |
+
+Al hacer cambios significativos en un proyecto:
+
+1. Actualizar `VERSION` con el nuevo número
+2. Agregar entrada en `CHANGELOG.md` con fecha y cambios
+3. Commit: `git commit -m "release: vX.Y.Z — descripción"`
+
+---
+
+## Notas Importantes
+
+- **`config/database.php`** nunca se sube a Git (`.gitignore`)
+- **`.installed.lock`** nunca se sube a Git (`.gitignore`)
+- **`/uploads/`** contenido excluido de Git (solo `.htaccess` y `.gitkeep`)
+- Al duplicar para un nuevo proyecto, el instalador funciona limpio
+- Cada proyecto puede divergir del starter kit según necesidades del cliente

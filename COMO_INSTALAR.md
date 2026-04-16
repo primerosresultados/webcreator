@@ -56,7 +56,7 @@
 |-----|--------|
 | `https://tusitio.com` | Tu sitio web público |
 | `https://tusitio.com/admin/` | Login del panel admin |
-| `https://tusitio.com/admin/dashboard.html` | Dashboard CRM |
+| `https://tusitio.com/admin/dashboard.php` | Dashboard CRM |
 
 ### Credenciales de admin:
 Las que elegiste en el Paso 3 (email + contraseña).
@@ -76,7 +76,7 @@ Edita `assets/css/variables.css` — ahí están TODOS los colores del sitio.
 ```
 
 ### Cambiar contenido:
-Edita `index.html` — cambia los textos, secciones, datos de contacto.
+Edita `index.php` — cambia los textos, secciones, datos de contacto.
 
 ### Lo que NO necesitas tocar:
 - `/api/` — backend (funciona igual siempre)
@@ -90,13 +90,15 @@ Edita `index.html` — cambia los textos, secciones, datos de contacto.
 
 ```
 1. Copiar la carpeta webcreator/ → carpeta-del-cliente/
-2. Editar index.html (contenido del cliente)
-3. Editar assets/css/variables.css (colores de su marca)
+2. Editar index.php (contenido del cliente)
+3. Editar colores desde el panel admin (o assets/css/variables.css)
 4. Crear repo en GitHub para ese cliente
 5. Crear BD en Hostinger para ese cliente
 6. Subir archivos a Hostinger
 7. Visitar /install/ → configurar
-8. Entregar sitio al cliente
+8. Configurar site info, logos y tema desde el admin
+9. Activar plugins necesarios (ej: Portfolio)
+10. Entregar sitio al cliente
 ```
 
 ---

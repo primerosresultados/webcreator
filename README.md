@@ -1,109 +1,297 @@
-# 🚀 WebCreator Starter Kit
+# WebCreator Starter Kit
 
-**Plantilla universal PHP/MySQL para sitios web con CRM integrado.**  
-Diseñada para despliegue en **Hostinger** con instalación automática.
+**v1.0.0** — Plantilla universal PHP/MySQL para sitios web profesionales con CRM y sistema de plugins.  
+Diseñada para despliegue rápido en **Hostinger** con instalación automática.
 
 ---
 
-## 📁 Estructura del Proyecto
+## Características
+
+| Módulo | Funcionalidades |
+|--------|----------------|
+| **Instalador** | Wizard automático, crea BD + tablas + admin en un paso |
+| **CRM (Leads)** | CRUD completo, estadísticas, filtros, notas, estados |
+| **Admin Panel** | Dashboard, configuración de sitio, tema visual, logos |
+| **Plugins** | Motor modular, activar/desactivar, upload ZIP, sidebar dinámico |
+| **Frontend** | Landing responsive, formularios, animaciones, WhatsApp |
+| **Seguridad** | CSRF, bcrypt, rate limiting, honeypot, headers, XSS/SQLi protection |
+| **Tema Dinámico** | Colores, fuentes y bordes editables desde el panel sin tocar código |
+
+---
+
+## Estructura del Proyecto
 
 ```
 webcreator/
-├── index.html                  # Sitio público (landing page)
-├── .htaccess                   # Seguridad Apache + caché + headers
-├── .gitignore                  # Archivos a ignorar en Git
+├── index.php                   # Landing page pública (dinámica)
+├── gracias.php                 # Página de agradecimiento
+├── .htaccess                   # Seguridad, caché, rewrite rules
+├── VERSION                     # Versión actual del sistema
+├── CHANGELOG.md                # Historial de versiones
 │
 ├── config/
-│   ├── .htaccess               # Bloquea acceso web a config
+│   ├── .htaccess               # Bloquea acceso directo
 │   └── database.example.php    # Plantilla de configuración
 │
 ├── install/
-│   ├── index.php               # 🔧 Wizard de instalación
-│   └── schema.sql              # Script SQL completo
+│   ├── index.php               # Wizard de instalación
+│   └── schema.sql              # Schema completo de la BD
 │
 ├── api/
 │   ├── init.php                # Bootstrap: PDO, CSRF, Auth, Helpers
 │   ├── auth.php                # Login / Logout / Sesión
-│   ├── leads.php               # CRUD completo de Leads
-│   └── upload.php              # Subida segura de imágenes
+│   ├── leads.php               # CRUD de Leads
+│   ├── settings.php            # Configuración del sitio
+│   ├── upload.php              # Subida de archivos
+│   ├── theme.css.php           # CSS dinámico desde BD
+│   ├── migrate.php             # Migraciones manuales
+│   └── plugins.php             # Motor de plugins
 │
 ├── admin/
-│   ├── index.html              # Página de login
-│   └── dashboard.html          # Panel CRM completo
+│   ├── index.php               # Página de login
+│   └── dashboard.php           # Panel admin completo
 │
 ├── assets/
 │   ├── css/
-│   │   ├── variables.css       # 🎨 Design tokens (colores, fuentes)
-│   │   ├── base.css            # Reset + tipografía base
-│   │   ├── components.css      # Componentes UI reutilizables
+│   │   ├── variables.css       # Design tokens (colores, fuentes)
+│   │   ├── base.css            # Reset + tipografía
+│   │   ├── components.css      # Botones, cards, modales
 │   │   ├── public.css          # Estilos del sitio público
 │   │   └── admin.css           # Estilos del panel admin
-│   └── js/
-│       ├── app.js              # JS del sitio público
-│       └── admin.js            # JS del panel admin (CRM)
+│   ├── js/
+│   │   ├── app.js              # JS del sitio público
+│   │   └── admin.js            # JS del panel admin + PluginManager
+│   └── img/                    # Imágenes del template
 │
-└── uploads/                    # Directorio de archivos subidos
-    └── .htaccess               # Bloquea ejecución PHP en uploads
+├── plugins/
+│   ├── .htaccess               # Protege archivos SQL internos
+│   └── portfolio/              # Plugin incluido: Portafolio
+│       ├── plugin.json         # Metadata del plugin
+│       ├── install.sql         # Tablas (se ejecuta al activar)
+│       ├── uninstall.sql       # DROP tables (al desactivar)
+│       ├── api.php             # API del plugin
+│       ├── admin-view.php      # Vista admin
+│       ├── admin.js            # JS admin del plugin
+│       ├── admin.css           # Estilos admin del plugin
+│       ├── public-page.php     # Página /portafolio
+│       ├── public-detail.php   # Detalle /portafolio/proyecto
+│       ├── public-component.php # Componente embebible
+│       └── public.css          # Estilos públicos
+│
+├── migrations/                 # SQL auto-ejecutables
+│   ├── 001_create_settings.sql
+│   └── _ejemplo_products.sql   # Ignorado (prefijo _)
+│
+└── uploads/                    # Archivos subidos (excluido de git)
+    └── .htaccess               # Bloquea ejecución PHP
 ```
 
-## 🚀 Cómo Instalar
+---
 
-1. **Sube la carpeta** completa a tu hosting en Hostinger (vía FTP o Administrador de Archivos)
-2. **Visita** `https://tusitio.com/install/` en tu navegador
-3. **Completa** el formulario con tus datos de MySQL de Hostinger
-4. **Listo!** El sistema crea las tablas, el admin, y se auto-bloquea
+## Instalación Rápida
 
-## 🎨 Cómo Personalizar para un Nuevo Proyecto
+1. **Duplicar** la carpeta para cada proyecto nuevo
+2. **Subir** a Hostinger (FTP, File Manager, o Git Deploy)
+3. **Visitar** `https://tusitio.com/install/`
+4. **Completar** el wizard (BD + admin) → ¡Listo!
 
-Solo modifica estos archivos:
+> Guía detallada en [`COMO_INSTALAR.md`](COMO_INSTALAR.md)
 
-| Archivo | Qué cambiar |
-|---------|-------------|
-| `assets/css/variables.css` | Colores, fuentes, espaciados |
-| `index.html` | Contenido del sitio público |
-| `assets/css/public.css` | Estilos visuales del sitio |
+---
 
-**El backend (api/, admin/, config/) se mantiene idéntico.**
+## Base de Datos
 
-## 🔒 Seguridad Incluida
-
-- ✅ PDO con Prepared Statements (anti SQL Injection)
-- ✅ CSRF Token en todas las operaciones
-- ✅ Password hashing con bcrypt (cost 12)
-- ✅ Rate limiting por sesión
-- ✅ Sanitización de inputs (anti XSS)
-- ✅ Honeypot + timing anti-spam en formularios
-- ✅ Directorio uploads bloquea ejecución PHP
-- ✅ Headers de seguridad (X-Frame, X-XSS, etc.)
-- ✅ Sesiones con timeout y regeneración de ID
-
-## 📊 Base de Datos
+### Tablas Core (schema.sql)
 
 | Tabla | Descripción |
 |-------|-------------|
-| `users` | Cuentas de administrador |
-| `leads` | Contactos captados (CRM) |
-| `media` | Archivos/imágenes subidas |
-| `settings` | Configuración key-value |
+| `users` | Cuentas admin (superadmin, admin, editor) |
+| `leads` | Contactos captados del formulario |
+| `media` | Archivos subidos |
+| `settings` | Configuración del sitio (key-value + JSON) |
 | `activity_log` | Registro de auditoría |
+| `migrations` | Control de migraciones ejecutadas |
 
-## 🔌 API Endpoints
+### Tablas de Plugins (se crean/eliminan al activar/desactivar)
+
+| Plugin | Tablas |
+|--------|--------|
+| Portfolio | `portfolio_projects`, `portfolio_images` |
+
+---
+
+## API Endpoints
 
 ### Auth
-- `GET  /api/auth.php?action=csrf` — Obtener token CSRF
-- `POST /api/auth.php?action=login` — Iniciar sesión
-- `POST /api/auth.php?action=logout` — Cerrar sesión
-- `GET  /api/auth.php?action=me` — Usuario actual
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/auth.php?action=csrf` | Obtener token CSRF |
+| `POST` | `/api/auth.php?action=login` | Iniciar sesión |
+| `POST` | `/api/auth.php?action=logout` | Cerrar sesión |
+| `GET` | `/api/auth.php?action=me` | Usuario actual |
 
 ### Leads
-- `GET    /api/leads.php` — Listar leads (paginado)
-- `GET    /api/leads.php?id=X` — Detalle de un lead
-- `GET    /api/leads.php?action=stats` — Estadísticas
-- `POST   /api/leads.php` — Crear lead (público)
-- `PUT    /api/leads.php?id=X` — Actualizar lead
-- `DELETE /api/leads.php?id=X` — Eliminar lead
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/leads.php` | Listar leads (paginado) |
+| `GET` | `/api/leads.php?id=X` | Detalle de un lead |
+| `GET` | `/api/leads.php?action=stats` | Estadísticas |
+| `POST` | `/api/leads.php` | Crear lead (público) |
+| `PUT` | `/api/leads.php?id=X` | Actualizar lead |
+| `DELETE` | `/api/leads.php?id=X` | Eliminar lead |
+
+### Settings
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/settings.php?action=site_info` | Info del sitio |
+| `POST` | `/api/settings.php?action=save_site_info` | Guardar info |
+| `GET` | `/api/settings.php?action=theme_config` | Config del tema |
+| `POST` | `/api/settings.php?action=save_theme_config` | Guardar tema |
 
 ### Upload
-- `POST   /api/upload.php` — Subir archivo
-- `GET    /api/upload.php` — Listar archivos
-- `DELETE /api/upload.php?id=X` — Eliminar archivo
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/api/upload.php` | Subir archivo |
+| `GET` | `/api/upload.php` | Listar archivos |
+| `DELETE` | `/api/upload.php?id=X` | Eliminar archivo |
+
+### Plugins
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/plugins.php?action=list` | Listar plugins |
+| `POST` | `/api/plugins.php?action=activate&plugin=ID` | Activar plugin |
+| `POST` | `/api/plugins.php?action=deactivate&plugin=ID` | Desactivar plugin |
+| `POST` | `/api/plugins.php?action=upload` | Subir ZIP de plugin |
+
+### Plugin: Portfolio
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/plugins.php?action=api&plugin=portfolio&route=projects` | Listar proyectos |
+| `POST` | `/api/plugins.php?action=api&plugin=portfolio&route=projects` | Crear proyecto |
+| `PUT` | `/api/plugins.php?action=api&plugin=portfolio&route=projects&id=X` | Editar proyecto |
+| `DELETE` | `/api/plugins.php?action=api&plugin=portfolio&route=projects&id=X` | Eliminar proyecto |
+| `POST` | `/api/plugins.php?action=api&plugin=portfolio&route=images` | Subir imagen |
+
+---
+
+## Sistema de Plugins
+
+### Crear un plugin nuevo
+
+1. Crear carpeta en `/plugins/mi-plugin/`
+2. Crear `plugin.json`:
+
+```json
+{
+    "id": "mi-plugin",
+    "name": "Mi Plugin",
+    "version": "1.0.0",
+    "description": "Descripción corta",
+    "author": "Tu nombre",
+    "icon": "box",
+    "sidebar_label": "Mi Plugin",
+    "has_admin": true,
+    "has_public": true
+}
+```
+
+3. Crear `install.sql` (tablas a crear) y `uninstall.sql` (DROP)
+4. Crear `api.php`, `admin-view.php`, `admin.js`, `admin.css`
+5. Opcional: `public-page.php`, `public.css`, `public-component.php`
+
+### Iconos disponibles para plugins
+`briefcase`, `box`, `layers`, `image`
+
+### Ciclo de vida
+- **Descubierto**: La carpeta existe en `/plugins/` con `plugin.json`
+- **Activado**: Se ejecuta `install.sql`, se registra en settings, aparece en sidebar
+- **Desactivado**: Se ejecuta `uninstall.sql` (⚠️ ELIMINA datos), se quita del sidebar
+
+---
+
+## Migraciones
+
+Los archivos `.sql` en `/migrations/` se ejecutan **automáticamente** al login de admin.
+
+| Regla | Detalle |
+|-------|---------|
+| Prefijo `_` | Se ignora (para templates) |
+| Orden | Alfabético por nombre |
+| Idempotencia | Usar `IF NOT EXISTS` / `ON DUPLICATE KEY` |
+| Control | Tabla `migrations` registra archivos ejecutados |
+| Trigger | Automático al login, o manual vía `/api/migrate.php` |
+
+---
+
+## Personalización por Proyecto
+
+### Qué modificar
+
+| Archivo | Qué cambiar |
+|---------|-------------|
+| `index.php` | Textos, secciones, servicios, imágenes |
+| `assets/img/` | Imágenes del hero, servicios |
+| Panel Admin → Config | Colores, fuentes, logos, info de contacto |
+
+### Qué NO tocar
+
+| Directorio | Razón |
+|-----------|-------|
+| `/api/` | Backend universal |
+| `/admin/` | Panel universal |
+| `/install/` | Instalador universal |
+| `/config/` | Se genera automáticamente |
+
+---
+
+## Seguridad
+
+- ✅ PDO con Prepared Statements (anti SQL Injection)
+- ✅ CSRF Token en todas las operaciones write
+- ✅ Password hashing con bcrypt (cost 12)
+- ✅ Rate limiting por sesión (max 30 intentos / 15 min)
+- ✅ Honeypot + timing anti-spam en formularios
+- ✅ Headers: X-Frame-Options, X-XSS-Protection, X-Content-Type-Options
+- ✅ `/uploads/` bloquea ejecución PHP
+- ✅ `/config/` bloqueado vía .htaccess
+- ✅ Instalador se auto-bloquea post-instalación
+- ✅ Sesiones con timeout y regeneración de ID
+
+---
+
+## Flujo para Nuevo Cliente
+
+```
+1. Duplicar carpeta webcreator/ → nombre-cliente/
+2. Crear repo en GitHub para ese cliente
+3. Editar index.php (contenido específico)
+4. Reemplazar imágenes en assets/img/
+5. Crear BD en Hostinger
+6. Subir archivos a hosting
+7. Visitar /install/ → configurar BD + admin
+8. Desde el panel: configurar colores, logos, info
+9. Activar plugins necesarios (ej: Portfolio)
+10. Entregar sitio al cliente
+```
+
+---
+
+## Requisitos del Servidor
+
+| Requisito | Mínimo |
+|-----------|--------|
+| PHP | 7.4+ |
+| MySQL | 5.7+ / MariaDB 10.3+ |
+| Extensiones PHP | PDO MySQL, JSON, mbstring |
+| Apache | mod_rewrite habilitado |
+| Disco | ~15 MB (sin uploads) |
+
+---
+
+## Versionado
+
+- Versión actual: ver archivo `VERSION`
+- Historial completo: ver `CHANGELOG.md`
+- Cada proyecto puede divergir del starter kit; actualizar `VERSION` y `CHANGELOG.md` al implementar cambios significativos
+
+> Guía de desarrollo detallada: [`GUIA_DESARROLLO.md`](GUIA_DESARROLLO.md)
