@@ -99,11 +99,8 @@ switch ($action) {
         if ($method !== 'POST') jsonError('Método no permitido', 405);
         
         $userId = $_SESSION['user_id'] ?? null;
-        if ($userId) {
-            logActivity('logout', 'auth', $userId);
-        }
         
-        // Destroy session completely
+        // Destroy session completely FIRST (in case logActivity crashes due to DB offline)
         $_SESSION = [];
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
@@ -113,6 +110,10 @@ switch ($action) {
             );
         }
         session_destroy();
+
+        if ($userId) {
+            logActivity('logout', 'auth', $userId);
+        }
         
         jsonSuccess(['message' => 'Sesión cerrada exitosamente.']);
         break;

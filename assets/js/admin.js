@@ -167,8 +167,16 @@ async function logout() {
 // DASHBOARD: Load Stats
 // ============================================
 async function loadDashboard() {
+    const chartContainer = document.getElementById('trend-chart');
+    if (chartContainer) chartContainer.innerHTML = '<div class="spinner"></div>';
+
     const result = await api('/api/leads.php?action=stats');
-    if (!result || !result.success) return;
+    if (!result || !result.success) {
+        if (chartContainer) {
+            chartContainer.innerHTML = `<p style="color:#ef4444;text-align:center;padding:2rem;font-size:13px;">${result?.error || 'Error al cargar datos del dashboard'}</p>`;
+        }
+        return;
+    }
 
     const stats = result.stats;
 
@@ -249,13 +257,19 @@ function renderTrendChart(data) {
 // LEADS: Load & Render
 // ============================================
 async function loadLeads() {
+    const tbody = document.getElementById('leads-tbody');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:3rem;"><div class="spinner" style="margin:0 auto;"></div></td></tr>`;
+
     const { search, status, page } = AdminApp.currentFilters;
     let url = `/api/leads.php?page=${page}&limit=25`;
     if (search) url += `&search=${encodeURIComponent(search)}`;
     if (status) url += `&status=${encodeURIComponent(status)}`;
 
     const result = await api(url);
-    if (!result || !result.success) return;
+    if (!result || !result.success) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:3rem;color:#ef4444;font-size:13px;">${result?.error || 'Error al cargar leads'}</td></tr>`;
+        return;
+    }
 
     AdminApp.leads = result.leads;
     AdminApp.pagination = result.pagination;
