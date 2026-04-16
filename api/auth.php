@@ -62,7 +62,7 @@ switch ($action) {
         }
 
         // Regenerate session ID for security
-        session_regenerate_id(true);
+        // session_regenerate_id(true); // Disabled because Hostinger/Cloudflare often strip Set-Cookie on API responses, causing session loss
         
         // Set session data
         $_SESSION['user_id'] = $user['id'];
