@@ -27,7 +27,7 @@ switch ($method) {
         $db = getDB();
 
         // Stats endpoint
-        if ($action === 'stats') {
+        if ($action === 'stats' || $action === 'stats_v2') {
             $stats = [];
             
             // Total leads

@@ -122,6 +122,7 @@ switch ($action) {
     // GET CURRENT USER
     // ============================================
     case 'me':
+    case 'me_v2':
         if ($method !== 'GET') jsonError('Método no permitido', 405);
         
         $currentUser = requireAuth();

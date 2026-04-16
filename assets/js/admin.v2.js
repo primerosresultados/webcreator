@@ -128,7 +128,7 @@ function initLogin() {
 // AUTH: CHECK SESSION
 // ============================================
 async function checkAuth() {
-    const result = await api('/api/auth.php?action=me');
+    const result = await api('/api/auth.php?action=me_v2');
     
     if (!result || !result.success) {
         window.location.href = '/admin/';
@@ -172,7 +172,7 @@ async function loadDashboard() {
     const chartContainer = document.getElementById('trend-chart');
     if (chartContainer) chartContainer.innerHTML = '<div class="spinner"></div>';
 
-    const result = await api('/api/leads.php?action=stats');
+    const result = await api('/api/leads.php?action=stats_v2');
     if (!result || !result.success) {
         if (chartContainer) {
             chartContainer.innerHTML = `<p style="color:#ef4444;text-align:center;padding:2rem;font-size:13px;">${result?.error || 'Error al cargar datos del dashboard'}</p>`;
