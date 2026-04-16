@@ -487,7 +487,7 @@ async function saveLead(event, id) {
         notes: document.getElementById('edit-lead-notes').value.trim()
     };
 
-    const result = await api(\`/api/leads.php?id=\${id}\`, {
+    const result = await api(`/api/leads.php?id=${id}`, {
         method: 'POST',
         body: JSON.stringify({ _method: 'PUT', ...data })
     });
