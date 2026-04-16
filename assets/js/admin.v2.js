@@ -1265,21 +1265,35 @@ const PluginManager = {
     // ── Inject active plugin links into sidebar ──
     injectSidebarLinks() {
         const container = document.getElementById('plugin-sidebar-links');
-        if (!container) return;
+        const containerPrincipal = document.getElementById('plugin-sidebar-principal');
 
         const activePlugins = this.plugins.filter(p => p.is_active);
         
-        container.innerHTML = activePlugins.map(p => `
+        let normalHtml = '';
+        let principalHtml = '';
+
+        activePlugins.forEach(p => {
+            const linkHtml = `
             <a class="sidebar-link" data-view="plugin-${p.id}" href="#">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     ${this.getIcon(p.icon || 'default')}
                 </svg>
                 ${escapeHtml(p.sidebar_label || p.name)}
             </a>
-        `).join('');
+            `;
+
+            if (p.id === 'portfolio' || p.sidebar_group === 'principal') {
+                principalHtml += linkHtml;
+            } else {
+                normalHtml += linkHtml;
+            }
+        });
+
+        if (container) container.innerHTML = normalHtml;
+        if (containerPrincipal) containerPrincipal.innerHTML = principalHtml;
 
         // Re-bind click events for new links
-        container.querySelectorAll('.sidebar-link[data-view]').forEach(link => {
+        document.querySelectorAll('.sidebar-link[data-view^="plugin-"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 switchView(link.dataset.view);

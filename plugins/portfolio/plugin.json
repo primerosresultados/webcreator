@@ -12,6 +12,7 @@
         { "path": "/portafolio/proyecto", "label": "Detalle Proyecto" }
     ],
     "has_homepage_component": true,
+    "sidebar_group": "principal",
     "nav_label": "Portafolio",
     "nav_href": "/portafolio",
     "requires": []

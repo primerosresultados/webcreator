@@ -76,6 +76,8 @@ if (function_exists('exec')) {
                         Leads / CRM
                         <span class="badge-count" id="leads-count">0</span>
                     </a>
+                    <!-- Dynamic principal plugin links injected here -->
+                    <div id="plugin-sidebar-principal"></div>
                 </div>
 
                 <div class="sidebar-section">
