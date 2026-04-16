@@ -11,7 +11,7 @@ $slug = $_GET['slug'] ?? '';
 
 // Load site info
 $S = [
-    'siteName' => 'MiSitio', 'siteDescription' => 'Arquitectura & Construcción Premium',
+    'siteName' => 'MiSitio', 'siteDescription' => 'Soluciones profesionales para tu negocio',
     'phone' => '+56 9 1234 5678', 'email' => 'contacto@tusitio.com',
     'whatsapp' => '', 'address' => 'Santiago, Chile',
     'instagram' => '', 'facebook' => '', 'youtube' => '', 'linkedin' => '',

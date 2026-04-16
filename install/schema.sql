@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `activity_log` (
 -- ============================================
 INSERT INTO `settings` (`setting_key`, `setting_value`, `setting_type`) VALUES
 ('site_name', 'Mi Sitio Web', 'string'),
-('site_description', 'Descripción de mi sitio web', 'string'),
+('site_description', 'Soluciones profesionales para tu negocio', 'string'),
 ('contact_email', 'admin@tusitio.com', 'string'),
 ('leads_per_page', '25', 'number'),
 ('enable_notifications', 'true', 'boolean'),
