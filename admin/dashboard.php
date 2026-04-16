@@ -730,7 +730,7 @@ if (function_exists('exec')) {
             document.getElementById('sidebar-toggle').style.display = window.innerWidth <= 1024 ? 'flex' : 'none';
         });
     </script>
-    <script src="/assets/js/admin.js?v=<?=$v?>"></script>
+    <script src="/assets/js/admin.v2.js?v=<?=$v?>"></script>
     <!-- Plugin JS files are loaded dynamically by PluginManager -->
 </body>
 </html>

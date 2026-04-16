@@ -43,6 +43,6 @@
         </div>
     </div>
 
-    <script src="/assets/js/admin.js?v=<?=$v?>"></script>
+    <script src="/assets/js/admin.v2.js?v=<?=$v?>"></script>
 </body>
 </html>
