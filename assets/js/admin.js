@@ -273,7 +273,9 @@ function renderLeadsTable() {
             <tr>
                 <td colspan="7" style="text-align:center;padding:3rem;">
                     <div class="empty-state" style="padding:2rem 0;">
-                        <div class="icon">📋</div>
+                        <div class="icon" style="color:var(--text-tertiary);margin-bottom:var(--space-4);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;margin:0 auto;display:block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                        </div>
                         <h3>No se encontraron leads</h3>
                         <p>Aún no hay leads registrados o tu búsqueda no produjo resultados.</p>
                     </div>
@@ -295,9 +297,15 @@ function renderLeadsTable() {
             <td>${formatDate(lead.created_at)}</td>
             <td>
                 <div class="flex gap-2">
-                    <button class="btn btn-ghost btn-icon" onclick="viewLead(${lead.id})" title="Ver detalle">👁️</button>
-                    <button class="btn btn-ghost btn-icon" onclick="cycleLead(${lead.id})" title="Cambiar estado">🔄</button>
-                    <button class="btn btn-ghost btn-icon" onclick="deleteLead(${lead.id})" title="Eliminar">🗑️</button>
+                    <button class="btn btn-ghost btn-icon" onclick="viewLead(${lead.id})" title="Ver/Editar detalle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                    <button class="btn btn-ghost btn-icon" onclick="cycleLead(${lead.id})" title="Cambiar estado rápido">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    </button>
+                    <button class="btn btn-ghost btn-icon" onclick="deleteLead(${lead.id})" title="Eliminar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ef4444;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -343,52 +351,145 @@ async function viewLead(id) {
     if (!modalBody) return;
 
     modalBody.innerHTML = `
-        <div class="lead-detail">
-            <div class="detail-row">
-                <span class="detail-label">Nombre</span>
-                <span class="detail-value">${escapeHtml(lead.name)}</span>
+        <form class="lead-detail-form" id="lead-edit-form" onsubmit="saveLead(event, ${lead.id})">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:var(--space-4);margin-bottom:var(--space-4);">
+                <div class="config-control" style="margin-bottom:0;">
+                    <label class="config-label">Nombre</label>
+                    <input type="text" id="edit-lead-name" class="form-input" value="${escapeHtml(lead.name)}" required style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;width:100%;">
+                </div>
+                <div class="config-control" style="margin-bottom:0;">
+                    <label class="config-label">Email</label>
+                    <input type="email" id="edit-lead-email" class="form-input" value="${escapeHtml(lead.email)}" required style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;width:100%;">
+                </div>
+                <div class="config-control" style="margin-bottom:0;">
+                    <label class="config-label">Teléfono</label>
+                    <input type="text" id="edit-lead-phone" class="form-input" value="${escapeHtml(lead.phone || '')}" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;width:100%;">
+                </div>
+                <div class="config-control" style="margin-bottom:0;">
+                    <label class="config-label">Estado</label>
+                    <select id="edit-lead-status" class="config-select form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;width:100%;">
+                        <option value="new" ${lead.status === 'new' ? 'selected' : ''}>Nuevo</option>
+                        <option value="contacted" ${lead.status === 'contacted' ? 'selected' : ''}>Contactado</option>
+                        <option value="qualified" ${lead.status === 'qualified' ? 'selected' : ''}>Calificado</option>
+                        <option value="converted" ${lead.status === 'converted' ? 'selected' : ''}>Convertido</option>
+                        <option value="lost" ${lead.status === 'lost' ? 'selected' : ''}>Perdido</option>
+                    </select>
+                </div>
             </div>
+
             <div class="detail-row">
-                <span class="detail-label">Email</span>
-                <span class="detail-value"><a href="mailto:${escapeHtml(lead.email)}">${escapeHtml(lead.email)}</a></span>
+                <span class="detail-label">Fuente / Fecha</span>
+                <span class="detail-value" style="color:var(--text-secondary);font-size:var(--text-sm);">
+                    ${escapeHtml(lead.source || 'website')} &middot; ${formatDate(lead.created_at, true)}
+                </span>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Teléfono</span>
-                <span class="detail-value">${lead.phone ? `<a href="tel:${escapeHtml(lead.phone)}">${escapeHtml(lead.phone)}</a>` : '—'}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Estado</span>
-                <span class="detail-value"><span class="badge badge-${lead.status}">${getStatusLabel(lead.status)}</span></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Fuente</span>
-                <span class="detail-value">${escapeHtml(lead.source || 'website')}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Fecha</span>
-                <span class="detail-value">${formatDate(lead.created_at, true)}</span>
-            </div>
+
             ${lead.message ? `
-                <div class="detail-row detail-message">
-                    <span class="detail-label">Mensaje</span>
-                    <p>${escapeHtml(lead.message)}</p>
+                <div class="config-control" style="margin-top:var(--space-4);">
+                    <label class="config-label">Mensaje del cliente (original)</label>
+                    <div style="background:var(--bg-tertiary);padding:var(--space-3);border-radius:8px;font-size:13px;color:var(--text-secondary);">
+                        ${escapeHtml(lead.message).replace(/\\n/g, '<br>')}
+                    </div>
                 </div>
             ` : ''}
-            ${lead.notes ? `
-                <div class="detail-row detail-message">
-                    <span class="detail-label">Notas internas</span>
-                    <p>${escapeHtml(lead.notes)}</p>
-                </div>
-            ` : ''}
-            <div class="detail-row">
-                <span class="detail-label">IP</span>
-                <span class="detail-value" style="font-family:var(--font-mono);font-size:var(--text-xs);">${escapeHtml(lead.ip_address || '—')}</span>
+
+            <div class="config-control" style="margin-top:var(--space-4);">
+                <label class="config-label">Notas internas (Solo visible en admin)</label>
+                <textarea id="edit-lead-notes" class="form-input" rows="4" placeholder="Observaciones, acuerdos..." style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:10px 14px;font-size:13px;width:100%;font-family:inherit;resize:vertical;">${escapeHtml(lead.notes || '')}</textarea>
             </div>
-        </div>
+
+            <div class="detail-row" style="margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px solid var(--border-light);">
+                <span class="detail-label">IP Address</span>
+                <span class="detail-value" style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-tertiary);">${escapeHtml(lead.ip_address || '—')}</span>
+            </div>
+
+            ${lead.log && lead.log.length > 0 ? `
+            <div class="config-control" style="margin-top:var(--space-5);">
+                <label class="config-label">Bitácora de Cliente (Historial)</label>
+                <div style="background:#f7f8fc;border:1px solid var(--border-color);border-radius:8px;padding:var(--space-4);max-height:200px;overflow-y:auto;">
+                    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;">
+                        ${lead.log.map(item => `
+                            <li style="display:flex;gap:12px;font-size:12px;">
+                                <div style="flex-shrink:0;color:var(--color-primary);margin-top:2px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <div style="flex:1;">
+                                    <div style="color:var(--text-primary);font-weight:600;margin-bottom:2px;">
+                                        ${item.action === 'create' ? 'Lead registrado' : (item.action === 'update' ? 'Lead modificado' : escapeHtml(item.action))}
+                                        <span style="color:var(--text-tertiary);font-weight:400;margin-left:4px;">por ${escapeHtml(item.user_name || 'Sistema')}</span>
+                                    </div>
+                                    <div style="color:var(--text-secondary);font-size:11px;margin-bottom:4px;">
+                                        ${formatDate(item.created_at, true)}
+                                    </div>
+                                    ${item.details ? `<div style="color:var(--text-secondary);font-family:var(--font-mono);font-size:10px;background:#fff;padding:4px 8px;border-radius:4px;border:1px solid #eef0f6;display:inline-block;">Cambios: ${escapeHtml(item.details)}</div>` : ''}
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+            ` : ''}
+
+            <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:var(--space-5);">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('lead-modal')" style="background:#f0f2f8;color:var(--text-primary);border:1px solid var(--border-color);">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="save-lead-btn" style="background:var(--color-primary);color:#fff;">Guardar Cambios</button>
+            </div>
+        </form>
     `;
 
-    document.getElementById('lead-modal-title').textContent = `Lead #${lead.id}`;
+    document.getElementById('lead-modal-title').textContent = `CRM: Editar Lead #${lead.id}`;
+    
+    const modalFooter = document.querySelector('#lead-modal .modal-footer');
+    if (modalFooter) modalFooter.style.display = 'none';
+
     openModal('lead-modal');
+    
+    // Restaurar el footer cuando se cierre el modal
+    const checkForClose = setInterval(() => {
+        const myModal = document.getElementById('lead-modal');
+        if (!myModal || !myModal.classList.contains('active')) {
+            if (modalFooter) modalFooter.style.display = 'flex';
+            clearInterval(checkForClose);
+        }
+    }, 500);
+}
+
+async function saveLead(event, id) {
+    event.preventDefault();
+    
+    const btn = document.getElementById('save-lead-btn');
+    if (btn) {
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+    }
+
+    const data = {
+        name: document.getElementById('edit-lead-name').value.trim(),
+        email: document.getElementById('edit-lead-email').value.trim(),
+        phone: document.getElementById('edit-lead-phone').value.trim(),
+        status: document.getElementById('edit-lead-status').value,
+        notes: document.getElementById('edit-lead-notes').value.trim()
+    };
+
+    const result = await api(\`/api/leads.php?id=\${id}\`, {
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', ...data })
+    });
+
+    if (btn) {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+    }
+
+    if (result && result.success) {
+        Toast.success('Lead actualizado exitosamente.');
+        closeModal('lead-modal');
+        const modalFooter = document.querySelector('#lead-modal .modal-footer');
+        if (modalFooter) modalFooter.style.display = 'flex';
+        loadLeads();
+    } else {
+        Toast.error(result?.error || 'Error al actualizar el lead.');
+    }
 }
 
 const statusCycle = ['new', 'contacted', 'qualified', 'converted', 'lost'];

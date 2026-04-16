@@ -64,6 +64,11 @@ switch ($method) {
             
             if (!$lead) jsonError('Lead no encontrado.', 404);
             
+            // Get activity log (Bitácora)
+            $logStmt = $db->prepare("SELECT a.*, u.full_name as user_name FROM activity_log a LEFT JOIN users u ON a.user_id = u.id WHERE a.entity_type = 'lead' AND a.entity_id = ? ORDER BY a.created_at DESC");
+            $logStmt->execute([$id]);
+            $lead['log'] = $logStmt->fetchAll();
+            
             jsonSuccess(['lead' => $lead]);
         }
 

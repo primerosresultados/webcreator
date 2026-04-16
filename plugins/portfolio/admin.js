@@ -45,7 +45,9 @@ const PortfolioAdmin = {
         if (this.projects.length === 0) {
             container.innerHTML = `
                 <div class="empty-state" style="padding:4rem 2rem;text-align:center;">
-                    <div style="font-size:3rem;margin-bottom:var(--space-4);">🏗️</div>
+                    <div style="color:var(--text-tertiary);margin-bottom:var(--space-4);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;margin:0 auto;display:block;"><polygon points="1 22 4 22 4 2 20 2 20 22 23 22"></polygon><polyline points="14 2 14 12 20 12"></polyline><line x1="10" y1="10" x2="10" y2="10"></line><line x1="10" y1="6" x2="10" y2="6"></line><line x1="10" y1="14" x2="10" y2="14"></line><line x1="10" y1="18" x2="10" y2="18"></line></svg>
+                    </div>
                     <h3 style="color:#1a1d2e;margin-bottom:var(--space-2);">Sin proyectos aún</h3>
                     <p style="color:#8b90a6;font-size:var(--text-sm);margin-bottom:var(--space-4);">Crea tu primer proyecto del portafolio.</p>
                     <button class="btn btn-primary btn-sm" onclick="PortfolioAdmin.openEditor()">
@@ -315,12 +317,12 @@ const PortfolioAdmin = {
                                 onclick="PortfolioAdmin.setFeatured(${projectId}, '${escapeHtml(img.image_url)}')" 
                                 title="Establecer como destacada"
                                 style="color:${img.image_url === featuredImage ? '#f59e0b' : '#fff'};">
-                            ⭐
+                            <svg viewBox="0 0 24 24" fill="${img.image_url === featuredImage ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         </button>
                         <button type="button" class="btn btn-ghost btn-icon" 
                                 onclick="PortfolioAdmin.deleteImage(${img.id}, ${projectId})" 
                                 title="Eliminar imagen" style="color:#fff;">
-                            🗑️
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                         </button>
                     </div>
                     ${img.image_url === featuredImage ? '<span class="portfolio-featured-badge">Destacada</span>' : ''}
