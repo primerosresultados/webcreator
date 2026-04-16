@@ -102,21 +102,17 @@ switch ($method) {
         $countStmt->execute($params);
         $total = (int)$countStmt->fetchColumn();
 
-        // Fetch leads
+        // Fetch leads (use positional params only — PDO can't mix ? and :named)
         $sql = "SELECT l.*, u.full_name as assigned_name 
                 FROM leads l 
                 LEFT JOIN users u ON l.assigned_to = u.id 
                 {$whereClause} 
                 ORDER BY l.{$sortBy} {$sortDir} 
-                LIMIT :limit OFFSET :offset";
+                LIMIT ? OFFSET ?";
         
         $stmt = $db->prepare($sql);
-        foreach ($params as $i => $param) {
-            $stmt->bindValue($i + 1, $param);
-        }
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
+        $allParams = array_merge($params, [$limit, $offset]);
+        $stmt->execute($allParams);
         $leads = $stmt->fetchAll();
 
         jsonSuccess([
