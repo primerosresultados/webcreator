@@ -42,12 +42,12 @@
 <!-- MODAL: Project Editor -->
 <!-- ============================================ -->
 <div class="modal-backdrop" id="portfolio-modal-backdrop"></div>
-<div class="modal portfolio-editor-modal" id="portfolio-editor-modal" style="max-width:900px;">
+<div class="modal portfolio-editor-modal" id="portfolio-editor-modal" style="max-width:940px;">
     <div class="modal-header">
         <h3 id="portfolio-editor-title">Nuevo Proyecto</h3>
         <button class="modal-close" onclick="PortfolioAdmin.closeEditor()">✕</button>
     </div>
-    <div class="modal-body" style="max-height:75vh;overflow-y:auto;">
+    <div class="modal-body" style="max-height:78vh;overflow-y:auto;">
         <form id="portfolio-editor-form" onsubmit="PortfolioAdmin.saveProject(event)">
             <input type="hidden" id="pf-id" value="">
 
@@ -87,8 +87,13 @@
                 </div>
             </div>
 
-            <!-- Row 3: Year + Area + Status -->
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+            <!-- Row 3: Date + Year + Area + Status -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="config-label">Fecha del Proyecto</label>
+                    <input type="date" id="pf-date" class="form-input"
+                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label class="config-label">Año</label>
                     <input type="number" id="pf-year" class="form-input" placeholder="2024" min="1900" max="2100"
@@ -116,13 +121,31 @@
             </div>
 
             <!-- Tags -->
-            <div class="form-group" style="margin-bottom:var(--space-5);">
+            <div class="form-group" style="margin-bottom:var(--space-4);">
                 <label class="config-label">Tags (separados por coma)</label>
                 <input type="text" id="pf-tags" class="form-input" placeholder="moderno, minimalista, hormigón"
                        style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
             </div>
 
-            <!-- Image Gallery Section -->
+            <!-- Video URL (main) -->
+            <div class="form-group" style="margin-bottom:var(--space-5);">
+                <label class="config-label">Video Principal (URL YouTube/Vimeo)</label>
+                <div style="display:flex;gap:8px;">
+                    <input type="url" id="pf-video-url" class="form-input" placeholder="https://www.youtube.com/watch?v=..."
+                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;flex:1;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="PortfolioAdmin.previewMainVideo()" title="Vista previa" style="white-space:nowrap;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Preview
+                    </button>
+                </div>
+                <div id="pf-video-preview" style="display:none;margin-top:var(--space-3);border-radius:10px;overflow:hidden;aspect-ratio:16/9;max-height:220px;background:#0a0a0f;"></div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- IMAGE GALLERY SECTION -->
+            <!-- ============================================ -->
             <div style="border-top:1.5px solid #eef0f6;padding-top:var(--space-5);margin-top:var(--space-2);">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);">
                     <div style="display:flex;align-items:center;gap:8px;">
@@ -142,7 +165,7 @@
 
                 <!-- Upload zone (shown when no project ID yet) -->
                 <div id="pf-gallery-notice" style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:12px 16px;font-size:12px;color:#92400e;">
-                    💡 Guarda el proyecto primero para poder subir imágenes.
+                    💡 Guarda el proyecto primero para poder subir imágenes y videos.
                 </div>
 
                 <!-- Gallery grid (shown after save) -->
@@ -159,6 +182,40 @@
                     <span style="font-size:11px;color:#aaa;">JPG, PNG, WebP — máx 10MB cada una</span>
                 </div>
             </div>
+
+            <!-- ============================================ -->
+            <!-- VIDEO GALLERY SECTION -->
+            <!-- ============================================ -->
+            <div id="pf-videos-section" style="border-top:1.5px solid #eef0f6;padding-top:var(--space-5);margin-top:var(--space-5);display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" style="width:18px;height:18px;">
+                            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                        </svg>
+                        <span style="font-size:14px;font-weight:700;color:#1a1d2e;">Videos del Proyecto</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="PortfolioAdmin.openAddVideoDialog()" id="pf-add-video-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Agregar Video
+                    </button>
+                </div>
+
+                <!-- Video list -->
+                <div id="pf-videos-list" class="portfolio-videos-list">
+                    <!-- Videos injected here -->
+                </div>
+
+                <!-- Empty state -->
+                <div id="pf-videos-empty" style="text-align:center;padding:1.5rem;color:#8b90a6;font-size:13px;display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#ccc;">
+                        <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                    </svg>
+                    Sin videos. Agrega URLs de YouTube o Vimeo.
+                </div>
+            </div>
+
         </form>
     </div>
     <div class="modal-footer" style="display:flex;gap:var(--space-3);justify-content:flex-end;">
@@ -169,6 +226,38 @@
                 <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
             </svg>
             Guardar Proyecto
+        </button>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MINI-MODAL: Add Video URL -->
+<!-- ============================================ -->
+<div class="modal" id="pf-add-video-modal" style="max-width:520px;z-index:200;">
+    <div class="modal-header">
+        <h3>Agregar Video</h3>
+        <button class="modal-close" onclick="PortfolioAdmin.closeAddVideoDialog()">✕</button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group" style="margin-bottom:var(--space-4);">
+            <label class="config-label">URL del Video *</label>
+            <input type="url" id="pf-new-video-url" class="form-input" placeholder="https://www.youtube.com/watch?v=..." required
+                   style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+            <span style="font-size:11px;color:#8b90a6;margin-top:4px;display:block;">Soporta YouTube y Vimeo</span>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label class="config-label">Título (opcional)</label>
+            <input type="text" id="pf-new-video-title" class="form-input" placeholder="Recorrido virtual del proyecto"
+                   style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+        </div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:var(--space-3);justify-content:flex-end;">
+        <button class="btn btn-secondary" onclick="PortfolioAdmin.closeAddVideoDialog()">Cancelar</button>
+        <button class="btn btn-primary" onclick="PortfolioAdmin.addVideo()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Agregar
         </button>
     </div>
 </div>
