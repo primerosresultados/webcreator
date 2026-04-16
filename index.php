@@ -49,8 +49,8 @@ try {
 // Helpers
 $phoneClean = preg_replace('/[^0-9+]/', '', $S['phone']);
 $h = function($v) { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); };
-$logoNormal   = !empty($S['logo_normal'])   ? $S['logo_normal']   : '';
-$logoNegative = !empty($S['logo_negative']) ? $S['logo_negative'] : '';
+$logoNormal   = !empty($S['logo_normal'])   ? $S['logo_normal']   : '/assets/img/logo-negative.png';
+$logoNegative = !empty($S['logo_negative']) ? $S['logo_negative'] : '/assets/img/logo-negative.png';
 // Default SVG logo fallback
 $svgLogo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>';
 
@@ -105,8 +105,8 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
         <nav class="nav container">
             <a href="/" class="nav-brand">
                 <?php if ($logoNegative || $logoNormal): ?>
-                    <?php if ($logoNegative): ?><img src="<?=$h($logoNegative)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-negative" style="height:40px;width:auto;"><?php endif; ?>
-                    <?php if ($logoNormal): ?><img src="<?=$h($logoNormal)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-normal" style="height:40px;width:auto;"><?php endif; ?>
+                    <?php if ($logoNegative): ?><img src="<?=$h($logoNegative)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-negative" style="height:36px;width:auto;display:block;"><?php endif; ?>
+                    <?php if ($logoNormal): ?><img src="<?=$h($logoNormal)?>" alt="<?=$h($S['siteName'])?>" class="brand-logo brand-logo-normal" style="height:36px;width:auto;"><?php endif; ?>
                 <?php else: ?>
                     <?=$svgLogo?>
                     <span><?=$h($S['siteName'])?></span>
@@ -117,6 +117,7 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <a href="#inicio" class="active">Inicio</a>
                 <a href="#nosotros">Nosotros</a>
                 <a href="#servicios">Servicios</a>
+                <a href="#proyectos">Proyectos</a>
                 <a href="#contacto">Contacto</a>
                 <a href="tel:<?=$phoneClean?>" class="nav-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><?=$h($S['phone'])?></a>
                 <a href="#inicio" class="btn btn-primary btn-sm">Solicitar Info</a>
@@ -322,6 +323,72 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                     <span class="stat-number" data-count="5">0</span>
                     <span class="stat-suffix"></span>
                     <span class="stat-label">Servicios Especializados</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FEATURED PROJECTS -->
+    <!-- ============================================ -->
+    <section class="section projects-section" id="proyectos">
+        <div class="container">
+            <div class="projects-header" data-animate="fadeInUp">
+                <span class="section-label">PROYECTOS DESTACADOS</span>
+                <h2>Arquitectura para contemplar</h2>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card project-card--large" data-animate="fadeIn">
+                    <img src="/assets/img/proyecto-alma-bosque.png" alt="Casa Alma del Bosque" loading="lazy">
+                    <div class="project-overlay"></div>
+                    <div class="project-info">
+                        <span class="project-tag">Proyecto Ejecutivo</span>
+                        <h3>Casa Alma del Bosque</h3>
+                        <div class="project-meta">
+                            <span>185 m²</span>
+                            <span class="project-meta-divider"></span>
+                            <span>Pucón, Chile</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card" data-animate="fadeIn" data-delay="100">
+                    <img src="/assets/img/proyecto-stark.png" alt="Casa Stark" loading="lazy">
+                    <div class="project-overlay"></div>
+                    <div class="project-info">
+                        <span class="project-tag">En Construcción</span>
+                        <h3>Casa Stark</h3>
+                        <div class="project-meta">
+                            <span>207 m²</span>
+                            <span class="project-meta-divider"></span>
+                            <span>Pucón, Chile</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card" data-animate="fadeIn" data-delay="200">
+                    <img src="/assets/img/proyecto-mirador.png" alt="Casa El Mirador" loading="lazy">
+                    <div class="project-overlay"></div>
+                    <div class="project-info">
+                        <span class="project-tag">Proyecto Ejecutivo</span>
+                        <h3>Casa El Mirador</h3>
+                        <div class="project-meta">
+                            <span>188 m²</span>
+                            <span class="project-meta-divider"></span>
+                            <span>Pucón, Chile</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card project-card--large" data-animate="fadeIn" data-delay="300">
+                    <img src="/assets/img/proyecto-dawulco.png" alt="Casa Dawulco" loading="lazy">
+                    <div class="project-overlay"></div>
+                    <div class="project-info">
+                        <span class="project-tag">Ante Proyecto</span>
+                        <h3>Casa Dawulco</h3>
+                        <div class="project-meta">
+                            <span>180 m²</span>
+                            <span class="project-meta-divider"></span>
+                            <span>Pucón, Chile</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

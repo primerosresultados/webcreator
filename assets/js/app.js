@@ -405,11 +405,48 @@ function closeWaModal() {
 }
 
 // ============================================
+// STAT COUNTER ANIMATION
+// ============================================
+function initCounters() {
+    const counters = document.querySelectorAll('.stat-number[data-count]');
+    if (counters.length === 0) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseInt(el.dataset.count, 10);
+                const duration = 2000;
+                const start = performance.now();
+
+                function animate(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // Ease out cubic
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    el.textContent = Math.floor(target * eased);
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        el.textContent = target;
+                    }
+                }
+                requestAnimationFrame(animate);
+                observer.unobserve(el);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    counters.forEach(c => observer.observe(c));
+}
+
+// ============================================
 // INITIALIZE
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     initHeader();
     initScrollAnimations();
+    initCounters();
     initContactForm();
     initHeroForm();
     initSmoothScroll();
