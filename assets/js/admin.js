@@ -33,6 +33,8 @@ async function api(url, options = {}) {
         config.headers = { ...defaults.headers, ...options.headers };
     }
 
+
+
     try {
         const response = await fetch(url, config);
         const data = await response.json();
@@ -126,7 +128,7 @@ function initLogin() {
 // AUTH: CHECK SESSION
 // ============================================
 async function checkAuth() {
-    const result = await api('/api/auth.php?action=me');
+    const result = await api('/api/auth.php?action=me_v2');
     
     if (!result || !result.success) {
         window.location.href = '/admin/';
@@ -170,7 +172,7 @@ async function loadDashboard() {
     const chartContainer = document.getElementById('trend-chart');
     if (chartContainer) chartContainer.innerHTML = '<div class="spinner"></div>';
 
-    const result = await api('/api/leads.php?action=stats');
+    const result = await api('/api/leads.php?action=stats_v2');
     if (!result || !result.success) {
         if (chartContainer) {
             chartContainer.innerHTML = `<p style="color:#ef4444;text-align:center;padding:2rem;font-size:13px;">${result?.error || 'Error al cargar datos del dashboard'}</p>`;
@@ -306,16 +308,21 @@ function renderLeadsTable() {
             </td>
             <td>${escapeHtml(lead.email)}</td>
             <td>${escapeHtml(lead.phone || '—')}</td>
-            <td><span class="badge badge-${lead.status}">${getStatusLabel(lead.status)}</span></td>
+            <td>
+                <select class="lead-status-select status-${lead.status}" onchange="changeLeadStatus(${lead.id}, this.value)" title="Cambiar estado">
+                    <option value="new" ${lead.status === 'new' ? 'selected' : ''}>Nuevo</option>
+                    <option value="contacted" ${lead.status === 'contacted' ? 'selected' : ''}>Contactado</option>
+                    <option value="qualified" ${lead.status === 'qualified' ? 'selected' : ''}>Calificado</option>
+                    <option value="converted" ${lead.status === 'converted' ? 'selected' : ''}>Convertido</option>
+                    <option value="lost" ${lead.status === 'lost' ? 'selected' : ''}>Perdido</option>
+                </select>
+            </td>
             <td>${escapeHtml(lead.source || 'web')}</td>
             <td>${formatDate(lead.created_at)}</td>
             <td>
                 <div class="flex gap-2">
                     <button class="btn btn-ghost btn-icon" onclick="viewLead(${lead.id})" title="Ver/Editar detalle">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                    <button class="btn btn-ghost btn-icon" onclick="cycleLead(${lead.id})" title="Cambiar estado rápido">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
                     </button>
                     <button class="btn btn-ghost btn-icon" onclick="deleteLead(${lead.id})" title="Eliminar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ef4444;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -485,7 +492,7 @@ async function saveLead(event, id) {
         notes: document.getElementById('edit-lead-notes').value.trim()
     };
 
-    const result = await api(\`/api/leads.php?id=\${id}\`, {
+    const result = await api(`/api/leads.php?id=${id}`, {
         method: 'POST',
         body: JSON.stringify({ _method: 'PUT', ...data })
     });
@@ -506,25 +513,21 @@ async function saveLead(event, id) {
     }
 }
 
-const statusCycle = ['new', 'contacted', 'qualified', 'converted', 'lost'];
-
-async function cycleLead(id) {
-    const lead = AdminApp.leads.find(l => l.id == id);
-    if (!lead) return;
-
-    const currentIdx = statusCycle.indexOf(lead.status);
-    const nextStatus = statusCycle[(currentIdx + 1) % statusCycle.length];
-
+async function changeLeadStatus(id, newStatus) {
     const result = await api(`/api/leads.php?id=${id}`, {
         method: 'POST',
-        body: JSON.stringify({ _method: 'PUT', status: nextStatus })
+        body: JSON.stringify({ _method: 'PUT', status: newStatus })
     });
 
     if (result && result.success) {
-        Toast.success(`Estado actualizado a: ${getStatusLabel(nextStatus)}`);
-        loadLeads(); // Refresh
+        Toast.success(`Estado actualizado a: ${getStatusLabel(newStatus)}`);
+        // Update local data to refresh the select styling without full reload
+        const lead = AdminApp.leads.find(l => l.id == id);
+        if (lead) lead.status = newStatus;
+        renderLeadsTable();
     } else {
         Toast.error(result?.error || 'Error al actualizar.');
+        renderLeadsTable(); // Revert select to original value
     }
 }
 
@@ -1263,21 +1266,35 @@ const PluginManager = {
     // ── Inject active plugin links into sidebar ──
     injectSidebarLinks() {
         const container = document.getElementById('plugin-sidebar-links');
-        if (!container) return;
+        const containerPrincipal = document.getElementById('plugin-sidebar-principal');
 
         const activePlugins = this.plugins.filter(p => p.is_active);
         
-        container.innerHTML = activePlugins.map(p => `
+        let normalHtml = '';
+        let principalHtml = '';
+
+        activePlugins.forEach(p => {
+            const linkHtml = `
             <a class="sidebar-link" data-view="plugin-${p.id}" href="#">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     ${this.getIcon(p.icon || 'default')}
                 </svg>
                 ${escapeHtml(p.sidebar_label || p.name)}
             </a>
-        `).join('');
+            `;
+
+            if (p.id === 'portfolio' || p.sidebar_group === 'principal') {
+                principalHtml += linkHtml;
+            } else {
+                normalHtml += linkHtml;
+            }
+        });
+
+        if (container) container.innerHTML = normalHtml;
+        if (containerPrincipal) containerPrincipal.innerHTML = principalHtml;
 
         // Re-bind click events for new links
-        container.querySelectorAll('.sidebar-link[data-view]').forEach(link => {
+        document.querySelectorAll('.sidebar-link[data-view^="plugin-"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 switchView(link.dataset.view);
