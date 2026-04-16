@@ -18,9 +18,12 @@ ini_set('log_errors', 1);
 // Set timezone
 date_default_timezone_set('America/Santiago');
 
-// CORS headers (adjust for production)
+// CORS headers & Anti-Cache (adjust for production)
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
 // Load config
 $configPath = __DIR__ . '/../config/database.php';

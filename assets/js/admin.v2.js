@@ -33,11 +33,7 @@ async function api(url, options = {}) {
         config.headers = { ...defaults.headers, ...options.headers };
     }
 
-    // Anti-cache for GET requests to bypass Cloudflare/Hostinger Cache
-    if (!config.method || config.method.toUpperCase() === 'GET') {
-        const separator = url.includes('?') ? '&' : '?';
-        url += `${separator}_t=${Date.now()}`;
-    }
+
 
     try {
         const response = await fetch(url, config);
