@@ -173,28 +173,30 @@ if ($project && !empty($project['tags'])) {
         </div>
         <?php endif; ?>
         <div class="container pd-hero-inner">
-            <nav class="pd-breadcrumb" aria-label="breadcrumb">
-                <a href="/">Inicio</a>
-                <span class="pd-breadcrumb-sep">/</span>
-                <a href="/#proyectos">Proyectos</a>
-                <span class="pd-breadcrumb-sep">/</span>
-                <span class="pd-breadcrumb-current"><?=$h($project['title'])?></span>
-            </nav>
-            <?php if ($statusChip): ?><span class="pd-status"><?=$h($statusChip)?></span><?php endif; ?>
-            <h1><?=$h($project['title'])?></h1>
-            <div class="pd-meta">
-                <?php if ($project['location']): ?>
-                <span class="pd-meta-item"><?=$icon['pin']?><?=$h($project['location'])?></span>
-                <?php endif; ?>
-                <?php if ($project['year']): ?>
-                <span class="pd-meta-item"><?=$icon['calendar']?><?=$h($project['year'])?></span>
-                <?php endif; ?>
-                <?php if ($project['area_m2']): ?>
-                <span class="pd-meta-item"><?=$icon['ruler']?><?=number_format($project['area_m2'], 0, ',', '.')?> m²</span>
-                <?php endif; ?>
-                <?php if ($project['client_name']): ?>
-                <span class="pd-meta-item"><?=$icon['user']?><?=$h($project['client_name'])?></span>
-                <?php endif; ?>
+            <div class="pd-hero-text">
+                <nav class="pd-breadcrumb" aria-label="breadcrumb">
+                    <a href="/">Inicio</a>
+                    <span class="pd-breadcrumb-sep">/</span>
+                    <a href="/#proyectos">Proyectos</a>
+                    <span class="pd-breadcrumb-sep">/</span>
+                    <span class="pd-breadcrumb-current"><?=$h($project['title'])?></span>
+                </nav>
+                <?php if ($statusChip): ?><span class="pd-status"><?=$h($statusChip)?></span><?php endif; ?>
+                <h1><?=$h($project['title'])?></h1>
+                <div class="pd-meta">
+                    <?php if ($project['location']): ?>
+                    <span class="pd-meta-item"><?=$icon['pin']?><?=$h($project['location'])?></span>
+                    <?php endif; ?>
+                    <?php if ($project['year']): ?>
+                    <span class="pd-meta-item"><?=$icon['calendar']?><?=$h($project['year'])?></span>
+                    <?php endif; ?>
+                    <?php if ($project['area_m2']): ?>
+                    <span class="pd-meta-item"><?=$icon['ruler']?><?=number_format($project['area_m2'], 0, ',', '.')?> m²</span>
+                    <?php endif; ?>
+                    <?php if ($project['client_name']): ?>
+                    <span class="pd-meta-item"><?=$icon['user']?><?=$h($project['client_name'])?></span>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Quick lead form — tagged with the current project -->
