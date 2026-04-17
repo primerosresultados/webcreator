@@ -586,12 +586,18 @@ body, p, span, li, td { font-family: var(--font-primary, 'Inter'), system-ui, sa
 }
 
 .split-content h3 {
-    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
     font-weight: 300;
     color: #ffffff;
     margin-bottom: var(--space-4);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+}
+
+@media (min-width: 769px) {
+    .split-content h3 {
+        white-space: nowrap;
+    }
 }
 
 .split-tags {
