@@ -976,6 +976,8 @@ async function saveSiteInfo() {
 
     if (result && result.success) {
         Toast.success('Información del sitio guardada correctamente.');
+        const brand = document.getElementById('sidebar-site-name');
+        if (brand && info.siteName) brand.textContent = info.siteName;
     } else {
         Toast.error(result?.error || 'Error al guardar la información.');
     }

@@ -1,5 +1,5 @@
-<?php 
-$v = time(); 
+<?php
+$v = time();
 $gitCommit = 'Unknown';
 if (function_exists('exec')) {
     $commit = @exec('git rev-parse --short HEAD 2>/dev/null');
@@ -7,6 +7,28 @@ if (function_exists('exec')) {
         $gitCommit = $commit;
     }
 }
+
+// Load site name for sidebar brand
+$siteName = 'WebCreator';
+try {
+    $cfgPath = __DIR__ . '/../config/database.php';
+    if (file_exists($cfgPath)) {
+        require_once $cfgPath;
+        $pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+        $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'site_info'");
+        $stmt->execute();
+        $row = $stmt->fetch();
+        if ($row) {
+            $info = json_decode($row['setting_value'], true);
+            if (is_array($info) && !empty($info['siteName'])) {
+                $siteName = $info['siteName'];
+            }
+        }
+    }
+} catch (Exception $e) {}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,7 +81,7 @@ if (function_exists('exec')) {
             <div class="sidebar-brand">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>
                 <div>
-                    <h2>WebCreator</h2>
+                    <h2 id="sidebar-site-name"><?=htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8')?></h2>
                     <small>Panel Admin</small>
                 </div>
             </div>
