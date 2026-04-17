@@ -30,6 +30,10 @@ DirectoryIndex index.php index.html
     # Block direct access to config files
     RewriteRule ^config/ - [F,L]
     
+    # ── Pretty Routes ──
+    # Pretty project URLs: /proyecto/{slug} → portfolio plugin detail (internal rewrite, keeps URL)
+    RewriteRule ^proyecto/([a-z0-9\-]+)/?$ /plugins/portfolio/public-detail.php?slug=$1 [L,QSA]
+
     # ── Plugin Routes ──
     # Portfolio plugin
     RewriteRule ^portafolio/?$ /plugins/portfolio/public-page.php [L]

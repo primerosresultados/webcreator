@@ -616,113 +616,86 @@ body, p, span, li, td { font-family: var(--font-primary, 'Inter'), system-ui, sa
 
 .projects-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: var(--space-4);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
     .projects-grid {
         grid-template-columns: 1fr;
     }
 }
 
 .project-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+}
+
+.project-card-thumb {
     position: relative;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-    min-height: 350px;
-    cursor: pointer;
+    border-radius: 14px;
+    background: #1a1a1a;
 }
 
-.project-card--large {
-    min-height: 450px;
-}
-
-.project-card img {
-    position: absolute;
-    inset: 0;
+.project-card-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s cubic-bezier(0.25, 0, 0.25, 1);
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.project-card:hover img {
-    transform: scale(1.08);
+.project-card:hover .project-card-thumb img {
+    transform: scale(1.06);
 }
 
-.project-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.75) 0%,
-        rgba(0, 0, 0, 0.15) 50%,
-        rgba(0, 0, 0, 0.05) 100%
-    );
-    z-index: 1;
-    transition: background 0.4s ease;
+.project-card-body {
+    padding: 1.25rem 0.25rem 0;
 }
 
-.project-card:hover .project-overlay {
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.85) 0%,
-        rgba(0, 0, 0, 0.25) 50%,
-        rgba(0, 0, 0, 0.1) 100%
-    );
-}
-
-.project-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--space-8);
-    z-index: 2;
-    transform: translateY(10px);
-    opacity: 0.9;
-    transition: all 0.4s ease;
-}
-
-.project-card:hover .project-info {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.project-tag {
+.project-card-status {
     display: inline-block;
-    padding: 4px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 0.65rem;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.15em;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    margin-bottom: var(--space-3);
+    margin-bottom: 0.5rem;
 }
 
-.project-info h3 {
-    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+.project-card-body h3 {
+    font-size: 1.35rem;
     font-weight: 300;
     color: #ffffff;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: var(--space-2);
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    margin: 0 0 0.5rem;
 }
 
-.project-meta {
+.project-card-meta {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    font-size: var(--text-xs);
-    color: rgba(255, 255, 255, 0.5);
-    letter-spacing: 0.05em;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.02em;
 }
 
-.project-meta-divider {
-    width: 20px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.3);
+.project-card-dot {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 /* ── STATS BAR ── */
@@ -1114,3 +1087,421 @@ body, p, span, li, td { font-family: var(--font-primary, 'Inter'), system-ui, sa
     #wa-modal { padding: 16px; }
     .wa-modal-card { width: 100%; margin-bottom: 64px; }
 }
+
+/* ============================================
+   PROJECT DETAIL PAGE (.pd-*)
+   ============================================ */
+
+body.project-page {
+    background: #0a0a0a;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+body.project-page .site-header {
+    position: sticky;
+    top: 0;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 50;
+}
+
+/* ── Hero ── */
+.pd-hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 8rem 0 4rem;
+    color: #fff;
+    overflow: hidden;
+}
+
+.pd-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.pd-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pd-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.35) 40%,
+        rgba(10, 10, 10, 0.92) 100%
+    );
+}
+
+.pd-hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.pd-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 2rem;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+}
+
+.pd-breadcrumb a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.pd-breadcrumb a:hover { color: #fff; }
+.pd-breadcrumb-sep { color: rgba(255, 255, 255, 0.3); }
+.pd-breadcrumb-current { color: rgba(255, 255, 255, 0.5); }
+
+.pd-status {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    font-family: 'Raleway', sans-serif;
+}
+
+.pd-hero h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0 0 1.75rem;
+    line-height: 1.08;
+}
+
+.pd-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 1.75rem;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+}
+
+.pd-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.pd-meta-item svg {
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 255, 255, 0.55);
+    flex-shrink: 0;
+}
+
+/* ── Content (description + aside) ── */
+.pd-content {
+    background: #0f0f0f;
+    padding: 5.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.pd-content-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 4.5rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .pd-content-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+.pd-body .section-label {
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+.pd-body p {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+    font-size: 1.02rem;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0 0 1.5rem;
+}
+
+.pd-body p:last-child { margin-bottom: 0; }
+
+/* ── Aside: ficha técnica ── */
+.pd-aside {
+    position: sticky;
+    top: 6rem;
+}
+
+.pd-card {
+    background: #161616;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 2rem;
+    border-radius: 4px;
+}
+
+.pd-card .section-label {
+    display: block;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pd-datasheet {
+    margin: 0 0 1.75rem;
+    display: grid;
+    gap: 1.1rem;
+}
+
+.pd-datasheet-row { margin: 0; }
+
+.pd-datasheet dt {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.3rem;
+}
+
+.pd-datasheet dd {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+    line-height: 1.45;
+}
+
+.pd-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pd-tag {
+    display: inline-block;
+    padding: 5px 11px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    letter-spacing: 0.04em;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+/* ── Gallery ── */
+.pd-gallery {
+    background: #0a0a0a;
+    padding: 5rem 0 6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.pd-gallery-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.pd-gallery-header h2 {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0.5rem 0 0;
+}
+
+.pd-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .pd-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 540px) {
+    .pd-gallery-grid { grid-template-columns: 1fr; }
+}
+
+.pd-gallery-item {
+    all: unset;
+    display: block;
+    cursor: pointer;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #1a1a1a;
+}
+
+.pd-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pd-gallery-item:hover img { transform: scale(1.05); }
+
+.pd-gallery-item:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.4);
+    outline-offset: 3px;
+}
+
+/* ── Other projects ── */
+.pd-others {
+    background: #0a0a0a;
+    padding: 5rem 0 7rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ── Lightbox ── */
+.pd-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.94);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 4rem;
+}
+
+.pd-lightbox.active { display: flex; }
+
+.pd-lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pd-lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+}
+
+.pd-lightbox-content p {
+    color: rgba(255, 255, 255, 0.65);
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+    text-align: center;
+}
+
+.pd-lightbox-btn {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    border-radius: 50%;
+}
+
+.pd-lightbox-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pd-lightbox-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.pd-lightbox-close { top: 1.5rem; right: 1.5rem; }
+.pd-lightbox-prev  { left: 1.5rem; top: 50%; transform: translateY(-50%); }
+.pd-lightbox-next  { right: 1.5rem; top: 50%; transform: translateY(-50%); }
+
+@media (max-width: 640px) {
+    .pd-lightbox { padding: 1rem; }
+    .pd-lightbox-close { top: 0.75rem; right: 0.75rem; }
+    .pd-lightbox-prev  { left: 0.5rem; }
+    .pd-lightbox-next  { right: 0.5rem; }
+}
+
+/* ── 404 ── */
+.pd-notfound {
+    padding: 9rem 0 8rem;
+    text-align: center;
+    color: #fff;
+    background: #0a0a0a;
+}
+
+.pd-notfound-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.pd-notfound-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.pd-notfound h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 1rem 0;
+}
+
+.pd-notfound p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2rem;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+}
+

@@ -37,5 +37,13 @@ if (preg_match('/\.php$/', $path) && is_file($file)) {
     return false;
 }
 
+// Pretty route: /proyecto/{slug} → portfolio plugin detail page (internal rewrite)
+if (preg_match('#^/proyecto/([a-z0-9\-]+)/?$#', $path, $m)) {
+    $_GET['slug'] = $m[1];
+    $_SERVER['REQUEST_URI'] = '/portafolio/proyecto?slug=' . urlencode($m[1]);
+    include __DIR__ . '/plugins/portfolio/public-detail.php';
+    return true;
+}
+
 // Default: serve index.php
 include __DIR__ . '/index.php';

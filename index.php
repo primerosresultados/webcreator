@@ -46,6 +46,16 @@ try {
     }
 } catch (Exception $e) {}
 
+// Featured projects — loaded from portfolio plugin tables
+// (First tag, comma-separated, is used as the visible status chip)
+$featuredProjects = [];
+try {
+    if (isset($pdo)) {
+        $fp = $pdo->query("SELECT slug, title, location, year, area_m2, featured_image, tags FROM portfolio_projects WHERE status = 'published' ORDER BY sort_order ASC, id ASC LIMIT 4");
+        $featuredProjects = $fp->fetchAll();
+    }
+} catch (Exception $e) {}
+
 // Helpers
 $phoneClean = preg_replace('/[^0-9+]/', '', $S['phone']);
 $h = function($v) { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); };
@@ -338,71 +348,33 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <h2>Arquitectura para contemplar</h2>
             </div>
             <div class="projects-grid">
-                <div class="project-card project-card--large" data-animate="fadeIn">
-                    <img src="/assets/img/proyecto-alma-bosque.png" alt="Casa Alma del Bosque" loading="lazy">
-                    <div class="project-overlay"></div>
-                    <div class="project-info">
-                        <span class="project-tag">Proyecto Ejecutivo</span>
-                        <h3>Casa Alma del Bosque</h3>
-                        <div class="project-meta">
-                            <span>185 m²</span>
-                            <span class="project-meta-divider"></span>
-                            <span>Pucón, Chile</span>
+                <?php foreach ($featuredProjects as $i => $p): ?>
+                <?php
+                    $statusChip = '';
+                    if (!empty($p['tags'])) {
+                        $parts = explode(',', $p['tags']);
+                        $statusChip = trim($parts[0]);
+                    }
+                    $surface = !empty($p['area_m2']) ? number_format((float)$p['area_m2'], 0, ',', '.') . ' m²' : '';
+                    $img = !empty($p['featured_image']) ? $p['featured_image'] : '/assets/img/proyecto-' . $p['slug'] . '.png';
+                ?>
+                <a class="project-card" href="/proyecto/<?=$h($p['slug'])?>" data-animate="fadeInUp" data-delay="<?=$i * 80?>">
+                    <div class="project-card-thumb">
+                        <img src="<?=$h($img)?>" alt="<?=$h($p['title'])?>" loading="lazy">
+                    </div>
+                    <div class="project-card-body">
+                        <?php if ($statusChip): ?><span class="project-card-status"><?=$h($statusChip)?></span><?php endif; ?>
+                        <h3><?=$h($p['title'])?></h3>
+                        <div class="project-card-meta">
+                            <?php if ($surface): ?><span><?=$h($surface)?></span><span class="project-card-dot">·</span><?php endif; ?>
+                            <span><?=$h($p['location'])?></span>
                         </div>
                     </div>
-                </div>
-                <div class="project-card" data-animate="fadeIn" data-delay="100">
-                    <img src="/assets/img/proyecto-stark.png" alt="Casa Stark" loading="lazy">
-                    <div class="project-overlay"></div>
-                    <div class="project-info">
-                        <span class="project-tag">En Construcción</span>
-                        <h3>Casa Stark</h3>
-                        <div class="project-meta">
-                            <span>207 m²</span>
-                            <span class="project-meta-divider"></span>
-                            <span>Pucón, Chile</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card" data-animate="fadeIn" data-delay="200">
-                    <img src="/assets/img/proyecto-mirador.png" alt="Casa El Mirador" loading="lazy">
-                    <div class="project-overlay"></div>
-                    <div class="project-info">
-                        <span class="project-tag">Proyecto Ejecutivo</span>
-                        <h3>Casa El Mirador</h3>
-                        <div class="project-meta">
-                            <span>188 m²</span>
-                            <span class="project-meta-divider"></span>
-                            <span>Pucón, Chile</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card project-card--large" data-animate="fadeIn" data-delay="300">
-                    <img src="/assets/img/proyecto-dawulco.png" alt="Casa Dawulco" loading="lazy">
-                    <div class="project-overlay"></div>
-                    <div class="project-info">
-                        <span class="project-tag">Ante Proyecto</span>
-                        <h3>Casa Dawulco</h3>
-                        <div class="project-meta">
-                            <span>180 m²</span>
-                            <span class="project-meta-divider"></span>
-                            <span>Pucón, Chile</span>
-                        </div>
-                    </div>
-                </div>
+                </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
-
-    <!-- ============================================ -->
-    <!-- PORTFOLIO COMPONENT (Plugin — auto-detected) -->
-    <!-- ============================================ -->
-    <?php
-    $portfolioComponentPath = __DIR__ . '/plugins/portfolio/public-component.php';
-    if (file_exists($portfolioComponentPath)) {
-        include $portfolioComponentPath;
-    }
-    ?>
 
     <!-- ============================================ -->
     <!-- CONTACT / CTA FINAL -->
