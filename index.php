@@ -315,23 +315,27 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
         <div class="container">
             <div class="stats-grid" data-animate="fadeInUp">
                 <div class="stat-item">
-                    <span class="stat-number" data-count="50">0</span>
-                    <span class="stat-suffix">+</span>
+                    <div class="stat-value">
+                        <span class="stat-number" data-count="50">0</span><span class="stat-suffix">+</span>
+                    </div>
                     <span class="stat-label">Proyectos Diseñados</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-count="100">0</span>
-                    <span class="stat-suffix">%</span>
+                    <div class="stat-value">
+                        <span class="stat-number" data-count="100">0</span><span class="stat-suffix">%</span>
+                    </div>
                     <span class="stat-label">Compromiso</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-count="10">0</span>
-                    <span class="stat-suffix">+</span>
+                    <div class="stat-value">
+                        <span class="stat-number" data-count="10">0</span><span class="stat-suffix">+</span>
+                    </div>
                     <span class="stat-label">Años de Experiencia</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" data-count="5">0</span>
-                    <span class="stat-suffix"></span>
+                    <div class="stat-value">
+                        <span class="stat-number" data-count="5">0</span><span class="stat-suffix"></span>
+                    </div>
                     <span class="stat-label">Servicios Especializados</span>
                 </div>
             </div>

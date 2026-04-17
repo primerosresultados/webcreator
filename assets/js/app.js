@@ -441,6 +441,40 @@ function initCounters() {
 }
 
 // ============================================
+// PAGE TRANSITIONS (subtle app-like fade)
+// ============================================
+function initPageTransitions() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+        const href = link.getAttribute('href');
+        if (!href) return;
+        if (link.target && link.target !== '_self') return;
+        if (link.hasAttribute('download')) return;
+        if (/^(mailto:|tel:|javascript:|#)/i.test(href)) return;
+
+        let url;
+        try { url = new URL(link.href, window.location.href); } catch { return; }
+        if (url.origin !== window.location.origin) return;
+        // Same-page hash navigation → skip
+        if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+
+        e.preventDefault();
+        document.body.classList.add('is-leaving');
+        setTimeout(() => { window.location.href = link.href; }, 240);
+    });
+
+    // Restore state when returning via back/forward cache
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) document.body.classList.remove('is-leaving');
+    });
+}
+
+// ============================================
 // INITIALIZE
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -451,4 +485,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroForm();
     initSmoothScroll();
     initWhatsApp();
+    initPageTransitions();
 });
