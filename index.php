@@ -214,7 +214,7 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
             <div class="overlay-menu-inner">
                 <span class="overlay-menu-eyebrow">Menú</span>
                 <nav class="overlay-menu-list" aria-label="Navegación principal">
-                    <a href="#nosotros">Estudio</a>
+                    <a href="/estudio">Estudio</a>
                     <a href="#proyectos">Proyectos</a>
                     <a href="#servicios">Servicios</a>
                     <a href="#contacto">Contacto</a>

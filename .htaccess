@@ -34,6 +34,9 @@ DirectoryIndex index.php index.html
     # Pretty project URLs: /proyecto/{slug} → portfolio plugin detail (internal rewrite, keeps URL)
     RewriteRule ^proyecto/([a-z0-9\-]+)/?$ /plugins/portfolio/public-detail.php?slug=$1 [L,QSA]
 
+    # Página Estudio
+    RewriteRule ^estudio/?$ /estudio.php [L]
+
     # ── Plugin Routes ──
     # Portfolio plugin
     RewriteRule ^portafolio/?$ /plugins/portfolio/public-page.php [L]
