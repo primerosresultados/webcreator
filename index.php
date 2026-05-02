@@ -225,6 +225,29 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <img src="/assets/img/hero-bg.png" alt="" loading="eager">
             <?php endif; ?>
         </div>
+
+        <?php if (count($heroVideos) > 1): ?>
+        <!-- Carousel controls -->
+        <button class="hero-nav hero-nav--prev" type="button" aria-label="Video anterior" data-hero-prev>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="hero-nav hero-nav--next" type="button" aria-label="Video siguiente" data-hero-next>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <div class="hero-bullets" role="tablist" aria-label="Seleccionar video">
+            <?php foreach ($heroVideos as $i => $_): ?>
+                <button class="hero-bullet<?= $i === 0 ? ' is-active' : '' ?>"
+                        type="button"
+                        role="tab"
+                        aria-label="Video <?= $i + 1 ?>"
+                        aria-selected="<?= $i === 0 ? 'true' : 'false' ?>"
+                        data-hero-go="<?= $i ?>">
+                    <span class="hero-bullet-fill"></span>
+                </button>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
     </section>
 
     <!-- ============================================ -->

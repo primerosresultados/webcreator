@@ -470,10 +470,31 @@ function initHeroVideos() {
         return;
     }
 
+    const hero = document.getElementById('inicio');
+    const bullets = hero ? Array.from(hero.querySelectorAll('.hero-bullet')) : [];
+
     let idx = 0;
+
+    const updateBulletDuration = (i) => {
+        const v = videos[i];
+        const b = bullets[i];
+        if (!b) return;
+        const dur = isFinite(v.duration) && v.duration > 0 ? v.duration : 6;
+        // restart fill animation by toggling
+        b.style.setProperty('--hero-bullet-duration', dur + 's');
+        const fill = b.querySelector('.hero-bullet-fill');
+        if (fill) {
+            fill.style.animation = 'none';
+            // force reflow
+            void fill.offsetWidth;
+            fill.style.animation = '';
+        }
+    };
+
     const playAt = (i) => {
+        idx = (i + videos.length) % videos.length;
         videos.forEach((v, k) => {
-            if (k === i) {
+            if (k === idx) {
                 v.classList.add('is-active');
                 try { v.currentTime = 0; } catch (e) {}
                 const p = v.play();
@@ -483,14 +504,39 @@ function initHeroVideos() {
                 v.pause();
             }
         });
+        bullets.forEach((b, k) => {
+            const active = k === idx;
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        // wait for metadata to know duration
+        const cur = videos[idx];
+        if (isFinite(cur.duration) && cur.duration > 0) {
+            updateBulletDuration(idx);
+        } else {
+            cur.addEventListener('loadedmetadata', () => updateBulletDuration(idx), { once: true });
+        }
     };
 
     videos.forEach((v, i) => {
-        v.addEventListener('ended', () => {
-            idx = (i + 1) % videos.length;
-            playAt(idx);
-        });
+        v.addEventListener('ended', () => playAt(i + 1));
     });
+
+    if (hero) {
+        const prev = hero.querySelector('[data-hero-prev]');
+        const next = hero.querySelector('[data-hero-next]');
+        if (prev) prev.addEventListener('click', () => playAt(idx - 1));
+        if (next) next.addEventListener('click', () => playAt(idx + 1));
+        bullets.forEach((b, i) => b.addEventListener('click', () => playAt(i)));
+
+        // Keyboard arrows when hero is in viewport
+        document.addEventListener('keydown', (e) => {
+            if (document.body.classList.contains('menu-open')) return;
+            if (window.scrollY > window.innerHeight) return;
+            if (e.key === 'ArrowLeft') playAt(idx - 1);
+            else if (e.key === 'ArrowRight') playAt(idx + 1);
+        });
+    }
 
     playAt(0);
 }
