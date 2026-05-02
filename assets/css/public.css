@@ -16,8 +16,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1) 250ms,
-                visibility 0s linear 750ms;
+    /* El fondo se mantiene 100% negro DURANTE el viaje del logo (900ms)
+       y recién después hace un fade rápido. Así nunca se ve el sitio
+       hasta que el logo llegó a destino. */
+    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1) 900ms,
+                visibility 0s linear 1300ms;
 }
 #page-loader-logo {
     height: clamp(70px, 12vw, 140px);
@@ -43,7 +46,7 @@ body.is-loaded #page-loader {
 body.is-loaded #page-loader-logo {
     /* x/y/scale los setea JS via custom props */
     transform: translate(var(--loader-tx, 0), var(--loader-ty, 0)) scale(var(--loader-scale, 0.3));
-    transition: transform 800ms cubic-bezier(0.7, 0, 0.2, 1);
+    transition: transform 900ms cubic-bezier(0.7, 0, 0.2, 1);
 }
 /* Mientras carga, ocultar overflow del body para que no se vea contenido detrás */
 body.is-loading { overflow: hidden; }
@@ -54,7 +57,8 @@ body.is-loading .nav-brand img { opacity: 0; }
 body.is-loaded .nav-brand .brand-logo,
 body.is-loaded .nav-brand img {
     opacity: 1;
-    transition: opacity 200ms ease 600ms;
+    /* Aparece cuando el viaje (900ms) terminó */
+    transition: opacity 200ms ease 950ms;
 }
 @media (prefers-reduced-motion: reduce) {
     #page-loader, #page-loader-logo { transition: none !important; animation: none !important; }

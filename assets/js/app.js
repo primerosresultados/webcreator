@@ -12,8 +12,8 @@
     const loaderLogo = document.getElementById('page-loader-logo');
     if (!loaderLogo) return;
 
-    // Min display time para que se vea el loader (UX). 600ms es suficiente.
-    const MIN_DISPLAY = 600;
+    // Min display time para que se vea bien el loader la primera vez.
+    const MIN_DISPLAY = 2000;
     const start = performance.now();
 
     function runExitAnimation() {
@@ -21,7 +21,7 @@
         if (!headerLogo) {
             // No hay logo destino: solo desvanecer el loader
             document.body.classList.add('is-loaded');
-            setTimeout(() => document.body.classList.remove('is-loading'), 800);
+            setTimeout(() => document.body.classList.remove('is-loading'), 1400);
             return;
         }
 
@@ -30,7 +30,7 @@
         const toRect = headerLogo.getBoundingClientRect();
         if (fromRect.width === 0 || toRect.width === 0) {
             document.body.classList.add('is-loaded');
-            setTimeout(() => document.body.classList.remove('is-loading'), 800);
+            setTimeout(() => document.body.classList.remove('is-loading'), 1400);
             return;
         }
 
@@ -48,8 +48,8 @@
         loaderLogo.style.setProperty('--loader-scale', scale.toFixed(4));
 
         document.body.classList.add('is-loaded');
-        // Después de que el loader desaparezca, sacamos is-loading para liberar scroll
-        setTimeout(() => document.body.classList.remove('is-loading'), 900);
+        // Liberar scroll después de que el viaje (900ms) + fade del fondo (400ms) terminen
+        setTimeout(() => document.body.classList.remove('is-loading'), 1400);
     }
 
     function tryStart() {
