@@ -12,44 +12,65 @@
     const loaderLogo = document.getElementById('page-loader-logo');
     if (!loaderLogo) return;
 
-    // Min display time para que se vea bien el loader la primera vez.
     const MIN_DISPLAY = 2000;
     const start = performance.now();
 
+    // Devuelve el logo del header que está REALMENTE visible (no display:none).
+    function getVisibleHeaderLogo() {
+        const candidates = document.querySelectorAll('.site-header .nav-brand img, .site-header .nav-brand svg');
+        for (const el of candidates) {
+            const cs = getComputedStyle(el);
+            if (cs.display !== 'none' && cs.visibility !== 'hidden') {
+                const r = el.getBoundingClientRect();
+                if (r.width > 0 && r.height > 0) return el;
+            }
+        }
+        return null;
+    }
+
+    function finalize() {
+        // Liberar scroll y limpiar después de que termine la transición del fondo
+        setTimeout(() => document.body.classList.remove('is-loading'), 1500);
+    }
+
     function runExitAnimation() {
-        const headerLogo = document.querySelector('.site-header .nav-brand img, .site-header .nav-brand svg');
-        if (!headerLogo) {
-            // No hay logo destino: solo desvanecer el loader
-            document.body.classList.add('is-loaded');
-            setTimeout(() => document.body.classList.remove('is-loading'), 1400);
-            return;
-        }
+        // Esperar a que la imagen del loader esté decoded para que su bounding-rect sea exacto
+        const ready = loaderLogo.complete ? Promise.resolve() : new Promise(r => loaderLogo.addEventListener('load', r, { once: true }));
+        ready.then(() => {
+            const headerLogo = getVisibleHeaderLogo();
+            if (!headerLogo) {
+                document.body.classList.add('is-loaded');
+                finalize();
+                return;
+            }
 
-        // Asegurar que el header tenga su layout listo
-        const fromRect = loaderLogo.getBoundingClientRect();
-        const toRect = headerLogo.getBoundingClientRect();
-        if (fromRect.width === 0 || toRect.width === 0) {
-            document.body.classList.add('is-loaded');
-            setTimeout(() => document.body.classList.remove('is-loading'), 1400);
-            return;
-        }
+            const fromRect = loaderLogo.getBoundingClientRect();
+            const toRect = headerLogo.getBoundingClientRect();
+            if (fromRect.width === 0 || toRect.width === 0) {
+                document.body.classList.add('is-loaded');
+                finalize();
+                return;
+            }
 
-        // Calcular delta para llevar el centro del loader-logo al centro del header-logo
-        const fromCx = fromRect.left + fromRect.width / 2;
-        const fromCy = fromRect.top + fromRect.height / 2;
-        const toCx = toRect.left + toRect.width / 2;
-        const toCy = toRect.top + toRect.height / 2;
-        const tx = toCx - fromCx;
-        const ty = toCy - fromCy;
-        const scale = toRect.height / fromRect.height;
+            // FLIP con transform-origin: top left → translate al top-left del destino
+            // y scale por la razón de anchos. Así la caja final coincide exactamente.
+            const tx = toRect.left - fromRect.left;
+            const ty = toRect.top - fromRect.top;
+            const scale = toRect.width / fromRect.width;
 
-        loaderLogo.style.setProperty('--loader-tx', tx + 'px');
-        loaderLogo.style.setProperty('--loader-ty', ty + 'px');
-        loaderLogo.style.setProperty('--loader-scale', scale.toFixed(4));
+            loaderLogo.style.setProperty('--loader-tx', tx.toFixed(2) + 'px');
+            loaderLogo.style.setProperty('--loader-ty', ty.toFixed(2) + 'px');
+            loaderLogo.style.setProperty('--loader-scale', scale.toFixed(4));
 
-        document.body.classList.add('is-loaded');
-        // Liberar scroll después de que el viaje (900ms) + fade del fondo (400ms) terminen
-        setTimeout(() => document.body.classList.remove('is-loading'), 1400);
+            // Forzar reflow para que el navegador registre las custom props antes del transition
+            // (sin esto a veces el primer frame "salta")
+            void loaderLogo.offsetWidth;
+
+            requestAnimationFrame(() => {
+                document.body.classList.add('is-loaded');
+                finalize();
+            });
+        });
     }
 
     function tryStart() {
@@ -70,7 +91,7 @@
             document.body.classList.add('is-loaded');
             document.body.classList.remove('is-loading');
         }
-    }, 5000);
+    }, 6000);
 })();
 
 // ============================================

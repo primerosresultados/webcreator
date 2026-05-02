@@ -6,8 +6,8 @@
 */
 
 /* ── PAGE LOADER ──
-   Muestra fondo negro + logo centrado mientras la página carga.
-   Al terminar, el logo se anima hacia su posición en el header. */
+   Fondo negro + logo centrado. Al cargar, el logo viaja a la posición
+   exacta del logo del header (FLIP, transform-origin: top left). */
 #page-loader {
     position: fixed;
     inset: 0;
@@ -16,54 +16,49 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* El fondo se mantiene 100% negro DURANTE el viaje del logo (900ms)
-       y recién después hace un fade rápido. Así nunca se ve el sitio
-       hasta que el logo llegó a destino. */
-    transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1) 900ms,
-                visibility 0s linear 1300ms;
+    /* El fondo se mantiene negro DURANTE todo el viaje del logo (1100ms)
+       y recién al final hace un fade corto. */
+    transition: opacity 350ms cubic-bezier(0.22, 1, 0.36, 1) 1100ms,
+                visibility 0s linear 1450ms;
 }
 #page-loader-logo {
     height: clamp(70px, 12vw, 140px);
     width: auto;
     display: block;
     opacity: 0;
-    transform: scale(0.96);
-    animation: loaderLogoIn 700ms cubic-bezier(0.22, 1, 0.36, 1) 80ms forwards;
-    transform-origin: center center;
-    transition: transform 900ms cubic-bezier(0.7, 0, 0.2, 1),
-                height 900ms cubic-bezier(0.7, 0, 0.2, 1);
-    will-change: transform, height;
+    /* FLIP: el origen top-left hace que translate+scale alineen exactamente
+       con la caja de destino del header. */
+    transform-origin: top left;
+    animation: loaderLogoIn 600ms cubic-bezier(0.22, 1, 0.36, 1) 100ms forwards;
+    will-change: transform, opacity;
 }
-@keyframes loaderLogoIn {
-    to { opacity: 1; transform: scale(1); }
-}
-/* Cuando JS marca la animación de salida: logo viaja al header, fondo se va */
+@keyframes loaderLogoIn { to { opacity: 1; } }
+
+/* Salida: logo viaja al header, fondo desvanece después */
 body.is-loaded #page-loader {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 }
 body.is-loaded #page-loader-logo {
-    /* x/y/scale los setea JS via custom props */
     transform: translate(var(--loader-tx, 0), var(--loader-ty, 0)) scale(var(--loader-scale, 0.3));
-    transition: transform 900ms cubic-bezier(0.7, 0, 0.2, 1);
+    transition: transform 1100ms cubic-bezier(0.86, 0, 0.07, 1);
 }
-/* Mientras carga, ocultar overflow del body para que no se vea contenido detrás */
+
 body.is-loading { overflow: hidden; }
-/* Logo del header oculto hasta que termine la animación, para que el viaje del
-   logo del loader luzca como un "match" sin duplicado visible */
+/* Logo del header invisible mientras dura el loader */
 body.is-loading .nav-brand .brand-logo,
-body.is-loading .nav-brand img { opacity: 0; }
+body.is-loading .nav-brand img { opacity: 0 !important; }
+/* Aparece JUSTO cuando el viaje termina (crossfade preciso) */
 body.is-loaded .nav-brand .brand-logo,
 body.is-loaded .nav-brand img {
     opacity: 1;
-    /* Aparece cuando el viaje (900ms) terminó */
-    transition: opacity 200ms ease 950ms;
+    transition: opacity 250ms ease 1050ms;
 }
 @media (prefers-reduced-motion: reduce) {
     #page-loader, #page-loader-logo { transition: none !important; animation: none !important; }
     body.is-loaded #page-loader { display: none; }
-    body.is-loading .nav-brand img { opacity: 1; }
+    body.is-loading .nav-brand img { opacity: 1 !important; }
 }
 
 /* ── PAGE TRANSITION ── */
