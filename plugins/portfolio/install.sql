@@ -47,9 +47,11 @@ CREATE TABLE IF NOT EXISTS `portfolio_videos` (
     `video_url` VARCHAR(500) NOT NULL,
     `video_type` ENUM('youtube','vimeo','upload','other') NOT NULL DEFAULT 'youtube',
     `title` VARCHAR(255) DEFAULT NULL,
+    `is_featured` TINYINT(1) NOT NULL DEFAULT 0,
     `sort_order` INT NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_portfolio_vid_project` (`project_id`),
+    INDEX `idx_portfolio_vid_featured` (`project_id`, `is_featured`),
     CONSTRAINT `fk_portfolio_videos_project` FOREIGN KEY (`project_id`)
         REFERENCES `portfolio_projects`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

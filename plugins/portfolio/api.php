@@ -524,6 +524,32 @@ switch ($pAction) {
         break;
 
     // ============================================
+    // SET FEATURED VIDEO (for header background)
+    // POST { project_id, video_id|null }   null = sin destacado
+    // ============================================
+    case 'set_featured_video':
+        requireAuth();
+        $body = getJSONBody();
+        $projectId = intval($body['project_id'] ?? 0);
+        $videoId = isset($body['video_id']) && $body['video_id'] !== null ? intval($body['video_id']) : null;
+
+        if (!$projectId) jsonError('project_id requerido.', 400);
+
+        $db = getDB();
+        // Reset todos
+        $resetStmt = $db->prepare("UPDATE portfolio_videos SET is_featured = 0 WHERE project_id = ?");
+        $resetStmt->execute([$projectId]);
+
+        if ($videoId) {
+            $setStmt = $db->prepare("UPDATE portfolio_videos SET is_featured = 1 WHERE id = ? AND project_id = ?");
+            $setStmt->execute([$videoId, $projectId]);
+            if ($setStmt->rowCount() === 0) jsonError('Video no encontrado.', 404);
+        }
+
+        jsonSuccess(['message' => $videoId ? 'Video destacado.' : 'Sin video destacado.']);
+        break;
+
+    // ============================================
     // REORDER VIDEOS
     // ============================================
     case 'reorder_videos':

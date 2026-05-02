@@ -616,6 +616,9 @@ const PortfolioAdmin = {
                         <span class="portfolio-video-url">${escapeHtml(v.video_url)}</span>
                     </div>
                     <div class="portfolio-video-actions">
+                        <button type="button" class="btn btn-ghost btn-icon" onclick="PortfolioAdmin.toggleFeaturedVideo(${v.id}, ${v.is_featured ? 'true' : 'false'})" title="${v.is_featured ? 'Quitar de cabecera' : 'Usar como video de cabecera'}" style="color:${v.is_featured ? '#f59e0b' : 'inherit'};">
+                            <svg viewBox="0 0 24 24" fill="${v.is_featured ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </button>
                         <button type="button" class="btn btn-ghost btn-icon" onclick="window.open('${escapeHtml(v.video_url)}', '_blank')" title="Abrir video">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                         </button>
@@ -758,6 +761,26 @@ const PortfolioAdmin = {
     // ============================================
     // VIDEO: Delete
     // ============================================
+    // Marcar/desmarcar video como destacado (cabecera del proyecto)
+    async toggleFeaturedVideo(videoId, currentlyFeatured) {
+        const projectId = document.getElementById('pf-id').value;
+        if (!projectId) return;
+        const newVideoId = currentlyFeatured ? null : videoId;
+        const result = await this.api('set_featured_video', {
+            method: 'POST',
+            body: JSON.stringify({ project_id: parseInt(projectId), video_id: newVideoId })
+        });
+        if (result && result.success) {
+            Toast.success(newVideoId ? 'Video usado como cabecera.' : 'Cabecera vuelve a la imagen.');
+            const projResult = await this.api(`get&id=${projectId}`);
+            if (projResult && projResult.success) {
+                this.showVideos(projectId, projResult.project.videos || []);
+            }
+        } else {
+            Toast.error(result?.error || 'Error al actualizar.');
+        }
+    },
+
     async deleteVideo(videoId) {
         if (!confirm('¿Eliminar este video?')) return;
 

@@ -196,8 +196,33 @@ if ($project && !empty($project['tags'])) {
     <?php else: ?>
 
     <!-- HERO -->
-    <section class="pd-hero">
-        <?php if (!empty($project['featured_image'])): ?>
+    <?php
+    // Buscar video destacado (is_featured=1) en este proyecto
+    $heroVideo = null;
+    if (!empty($project['videos'])) {
+        foreach ($project['videos'] as $vv) {
+            if (!empty($vv['is_featured'])) { $heroVideo = $vv; break; }
+        }
+    }
+    // Solo soportamos como bg los que se pueden reproducir en background:
+    // Cloudinary upload o MP4 directo. YouTube/Vimeo iframe no se usa.
+    $heroVideoUrl = null;
+    if ($heroVideo) {
+        $type = $heroVideo['video_type'] ?? 'other';
+        if (in_array($type, ['upload', 'other'], true) && preg_match('#\.(mp4|webm|mov)$|res\.cloudinary\.com/.+/video/upload/#i', $heroVideo['video_url'])) {
+            $heroVideoUrl = $heroVideo['video_url'];
+        }
+    }
+    ?>
+    <section class="pd-hero<?= $heroVideoUrl ? ' pd-hero--video' : '' ?>">
+        <?php if ($heroVideoUrl): ?>
+        <div class="pd-hero-bg">
+            <video src="<?=$h($heroVideoUrl)?>"
+                   <?php if (!empty($project['featured_image'])): ?>poster="<?=$h($project['featured_image'])?>"<?php endif; ?>
+                   autoplay muted loop playsinline preload="auto"></video>
+            <div class="pd-hero-overlay"></div>
+        </div>
+        <?php elseif (!empty($project['featured_image'])): ?>
         <div class="pd-hero-bg">
             <img src="<?=$h($project['featured_image'])?>" alt="<?=$h($project['title'])?>">
             <div class="pd-hero-overlay"></div>
