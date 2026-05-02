@@ -46,14 +46,17 @@ body.is-loaded #page-loader-logo {
 }
 
 body.is-loading { overflow: hidden; }
-/* Logo del header invisible mientras dura el loader */
+/* Logo del header invisible mientras dura el loader (sin !important para que
+   la transición pueda animar correctamente al pasar a is-loaded) */
 body.is-loading .nav-brand .brand-logo,
-body.is-loading .nav-brand img { opacity: 0 !important; }
-/* Aparece JUSTO cuando el viaje termina (crossfade preciso) */
+body.is-loading .nav-brand img { opacity: 0; }
+/* Crossfade: el header-logo empieza a aparecer MID-viaje (700ms),
+   así cuando el logo del loader aterriza (1100ms) el del header ya está
+   visible al 100% — la transición se siente continua. */
 body.is-loaded .nav-brand .brand-logo,
 body.is-loaded .nav-brand img {
     opacity: 1;
-    transition: opacity 250ms ease 1050ms;
+    transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1) 700ms;
 }
 @media (prefers-reduced-motion: reduce) {
     #page-loader, #page-loader-logo { transition: none !important; animation: none !important; }

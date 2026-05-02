@@ -29,8 +29,11 @@
     }
 
     function finalize() {
-        // Liberar scroll y limpiar después de que termine la transición del fondo
-        setTimeout(() => document.body.classList.remove('is-loading'), 1500);
+        // Quitamos is-loading rápido (200ms) para que la transición del header-logo
+        // (que se dispara con is-loaded) corra sin que el !important / opacity:0
+        // de is-loading la bloquee. El overflow:hidden ya no hace falta porque
+        // el bg negro sigue tapando todo via #page-loader.
+        setTimeout(() => document.body.classList.remove('is-loading'), 200);
     }
 
     function runExitAnimation() {
