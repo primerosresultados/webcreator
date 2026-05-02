@@ -8,6 +8,11 @@ if (function_exists('exec')) {
     }
 }
 
+// Cloudinary config (público) para inyectar en data-attr
+$cloudCfg = @include __DIR__ . '/../config/cloudinary.php';
+if (!is_array($cloudCfg)) $cloudCfg = [];
+$cloudCfgJson = htmlspecialchars(json_encode($cloudCfg, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+
 // Load site name for sidebar brand
 $siteName = 'WebCreator';
 try {
@@ -72,6 +77,7 @@ try {
     </style>
 </head>
 <body>
+    <div id="admin-cloudinary-cfg" data-cfg="<?=$cloudCfgJson?>" hidden></div>
     <div class="admin-layout">
 
         <!-- ============================================ -->
@@ -465,6 +471,40 @@ try {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Hero Videos -->
+                <div class="admin-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    <span>Videos del Hero</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <p style="font-size:12px;color:#8b90a6;margin-bottom:var(--space-4);">
+                        Videos de fondo del Hero (home). Se reproducen en loop, sin sonido, en el orden listado. Se suben directo a Cloudinary.
+                        <br><strong>Máx 100MB por archivo</strong> (límite del plan free).
+                    </p>
+
+                    <div id="hero-videos-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:var(--space-4);">
+                        <!-- Lista renderizada por JS -->
+                    </div>
+
+                    <div id="hero-videos-empty" style="text-align:center;padding:1.5rem;color:#8b90a6;font-size:13px;border:1.5px dashed #e8eaf2;border-radius:10px;margin-bottom:var(--space-4);display:none;">
+                        Sin videos cargados. Subí uno o más archivos.
+                    </div>
+
+                    <input type="file" id="hero-video-input" accept="video/*" multiple style="display:none;" onchange="uploadHeroVideos(this)">
+
+                    <div style="display:flex;gap:var(--space-3);justify-content:space-between;flex-wrap:wrap;">
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('hero-video-input').click()" id="hero-upload-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Subir video(s)
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="saveHeroVideos()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Guardar Videos del Hero
+                        </button>
                     </div>
                 </div>
 

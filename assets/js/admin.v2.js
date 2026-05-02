@@ -693,7 +693,7 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
-    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); }
+    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); loadHeroVideos(); }
     if (viewName === 'plugins') PluginManager.loadPlugins();
 
     // Handle dynamic plugin views (e.g., view-plugin-portfolio)
@@ -1522,3 +1522,142 @@ document.addEventListener('DOMContentLoaded', () => {
         initDashboard();
     }
 });
+
+// ============================================
+// HERO VIDEOS (Cloudinary)
+// ============================================
+let HERO_VIDEOS = []; // [{ public_id, url, name }]
+
+function getCloudinaryCfg() {
+    if (window.CLOUDINARY_CFG) return window.CLOUDINARY_CFG;
+    const node = document.getElementById('admin-cloudinary-cfg');
+    if (node && node.dataset.cfg) {
+        try { window.CLOUDINARY_CFG = JSON.parse(node.dataset.cfg); return window.CLOUDINARY_CFG; } catch (e) {}
+    }
+    return null;
+}
+
+function renderHeroVideos() {
+    const list = document.getElementById('hero-videos-list');
+    const empty = document.getElementById('hero-videos-empty');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!HERO_VIDEOS.length) {
+        if (empty) empty.style.display = 'block';
+        return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    const cfg = getCloudinaryCfg();
+    HERO_VIDEOS.forEach((v, i) => {
+        const thumb = (cfg && cfg.cloudName && v.public_id)
+            ? `https://res.cloudinary.com/${cfg.cloudName}/video/upload/q_auto,f_auto,so_0,w_120,h_68,c_fill/${v.public_id}.jpg`
+            : '';
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:8px;border:1.5px solid #eef0f6;border-radius:10px;background:#fff;';
+        row.innerHTML = `
+            <div style="width:60px;height:34px;border-radius:6px;background:#f0f2f8 ${thumb ? `url('${thumb}') center/cover no-repeat` : ''};flex-shrink:0;"></div>
+            <div style="flex:1;min-width:0;font-size:12px;">
+                <div style="font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(v.name || v.public_id || '(sin nombre)')}</div>
+                <div style="color:#8b90a6;font-family:var(--font-mono,monospace);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(v.public_id || '')}</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" title="Subir" onclick="moveHeroVideo(${i}, -1)" ${i === 0 ? 'disabled' : ''} style="padding:4px 8px;">↑</button>
+            <button class="btn btn-ghost btn-sm" title="Bajar" onclick="moveHeroVideo(${i}, 1)" ${i === HERO_VIDEOS.length - 1 ? 'disabled' : ''} style="padding:4px 8px;">↓</button>
+            <button class="btn btn-danger btn-sm" title="Eliminar" onclick="removeHeroVideo(${i})" style="padding:4px 8px;">✕</button>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function moveHeroVideo(idx, dir) {
+    const j = idx + dir;
+    if (j < 0 || j >= HERO_VIDEOS.length) return;
+    const tmp = HERO_VIDEOS[idx];
+    HERO_VIDEOS[idx] = HERO_VIDEOS[j];
+    HERO_VIDEOS[j] = tmp;
+    renderHeroVideos();
+}
+
+function removeHeroVideo(idx) {
+    if (!confirm('¿Quitar este video de la lista? (no se borra de Cloudinary)')) return;
+    HERO_VIDEOS.splice(idx, 1);
+    renderHeroVideos();
+}
+
+async function loadHeroVideos() {
+    const result = await api('/api/settings.php?key=hero_videos');
+    HERO_VIDEOS = [];
+    if (result && result.success && result.setting && result.setting.setting_value) {
+        try {
+            const arr = JSON.parse(result.setting.setting_value);
+            if (Array.isArray(arr)) HERO_VIDEOS = arr.filter(x => x && x.public_id);
+        } catch (e) {}
+    }
+    renderHeroVideos();
+}
+
+async function uploadHeroVideos(input) {
+    const files = Array.from(input.files || []);
+    input.value = '';
+    if (!files.length) return;
+
+    const cfg = getCloudinaryCfg();
+    if (!cfg || !cfg.cloudName || !cfg.uploadPreset) {
+        Toast.error('Cloudinary no está configurado. Revisá config/cloudinary.php');
+        return;
+    }
+
+    const btn = document.getElementById('hero-upload-btn');
+    if (btn) btn.disabled = true;
+
+    let okCount = 0;
+    for (const file of files) {
+        if (!file.type.startsWith('video/')) {
+            Toast.warning(`"${file.name}" no es un video.`);
+            continue;
+        }
+        if (file.size > 100 * 1024 * 1024) {
+            Toast.warning(`"${file.name}" excede 100MB.`);
+            continue;
+        }
+
+        Toast.info(`Subiendo "${file.name}"...`);
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', cfg.uploadPreset);
+        if (cfg.folder) fd.append('folder', cfg.folder + '/hero');
+
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/video/upload`, { method: 'POST', body: fd });
+            const json = await res.json();
+            if (!res.ok || !json.public_id) {
+                Toast.error(`Cloudinary rechazó "${file.name}": ${json.error?.message || 'error'}`);
+                continue;
+            }
+            HERO_VIDEOS.push({
+                public_id: json.public_id,
+                url: json.secure_url,
+                name: file.name.replace(/\.[^.]+$/, '')
+            });
+            okCount++;
+            renderHeroVideos();
+        } catch (e) {
+            Toast.error(`Error de red subiendo "${file.name}".`);
+        }
+    }
+
+    if (btn) btn.disabled = false;
+    if (okCount > 0) Toast.success(`${okCount} video(s) subido(s). Recordá guardar.`);
+}
+
+async function saveHeroVideos() {
+    const result = await api('/api/settings.php', {
+        method: 'POST',
+        body: JSON.stringify({ _method: 'PUT', hero_videos: HERO_VIDEOS })
+    });
+    if (result && result.success) {
+        Toast.success('Videos del hero guardados.');
+    } else {
+        Toast.error(result?.error || 'Error al guardar.');
+    }
+}

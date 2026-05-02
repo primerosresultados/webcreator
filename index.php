@@ -51,7 +51,7 @@ try {
 $featuredProjects = [];
 try {
     if (isset($pdo)) {
-        $fp = $pdo->query("SELECT slug, title, location, year, area_m2, featured_image, tags FROM portfolio_projects WHERE status = 'published' ORDER BY sort_order ASC, id ASC LIMIT 4");
+        $fp = $pdo->query("SELECT slug, title, location, year, area_m2, featured_image, tags FROM portfolio_projects WHERE status = 'published' ORDER BY sort_order ASC, id ASC LIMIT 12");
         $featuredProjects = $fp->fetchAll();
     }
 } catch (Exception $e) {}
@@ -186,23 +186,64 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- HERO SECTION — Video background loop -->
     <!-- ============================================ -->
     <?php
-    // Hero videos desde Cloudinary. Editá config/hero-videos.php para agregar/sacar.
+    // Hero videos desde Cloudinary.
+    // Prioridad: settings.hero_videos (admin) → config/hero-videos.php (file fallback).
     $heroVideos = [];
     $cloudinaryPoster = null;
-    $heroCfg = @include __DIR__ . '/config/hero-videos.php';
-    if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
-        $cloud = $heroCfg['cloudName'];
-        $tx    = $heroCfg['transform'] ?? 'q_auto,f_auto';
-        foreach ($heroCfg['publicIds'] as $pid) {
-            $pid = trim($pid);
-            if ($pid === '') continue;
-            $heroVideos[] = "https://res.cloudinary.com/{$cloud}/video/upload/{$tx}/{$pid}.mp4";
+    $heroPublicIds = [];
+    $heroCloud = null;
+    $heroTx = 'q_auto,f_auto';
+
+    // 1) Intentar leer desde DB (admin)
+    try {
+        $cfgPath = __DIR__ . '/config/database.php';
+        if (file_exists($cfgPath)) {
+            require_once $cfgPath;
+            $pdoHero = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+            $stmtH = $pdoHero->prepare("SELECT setting_value FROM settings WHERE setting_key = 'hero_videos'");
+            $stmtH->execute();
+            $rowH = $stmtH->fetch();
+            if ($rowH && !empty($rowH['setting_value'])) {
+                $arr = json_decode($rowH['setting_value'], true);
+                if (is_array($arr)) {
+                    foreach ($arr as $v) {
+                        if (is_array($v) && !empty($v['public_id'])) {
+                            $heroPublicIds[] = trim($v['public_id']);
+                        }
+                    }
+                }
+            }
         }
-        if (!empty($heroVideos)) {
-            // Poster para mientras carga el primer video
-            $firstId = trim($heroCfg['publicIds'][0]);
-            $cloudinaryPoster = "https://res.cloudinary.com/{$cloud}/video/upload/q_auto,f_auto,so_0/{$firstId}.jpg";
+    } catch (Exception $e) {}
+
+    // Cloud name: del config/cloudinary.php (mismo cloud que el resto del sitio)
+    $cloudCfgFile = @include __DIR__ . '/config/cloudinary.php';
+    if (is_array($cloudCfgFile) && !empty($cloudCfgFile['cloudName'])) {
+        $heroCloud = $cloudCfgFile['cloudName'];
+        if (!empty($cloudCfgFile['transform'])) $heroTx = $cloudCfgFile['transform'];
+    }
+
+    // 2) Fallback a config/hero-videos.php si no hay nada en DB
+    if (empty($heroPublicIds)) {
+        $heroCfg = @include __DIR__ . '/config/hero-videos.php';
+        if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
+            $heroCloud = $heroCfg['cloudName'];
+            if (!empty($heroCfg['transform'])) $heroTx = $heroCfg['transform'];
+            foreach ($heroCfg['publicIds'] as $pid) {
+                $pid = trim($pid);
+                if ($pid !== '') $heroPublicIds[] = $pid;
+            }
         }
+    }
+
+    if ($heroCloud && !empty($heroPublicIds)) {
+        foreach ($heroPublicIds as $pid) {
+            $heroVideos[] = "https://res.cloudinary.com/{$heroCloud}/video/upload/{$heroTx}/{$pid}.mp4";
+        }
+        $cloudinaryPoster = "https://res.cloudinary.com/{$heroCloud}/video/upload/q_auto,f_auto,so_0/{$heroPublicIds[0]}.jpg";
     }
     ?>
     <section class="hero hero--video" id="inicio">
