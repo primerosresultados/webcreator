@@ -268,7 +268,6 @@ if ($project && !empty($project['tags'])) {
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>
-                    <a href="/#contacto" class="btn btn-dark btn-block">Consultar un proyecto similar</a>
                 </div>
             </aside>
         </div>
