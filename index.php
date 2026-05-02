@@ -301,7 +301,6 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <h2>
                     Nos enfocamos en el diseño de casas en el sur de Chile, donde cada proyecto nace del respeto por el entorno natural y la visión de quienes lo habitarán.
                 </h2>
-                <a href="#contacto" class="btn btn-dark btn-lg">Conversemos sobre tu Proyecto</a>
             </div>
 
             <!-- Servicios -->
