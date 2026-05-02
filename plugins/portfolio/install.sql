@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS `portfolio_projects` (
     `year` SMALLINT UNSIGNED DEFAULT NULL,
     `project_date` DATE DEFAULT NULL,
     `area_m2` DECIMAL(10,2) DEFAULT NULL,
+    `materials` TEXT DEFAULT NULL,
+    `program` TEXT DEFAULT NULL,
     `status` ENUM('draft','published') NOT NULL DEFAULT 'draft',
     `featured_image` VARCHAR(500) DEFAULT NULL,
     `video_url` VARCHAR(500) DEFAULT NULL,

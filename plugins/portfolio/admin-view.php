@@ -136,6 +136,20 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;resize:vertical;font-family:inherit;"></textarea>
             </div>
 
+            <!-- Materialidades + Programa -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="config-label">Materialidades (separadas por coma)</label>
+                    <input type="text" id="pf-materials" class="form-input" placeholder="Piedra local, Madera nativa, Hormigón visto"
+                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="config-label">Programa (separado por coma)</label>
+                    <input type="text" id="pf-program" class="form-input" placeholder="Living, Cocina, 3 dormitorios"
+                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                </div>
+            </div>
+
             <!-- Tags -->
             <div class="form-group" style="margin-bottom:var(--space-4);">
                 <label class="config-label">Tags (separados por coma)</label>

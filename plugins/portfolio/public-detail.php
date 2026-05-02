@@ -49,6 +49,10 @@ try {
                 $imgStmt->execute([$project['id']]);
                 $project['images'] = $imgStmt->fetchAll();
 
+                $vidStmt = $pdo->prepare("SELECT * FROM portfolio_videos WHERE project_id = ? ORDER BY sort_order ASC, id ASC");
+                $vidStmt->execute([$project['id']]);
+                $project['videos'] = $vidStmt->fetchAll();
+
                 $oStmt = $pdo->prepare("SELECT slug, title, location, area_m2, featured_image, tags FROM portfolio_projects WHERE status = 'published' AND id != ? ORDER BY sort_order ASC, id ASC LIMIT 3");
                 $oStmt->execute([$project['id']]);
                 $others = $oStmt->fetchAll();
@@ -230,6 +234,23 @@ if ($project && !empty($project['tags'])) {
     </section>
 
     <!-- CONTENT -->
+    <?php
+    $materials = !empty($project['materials']) ? array_filter(array_map('trim', explode(',', $project['materials']))) : [];
+    $program   = !empty($project['program'])   ? array_filter(array_map('trim', explode(',', $project['program'])))   : [];
+
+    // Helpers para videos
+    $videoThumb = function($v) {
+        $url = $v['video_url']; $type = $v['video_type'] ?? 'other';
+        if ($type === 'youtube' && preg_match('#(?:v=|youtu\.be/|/embed/)([A-Za-z0-9_-]{6,})#', $url, $m)) {
+            return "https://i.ytimg.com/vi/{$m[1]}/hqdefault.jpg";
+        }
+        if ($type === 'upload' && preg_match('#^(https?://res\.cloudinary\.com/[^/]+/video/upload/)(?:[^/]+/)*(.+)\.[a-z0-9]+$#i', $url, $m)) {
+            return $m[1] . 'q_auto,f_auto,so_0,w_800,h_600,c_fill/' . $m[2] . '.jpg';
+        }
+        return null;
+    };
+    $videos = !empty($project['videos']) ? $project['videos'] : [];
+    ?>
     <section class="pd-content">
         <div class="container pd-content-grid">
             <div class="pd-body">
@@ -238,6 +259,49 @@ if ($project && !empty($project['tags'])) {
                 <?php foreach (preg_split('/\R\R+/u', trim($project['description'])) as $paragraph): ?>
                 <p><?=$h($paragraph)?></p>
                 <?php endforeach; ?>
+                <?php endif; ?>
+
+                <?php if (!empty($project['images']) || !empty($videos)): ?>
+                <div class="pd-media">
+                    <?php $hasImages = !empty($project['images']); $hasVideos = !empty($videos); ?>
+                    <?php if ($hasImages && $hasVideos): ?>
+                    <div class="pd-media-tabs" role="tablist">
+                        <button type="button" class="pd-media-tab is-active" data-tab="images" role="tab" aria-selected="true">Imágenes</button>
+                        <button type="button" class="pd-media-tab" data-tab="videos" role="tab" aria-selected="false">Videos</button>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($hasImages): ?>
+                    <div class="pd-media-panel is-active" data-panel="images">
+                        <div class="pd-gallery-grid">
+                            <?php foreach ($project['images'] as $i => $img): ?>
+                            <button type="button" class="pd-gallery-item" onclick="openLightbox(<?=$i?>)" aria-label="Ver imagen <?=($i+1)?>">
+                                <img src="<?=$h($img['image_url'])?>" alt="<?=$h($img['caption'] ?: $project['title'])?>" loading="lazy">
+                            </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if ($hasVideos): ?>
+                    <div class="pd-media-panel<?= !$hasImages ? ' is-active' : '' ?>" data-panel="videos">
+                        <div class="pd-gallery-grid">
+                            <?php foreach ($videos as $i => $vid): $thumb = $videoThumb($vid); ?>
+                            <button type="button" class="pd-gallery-item pd-video-item" onclick="openVideoLightbox(<?=$i?>)" aria-label="Ver video <?=($i+1)?>">
+                                <?php if ($thumb): ?>
+                                    <img src="<?=$h($thumb)?>" alt="<?=$h($vid['title'] ?: 'Video')?>" loading="lazy">
+                                <?php else: ?>
+                                    <video src="<?=$h($vid['video_url'])?>" preload="metadata" muted playsinline></video>
+                                <?php endif; ?>
+                                <span class="pd-video-play" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                                </span>
+                            </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
                 <?php endif; ?>
             </div>
 
@@ -248,49 +312,36 @@ if ($project && !empty($project['tags'])) {
                         <?php if ($project['location']): ?>
                         <div class="pd-datasheet-row"><dt>Ubicación</dt><dd><?=$h($project['location'])?></dd></div>
                         <?php endif; ?>
-                        <?php if ($project['year']): ?>
-                        <div class="pd-datasheet-row"><dt>Año</dt><dd><?=$h($project['year'])?></dd></div>
-                        <?php endif; ?>
                         <?php if ($project['area_m2']): ?>
                         <div class="pd-datasheet-row"><dt>Superficie</dt><dd><?=number_format($project['area_m2'], 0, ',', '.')?> m²</dd></div>
                         <?php endif; ?>
-                        <?php if ($project['client_name']): ?>
-                        <div class="pd-datasheet-row"><dt>Cliente</dt><dd><?=$h($project['client_name'])?></dd></div>
-                        <?php endif; ?>
-                        <?php if ($statusChip): ?>
-                        <div class="pd-datasheet-row"><dt>Estado</dt><dd><?=$h($statusChip)?></dd></div>
-                        <?php endif; ?>
                     </dl>
-                    <?php if (!empty($otherTags)): ?>
-                    <div class="pd-tags">
-                        <?php foreach ($otherTags as $tag): ?>
-                        <span class="pd-tag"><?=$h($tag)?></span>
-                        <?php endforeach; ?>
+
+                    <?php if (!empty($materials)): ?>
+                    <div class="pd-spec-block">
+                        <span class="section-label">Materialidades</span>
+                        <div class="pd-tags">
+                            <?php foreach ($materials as $m): ?>
+                            <span class="pd-tag"><?=$h($m)?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($program)): ?>
+                    <div class="pd-spec-block">
+                        <span class="section-label">Programa</span>
+                        <div class="pd-tags">
+                            <?php foreach ($program as $pg): ?>
+                            <span class="pd-tag"><?=$h($pg)?></span>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                     <?php endif; ?>
                 </div>
             </aside>
         </div>
     </section>
-
-    <?php if (!empty($project['images'])): ?>
-    <!-- GALLERY -->
-    <section class="pd-gallery">
-        <div class="container">
-            <div class="pd-gallery-header">
-                <span class="section-label">Galería</span>
-                <h2>Más imágenes del proyecto</h2>
-            </div>
-            <div class="pd-gallery-grid">
-                <?php foreach ($project['images'] as $i => $img): ?>
-                <button type="button" class="pd-gallery-item" onclick="openLightbox(<?=$i?>)" aria-label="Ver imagen <?=($i+1)?>">
-                    <img src="<?=$h($img['image_url'])?>" alt="<?=$h($img['caption'] ?: $project['title'])?>" loading="lazy">
-                </button>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-    <?php endif; ?>
 
     <?php if (!empty($others)): ?>
     <!-- OTHER PROJECTS -->
@@ -330,35 +381,67 @@ if ($project && !empty($project['tags'])) {
     </section>
     <?php endif; ?>
 
-    <!-- LIGHTBOX -->
-    <?php if (!empty($project['images'])): ?>
-    <div class="pd-lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galería de imágenes">
+    <!-- LIGHTBOX (imágenes y videos) -->
+    <?php if (!empty($project['images']) || !empty($videos)): ?>
+    <div class="pd-lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galería">
         <button class="pd-lightbox-btn pd-lightbox-close" onclick="closeLightbox()" aria-label="Cerrar"><?=$icon['close']?></button>
         <button class="pd-lightbox-btn pd-lightbox-prev" onclick="lightboxNav(-1)" aria-label="Anterior"><?=$icon['chev_l']?></button>
         <button class="pd-lightbox-btn pd-lightbox-next" onclick="lightboxNav(1)" aria-label="Siguiente"><?=$icon['chev_r']?></button>
         <div class="pd-lightbox-content">
-            <img id="lightbox-img" src="" alt="">
+            <img id="lightbox-img" src="" alt="" style="display:none;">
+            <div id="lightbox-video" style="display:none;width:min(90vw,1280px);aspect-ratio:16/9;"></div>
             <p id="lightbox-caption"></p>
         </div>
     </div>
     <script>
-    const lbImages = <?=json_encode(array_map(function($img) { return ['url' => $img['image_url'], 'caption' => $img['caption'] ?? '']; }, $project['images']))?>;
+    const lbImages = <?=json_encode(array_map(function($img) { return ['url' => $img['image_url'], 'caption' => $img['caption'] ?? '']; }, $project['images'] ?? []))?>;
+    const lbVideos = <?=json_encode(array_map(function($v) { return ['url' => $v['video_url'], 'type' => $v['video_type'] ?? 'other', 'title' => $v['title'] ?? '']; }, $videos))?>;
+    let lbMode = 'image'; // 'image' | 'video'
     let lbIndex = 0;
-    function openLightbox(i) {
-        lbIndex = i;
-        document.getElementById('lightbox-img').src = lbImages[i].url;
-        document.getElementById('lightbox-caption').textContent = lbImages[i].caption || '';
-        document.getElementById('lightbox').classList.add('active');
-        document.body.style.overflow = 'hidden';
+
+    function lbRender() {
+        const imgEl = document.getElementById('lightbox-img');
+        const vidEl = document.getElementById('lightbox-video');
+        const capEl = document.getElementById('lightbox-caption');
+        vidEl.innerHTML = '';
+        if (lbMode === 'image') {
+            const it = lbImages[lbIndex];
+            imgEl.src = it.url;
+            imgEl.style.display = '';
+            vidEl.style.display = 'none';
+            capEl.textContent = it.caption || '';
+        } else {
+            const v = lbVideos[lbIndex];
+            imgEl.style.display = 'none';
+            vidEl.style.display = '';
+            let html = '';
+            if (v.type === 'youtube') {
+                const m = v.url.match(/(?:v=|youtu\.be\/|\/embed\/)([A-Za-z0-9_-]{6,})/);
+                if (m) html = `<iframe src="https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;border:0;border-radius:8px;"></iframe>`;
+            } else if (v.type === 'vimeo') {
+                const m = v.url.match(/vimeo\.com\/(\d+)/);
+                if (m) html = `<iframe src="https://player.vimeo.com/video/${m[1]}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen style="width:100%;height:100%;border:0;border-radius:8px;"></iframe>`;
+            }
+            if (!html) {
+                html = `<video src="${v.url}" controls autoplay playsinline style="width:100%;height:100%;border-radius:8px;background:#000;"></video>`;
+            }
+            vidEl.innerHTML = html;
+            capEl.textContent = v.title || '';
+        }
     }
+
+    function openLightbox(i) { lbMode = 'image'; lbIndex = i; lbRender(); document.getElementById('lightbox').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function openVideoLightbox(i) { lbMode = 'video'; lbIndex = i; lbRender(); document.getElementById('lightbox').classList.add('active'); document.body.style.overflow = 'hidden'; }
     function closeLightbox() {
         document.getElementById('lightbox').classList.remove('active');
+        document.getElementById('lightbox-video').innerHTML = '';
         document.body.style.overflow = '';
     }
     function lightboxNav(dir) {
-        lbIndex = (lbIndex + dir + lbImages.length) % lbImages.length;
-        document.getElementById('lightbox-img').src = lbImages[lbIndex].url;
-        document.getElementById('lightbox-caption').textContent = lbImages[lbIndex].caption || '';
+        const arr = lbMode === 'image' ? lbImages : lbVideos;
+        if (!arr.length) return;
+        lbIndex = (lbIndex + dir + arr.length) % arr.length;
+        lbRender();
     }
     document.getElementById('lightbox').addEventListener('click', (e) => {
         if (e.target.id === 'lightbox') closeLightbox();
@@ -368,6 +451,21 @@ if ($project && !empty($project['tags'])) {
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') lightboxNav(-1);
         if (e.key === 'ArrowRight') lightboxNav(1);
+    });
+
+    // Tabs Imágenes / Videos
+    document.querySelectorAll('.pd-media-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            document.querySelectorAll('.pd-media-tab').forEach(t => {
+                const active = t.dataset.tab === target;
+                t.classList.toggle('is-active', active);
+                t.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            document.querySelectorAll('.pd-media-panel').forEach(p => {
+                p.classList.toggle('is-active', p.dataset.panel === target);
+            });
+        });
     });
     </script>
     <?php endif; ?>

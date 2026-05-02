@@ -209,6 +209,8 @@ const PortfolioAdmin = {
             document.getElementById('pf-area').value = p.area_m2 || '';
             document.getElementById('pf-status').value = p.status || 'draft';
             document.getElementById('pf-description').value = p.description || '';
+            document.getElementById('pf-materials').value = p.materials || '';
+            document.getElementById('pf-program').value = p.program || '';
             document.getElementById('pf-tags').value = p.tags || '';
             document.getElementById('pf-video-url').value = p.video_url || '';
 
@@ -266,6 +268,8 @@ const PortfolioAdmin = {
             area_m2: document.getElementById('pf-area').value,
             status: document.getElementById('pf-status').value,
             description: document.getElementById('pf-description').value.trim(),
+            materials: document.getElementById('pf-materials').value.trim(),
+            program: document.getElementById('pf-program').value.trim(),
             tags: document.getElementById('pf-tags').value.trim(),
             video_url: document.getElementById('pf-video-url').value.trim()
         };

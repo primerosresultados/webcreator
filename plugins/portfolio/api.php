@@ -229,8 +229,8 @@ switch ($pAction) {
         }
 
         $stmt = $db->prepare("
-            INSERT INTO portfolio_projects (title, slug, category, description, client_name, location, year, project_date, area_m2, status, featured_image, video_url, tags, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO portfolio_projects (title, slug, category, description, client_name, location, year, project_date, area_m2, materials, program, status, featured_image, video_url, tags, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $title,
@@ -242,6 +242,8 @@ switch ($pAction) {
             !empty($body['year']) ? intval($body['year']) : null,
             !empty($body['project_date']) ? $body['project_date'] : null,
             !empty($body['area_m2']) ? floatval($body['area_m2']) : null,
+            $body['materials'] ?? null,
+            $body['program'] ?? null,
             $body['status'] ?? 'draft',
             $body['featured_image'] ?? null,
             $body['video_url'] ?? null,
@@ -274,7 +276,7 @@ switch ($pAction) {
         $fields = [];
         $params = [];
 
-        $updatable = ['title', 'category', 'description', 'client_name', 'location', 'year', 'project_date', 'area_m2', 'status', 'featured_image', 'video_url', 'tags', 'sort_order'];
+        $updatable = ['title', 'category', 'description', 'client_name', 'location', 'year', 'project_date', 'area_m2', 'materials', 'program', 'status', 'featured_image', 'video_url', 'tags', 'sort_order'];
         foreach ($updatable as $field) {
             if (array_key_exists($field, $body)) {
                 $fields[] = "`{$field}` = ?";

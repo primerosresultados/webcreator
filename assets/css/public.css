@@ -1906,6 +1906,100 @@ body.project-page .site-header {
     outline-offset: 3px;
 }
 
+/* ── Media tabs (Imágenes / Videos) en columna de descripción ── */
+.pd-media {
+    margin-top: 2.5rem;
+}
+
+.pd-media-tabs {
+    display: inline-flex;
+    gap: 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.pd-media-tab {
+    all: unset;
+    cursor: pointer;
+    padding: 0.55rem 1.4rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    transition: color 0.25s ease, background 0.25s ease;
+}
+
+.pd-media-tab:hover { color: rgba(255, 255, 255, 0.85); }
+
+.pd-media-tab.is-active {
+    background: #fff;
+    color: #0a0a0a;
+}
+
+.pd-media-panel { display: none; }
+.pd-media-panel.is-active { display: block; }
+
+.pd-media .pd-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 600px) {
+    .pd-media .pd-gallery-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Video item: thumb + play overlay ── */
+.pd-video-item { position: relative; }
+
+.pd-video-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #000;
+}
+
+.pd-video-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.05));
+    color: #fff;
+    opacity: 0.85;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.pd-video-item:hover .pd-video-play { opacity: 1; }
+
+.pd-video-play svg {
+    width: 44px;
+    height: 44px;
+    filter: drop-shadow(0 2px 12px rgba(0,0,0,0.5));
+}
+
+/* ── Ficha técnica: bloques de Materialidades / Programa ── */
+.pd-spec-block {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pd-spec-block .section-label {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.pd-spec-block .pd-tags {
+    margin-top: 0;
+}
+
 /* ── Other projects ── */
 .pd-others {
     background: #0a0a0a;
