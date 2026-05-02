@@ -384,7 +384,16 @@ const PortfolioAdmin = {
             return;
         }
 
-        const cfg = window.CLOUDINARY_CFG;
+        // Leer config desde el data-attribute inyectado por admin-view.php.
+        // (No podemos usar window.CLOUDINARY_CFG porque admin-view se carga vía
+        // innerHTML y los <script> no se ejecutan en ese caso.)
+        let cfg = window.CLOUDINARY_CFG;
+        if (!cfg) {
+            const node = document.getElementById('portfolio-cloudinary-cfg');
+            if (node && node.dataset.cfg) {
+                try { cfg = JSON.parse(node.dataset.cfg); window.CLOUDINARY_CFG = cfg; } catch (e) {}
+            }
+        }
         if (!cfg || !cfg.cloudName || !cfg.uploadPreset) {
             Toast.error('Cloudinary no está configurado. Revisá config/cloudinary.php');
             return;

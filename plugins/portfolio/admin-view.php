@@ -5,18 +5,20 @@
      Uses the same admin CSS classes and design patterns. -->
 
 <?php
+// Cloudinary config: la inyectamos como data-attribute en lugar de <script>
+// porque admin-view.php se carga vía fetch() + innerHTML — los <script> no se ejecutan.
 $cloudCfg = @include __DIR__ . '/../../config/cloudinary.php';
-if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])):
+$cloudJson = '';
+if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
+    $cloudJson = htmlspecialchars(json_encode([
+        'cloudName'    => $cloudCfg['cloudName'],
+        'uploadPreset' => $cloudCfg['uploadPreset'] ?? '',
+        'folder'       => $cloudCfg['folder'] ?? '',
+        'transform'    => $cloudCfg['transform'] ?? 'q_auto,f_auto',
+    ]), ENT_QUOTES, 'UTF-8');
+}
 ?>
-<script>
-window.CLOUDINARY_CFG = <?= json_encode([
-    'cloudName'    => $cloudCfg['cloudName'],
-    'uploadPreset' => $cloudCfg['uploadPreset'] ?? '',
-    'folder'       => $cloudCfg['folder'] ?? '',
-    'transform'    => $cloudCfg['transform'] ?? 'q_auto,f_auto',
-]) ?>;
-</script>
-<?php endif; ?>
+<div id="portfolio-cloudinary-cfg" data-cfg="<?=$cloudJson?>" hidden></div>
 
 <!-- Toolbar -->
 <div class="toolbar">
