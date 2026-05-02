@@ -186,18 +186,23 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- HERO SECTION — Video background loop -->
     <!-- ============================================ -->
     <?php
-    // Detectar videos en /uploads/videos (mp4/webm). Fallback: imagen hero-bg.
-    $videosDir = __DIR__ . '/uploads/videos';
+    // Hero videos desde Cloudinary. Editá config/hero-videos.php para agregar/sacar.
     $heroVideos = [];
-    if (is_dir($videosDir)) {
-        foreach (scandir($videosDir) as $f) {
-            if ($f === '.' || $f === '..') continue;
-            $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION));
-            if (in_array($ext, ['mp4','webm','mov','m4v'], true)) {
-                $heroVideos[] = '/uploads/videos/' . rawurlencode($f);
-            }
+    $cloudinaryPoster = null;
+    $heroCfg = @include __DIR__ . '/config/hero-videos.php';
+    if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
+        $cloud = $heroCfg['cloudName'];
+        $tx    = $heroCfg['transform'] ?? 'q_auto,f_auto';
+        foreach ($heroCfg['publicIds'] as $pid) {
+            $pid = trim($pid);
+            if ($pid === '') continue;
+            $heroVideos[] = "https://res.cloudinary.com/{$cloud}/video/upload/{$tx}/{$pid}.mp4";
         }
-        sort($heroVideos);
+        if (!empty($heroVideos)) {
+            // Poster para mientras carga el primer video
+            $firstId = trim($heroCfg['publicIds'][0]);
+            $cloudinaryPoster = "https://res.cloudinary.com/{$cloud}/video/upload/q_auto,f_auto,so_0/{$firstId}.jpg";
+        }
     }
     ?>
     <section class="hero hero--video" id="inicio">
@@ -207,11 +212,13 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                     <?php foreach ($heroVideos as $i => $src): ?>
                         <video class="hero-video<?= $i === 0 ? ' is-active' : '' ?>"
                                src="<?=$h($src)?>"
+                               <?= $cloudinaryPoster && $i === 0 ? 'poster="'.$h($cloudinaryPoster).'"' : '' ?>
                                muted
                                playsinline
                                <?= count($heroVideos) === 1 ? 'loop' : '' ?>
                                <?= $i === 0 ? 'autoplay' : '' ?>
-                               preload="<?= $i === 0 ? 'auto' : 'metadata' ?>"></video>
+                               preload="<?= $i === 0 ? 'auto' : 'metadata' ?>"
+                               crossorigin="anonymous"></video>
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
