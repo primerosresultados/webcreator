@@ -595,13 +595,23 @@ if ($project && !empty($project['tags'])) {
                     <span style="color:rgba(255,255,255,0.5);font-size:0.85rem;"><?=$h($S['address'])?></span>
                     <?php endif; ?>
                     <?php
-                    $igUrl = $S['instagram'] ?? '';
-                    $igHandle = ($igUrl && preg_match('#instagram\.com/([^/?#]+)#i', $igUrl, $mIg)) ? $mIg[1] : '';
+                    $rawIg = trim($S['instagram'] ?? '');
+                    $igHandle = '';
+                    $igUrl = '';
+                    if ($rawIg) {
+                        if (preg_match('#instagram\.com/([^/?#]+)#i', $rawIg, $mIg)) {
+                            $igHandle = $mIg[1];
+                            $igUrl = $rawIg;
+                        } else {
+                            $igHandle = ltrim($rawIg, '@');
+                            $igUrl = 'https://instagram.com/' . $igHandle;
+                        }
+                    }
                     ?>
-                    <?php if ($igUrl): ?>
+                    <?php if ($igHandle): ?>
                     <a href="<?=$h($igUrl)?>" target="_blank" rel="noopener" class="footer-ig">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                        <span><?=$h($igHandle ?: 'Instagram')?></span>
+                        <span>@<?=$h($igHandle)?></span>
                     </a>
                     <?php endif; ?>
                 </div>
