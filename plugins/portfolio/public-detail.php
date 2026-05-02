@@ -125,7 +125,7 @@ if ($project && !empty($project['tags'])) {
 </head>
 <body class="project-page">
 
-    <!-- HEADER (matches home) -->
+    <!-- HEADER (matches home: solo marca + hamburguesa) -->
     <header class="site-header" id="header">
         <nav class="nav container">
             <a href="/" class="nav-brand">
@@ -137,20 +137,47 @@ if ($project && !empty($project['tags'])) {
                     <span><?=$h($S['siteName'])?></span>
                 <?php endif; ?>
             </a>
-            <div class="nav-links" id="nav-links">
-                <a href="/">Inicio</a>
-                <a href="/#nosotros">Nosotros</a>
-                <a href="/#servicios">Servicios</a>
-                <a href="/#proyectos" class="active">Proyectos</a>
-                <a href="/#contacto">Contacto</a>
-                <a href="tel:<?=$phoneClean?>" class="nav-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><?=$h($S['phone'])?></a>
-                <a href="/#contacto" class="btn btn-primary btn-sm">Solicitar Info</a>
-            </div>
-            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="overlay-menu">
                 <span></span><span></span><span></span>
             </button>
         </nav>
     </header>
+
+    <!-- OVERLAY MENU (Foster + Partners style) -->
+    <?php
+    // Imagen del menú: foto del proyecto actual si tiene, fallback hero-bg
+    $menuImage = !empty($project['featured_image']) ? $project['featured_image'] : '/assets/img/hero-bg.png';
+    $instagramUrl = $S['instagram'] ?? '';
+    $linkedinUrl  = $S['linkedin']  ?? '';
+    ?>
+    <div class="overlay-menu" id="overlay-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menú principal">
+        <div class="overlay-menu-image" style="background-image:url('<?=$h($menuImage)?>');" aria-hidden="true"></div>
+        <div class="overlay-menu-panel">
+            <button class="overlay-menu-close" id="overlay-menu-close" aria-label="Cerrar menú">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="overlay-menu-inner">
+                <span class="overlay-menu-eyebrow">Menú</span>
+                <nav class="overlay-menu-list" aria-label="Navegación principal">
+                    <a href="/#nosotros">Estudio</a>
+                    <a href="/#proyectos">Proyectos</a>
+                    <a href="/#servicios">Servicios</a>
+                    <a href="/#contacto">Contacto</a>
+                </nav>
+                <div class="overlay-menu-social">
+                    <a href="<?= $instagramUrl ? $h($instagramUrl) : 'https://instagram.com/FARE_Arquitectura' ?>" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <?php if ($linkedinUrl): ?>
+                    <a href="<?=$h($linkedinUrl)?>" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?php if (!$project): ?>
     <section class="pd-notfound">
