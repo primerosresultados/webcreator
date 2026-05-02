@@ -53,6 +53,18 @@ DirectoryIndex index.php index.html
     AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
 </IfModule>
 
+# ============================================
+# LiteSpeed Cache — desactivar para HTML dinámico
+# ============================================
+# Evita que LSCache sirva HTML stale del home/admin/api.
+# Los assets estáticos (img/css/js) siguen cacheados por mod_expires.
+<IfModule LiteSpeed>
+    # Desactivar LSCache globalmente para PHP (es un sitio chico, no hace falta)
+    CacheDisable public /
+    RewriteEngine On
+    RewriteRule .* - [E=Cache-Control:no-cache]
+</IfModule>
+
 # Cache static assets (images long, CSS/JS short for faster deploy)
 <IfModule mod_expires.c>
     ExpiresActive On
