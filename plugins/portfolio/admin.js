@@ -377,18 +377,18 @@ const PortfolioAdmin = {
     // ============================================
     // IMAGE UPLOAD
     // ============================================
-    async uploadImages(input) {
+    async uploadImages(filesOrInput) {
         // Re-entrance guard: bloquea uploads concurrentes (ej: drop disparando varias veces).
         if (this._uploading) return;
         this._uploading = true;
         try {
-            await this._uploadImagesInner(input);
+            await this._uploadImagesInner(filesOrInput);
         } finally {
             this._uploading = false;
         }
     },
 
-    async _uploadImagesInner(input) {
+    async _uploadImagesInner(filesOrInput) {
         const projectId = document.getElementById('pf-id').value;
         if (!projectId) {
             Toast.warning('Guarda el proyecto primero.');
@@ -410,8 +410,16 @@ const PortfolioAdmin = {
             return;
         }
 
-        const files = Array.from(input.files);
+        // Aceptar tanto un <input type=file> como una FileList/Array de File
+        let files, sourceInput = null;
+        if (filesOrInput && filesOrInput.tagName === 'INPUT') {
+            sourceInput = filesOrInput;
+            files = Array.from(filesOrInput.files);
+        } else {
+            files = Array.from(filesOrInput || []);
+        }
         if (files.length === 0) return;
+        Toast.info(`Subiendo ${files.length} imagen(es)...`);
 
         let okCount = 0;
         for (const file of files) {
@@ -465,7 +473,7 @@ const PortfolioAdmin = {
         }
 
         if (okCount > 0) Toast.success(`${okCount} imagen(es) subida(s) a Cloudinary.`);
-        input.value = '';
+        if (sourceInput) sourceInput.value = '';
 
         // Reload gallery
         const result = await this.api(`get&id=${projectId}`);
@@ -520,37 +528,46 @@ const PortfolioAdmin = {
     // ============================================
     initDropZone(projectId) {
         const dropZone = document.getElementById('pf-drop-zone');
+        const grid     = document.getElementById('pf-gallery-grid');
         if (!dropZone) return;
-        // Evitar apilar listeners cada vez que se re-renderiza la galería.
-        if (dropZone._initialized) return;
-        dropZone._initialized = true;
 
+        // Click sobre la zona = abrir file picker (idempotente: onclick reemplaza)
         dropZone.onclick = () => document.getElementById('pf-image-input').click();
 
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '#6366f1';
-            dropZone.style.background = 'rgba(99,102,241,0.04)';
-        });
+        // Soporta drop tanto en la dropzone como en el grid (UX más amplia).
+        // Marcamos cada nodo con _dndInit para no apilar listeners al re-render.
+        const filterImages = (filesList) => {
+            return Array.from(filesList || []).filter(f => f && f.type && f.type.startsWith('image/'));
+        };
 
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.borderColor = '';
-            dropZone.style.background = '';
-        });
+        const setupDnD = (node) => {
+            if (!node || node._dndInit) return;
+            node._dndInit = true;
 
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.style.borderColor = '';
-            dropZone.style.background = '';
+            node.addEventListener('dragover', (e) => {
+                if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes('Files')) return;
+                e.preventDefault();
+                node.classList.add('is-dragover');
+            });
+            node.addEventListener('dragleave', (e) => {
+                // Solo quitar el highlight si salimos del nodo (no de un hijo)
+                if (e.relatedTarget && node.contains(e.relatedTarget)) return;
+                node.classList.remove('is-dragover');
+            });
+            node.addEventListener('drop', (e) => {
+                e.preventDefault();
+                node.classList.remove('is-dragover');
+                const files = filterImages(e.dataTransfer && e.dataTransfer.files);
+                if (files.length === 0) {
+                    Toast.warning('Solo se aceptan imágenes.');
+                    return;
+                }
+                this.uploadImages(files);
+            });
+        };
 
-            if (e.dataTransfer.files.length > 0) {
-                const input = document.getElementById('pf-image-input');
-                const dt = new DataTransfer();
-                Array.from(e.dataTransfer.files).forEach(f => dt.items.add(f));
-                input.files = dt.files;
-                this.uploadImages(input);
-            }
-        });
+        setupDnD(dropZone);
+        setupDnD(grid);
     },
 
     // ============================================

@@ -171,6 +171,19 @@
     letter-spacing: 0.05em;
 }
 
+/* Drag-over highlight (dropzone + grid) */
+.portfolio-drop-zone.is-dragover,
+.portfolio-gallery-grid.is-dragover {
+    border-color: #6366f1 !important;
+    background: rgba(99, 102, 241, 0.06) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+    border-radius: 12px;
+}
+.portfolio-gallery-grid.is-dragover {
+    outline: 2px dashed #6366f1;
+    outline-offset: 4px;
+}
+
 /* ── Drop Zone ── */
 .portfolio-drop-zone {
     display: flex;
