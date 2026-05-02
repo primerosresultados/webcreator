@@ -384,9 +384,16 @@ const PortfolioAdmin = {
             return;
         }
 
+        const cfg = window.CLOUDINARY_CFG;
+        if (!cfg || !cfg.cloudName || !cfg.uploadPreset) {
+            Toast.error('Cloudinary no está configurado. Revisá config/cloudinary.php');
+            return;
+        }
+
         const files = Array.from(input.files);
         if (files.length === 0) return;
 
+        let okCount = 0;
         for (const file of files) {
             if (!file.type.startsWith('image/')) {
                 Toast.warning(`"${file.name}" no es una imagen.`);
@@ -397,27 +404,47 @@ const PortfolioAdmin = {
                 continue;
             }
 
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('project_id', projectId);
-            formData.append('csrf_token', AdminApp.csrfToken);
-
             try {
-                const response = await fetch(`/api/plugins.php?action=api&plugin=portfolio&p_action=upload_image&project_id=${projectId}`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
+                // 1) Subida directa a Cloudinary (unsigned)
+                const cloudData = new FormData();
+                cloudData.append('file', file);
+                cloudData.append('upload_preset', cfg.uploadPreset);
+                if (cfg.folder) cloudData.append('folder', cfg.folder);
 
-                if (!result.success) {
-                    Toast.error(result.error || `Error al subir "${file.name}".`);
+                const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: cloudData
+                });
+                const cloudJson = await cloudRes.json();
+
+                if (!cloudRes.ok || !cloudJson.secure_url) {
+                    Toast.error(`Cloudinary rechazó "${file.name}": ${cloudJson.error?.message || 'error desconocido'}`);
+                    continue;
                 }
+
+                // 2) Avisar al backend para que registre la imagen en DB
+                const dbRes = await fetch(`/api/plugins.php?action=api&plugin=portfolio&p_action=upload_image&project_id=${projectId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_id: projectId,
+                        image_url: cloudJson.secure_url,
+                        public_id: cloudJson.public_id,
+                        caption: ''
+                    })
+                });
+                const dbJson = await dbRes.json();
+                if (!dbJson.success) {
+                    Toast.error(dbJson.error || `Error al guardar "${file.name}" en la base.`);
+                    continue;
+                }
+                okCount++;
             } catch (err) {
-                Toast.error(`Error de conexión al subir "${file.name}".`);
+                Toast.error(`Error de red al subir "${file.name}".`);
             }
         }
 
-        Toast.success(`${files.length} imagen(es) subida(s).`);
+        if (okCount > 0) Toast.success(`${okCount} imagen(es) subida(s) a Cloudinary.`);
         input.value = '';
 
         // Reload gallery

@@ -4,6 +4,20 @@
      Injected dynamically into the dashboard when the plugin is active.
      Uses the same admin CSS classes and design patterns. -->
 
+<?php
+$cloudCfg = @include __DIR__ . '/../../config/cloudinary.php';
+if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])):
+?>
+<script>
+window.CLOUDINARY_CFG = <?= json_encode([
+    'cloudName'    => $cloudCfg['cloudName'],
+    'uploadPreset' => $cloudCfg['uploadPreset'] ?? '',
+    'folder'       => $cloudCfg['folder'] ?? '',
+    'transform'    => $cloudCfg['transform'] ?? 'q_auto,f_auto',
+]) ?>;
+</script>
+<?php endif; ?>
+
 <!-- Toolbar -->
 <div class="toolbar">
     <div class="toolbar-search">

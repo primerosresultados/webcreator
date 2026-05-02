@@ -338,45 +338,28 @@ switch ($pAction) {
         requireAuth();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonError('Método no permitido.', 405);
 
-        $projectId = intval($_POST['project_id'] ?? $_GET['project_id'] ?? 0);
+        // Las imágenes se suben directo desde el browser a Cloudinary (unsigned).
+        // Acá solo registramos la URL ya hosteada.
+        $body = getJSONBody();
+        $projectId = intval($body['project_id'] ?? $_GET['project_id'] ?? 0);
+        $imageUrl  = trim($body['image_url'] ?? '');
+        $publicId  = trim($body['public_id'] ?? '');
+        $caption   = $body['caption'] ?? '';
+
         if (!$projectId) jsonError('project_id requerido.', 400);
-
-        if (empty($_FILES['image'])) jsonError('No se recibió imagen.', 400);
-
-        $file = $_FILES['image'];
-        if ($file['error'] !== UPLOAD_ERR_OK) jsonError('Error al subir archivo.', 400);
-
-        // Validate it's an image
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mime, $allowedTypes)) jsonError('Solo se permiten imágenes (JPG, PNG, WebP, GIF).', 400);
-        if ($file['size'] > 10 * 1024 * 1024) jsonError('La imagen no puede pesar más de 10MB.', 400);
-
-        // Generate unique filename
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg';
-        $filename = 'portfolio_' . $projectId . '_' . uniqid() . '.' . $ext;
-        $uploadDir = __DIR__ . '/../uploads/portfolio/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-        $destPath = $uploadDir . $filename;
-
-        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
-            jsonError('Error al guardar la imagen.', 500);
+        if ($imageUrl === '' || !preg_match('#^https?://#i', $imageUrl)) {
+            jsonError('image_url inválido.', 400);
         }
 
-        $imageUrl = '/uploads/portfolio/' . $filename;
+        $db = getDB();
 
         // Get next sort order
-        $db = getDB();
         $sortStmt = $db->prepare("SELECT COALESCE(MAX(sort_order), 0) + 1 FROM portfolio_images WHERE project_id = ?");
         $sortStmt->execute([$projectId]);
         $sortOrder = $sortStmt->fetchColumn();
 
-        $caption = $_POST['caption'] ?? '';
-        $stmt = $db->prepare("INSERT INTO portfolio_images (project_id, image_url, caption, sort_order) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$projectId, $imageUrl, $caption, $sortOrder]);
+        $stmt = $db->prepare("INSERT INTO portfolio_images (project_id, image_url, public_id, caption, sort_order) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$projectId, $imageUrl, $publicId ?: null, $caption, $sortOrder]);
         $imageId = $db->lastInsertId();
 
         // If this is the first image, set it as featured
@@ -388,11 +371,12 @@ switch ($pAction) {
         }
 
         jsonSuccess([
-            'message' => 'Imagen subida.',
+            'message' => 'Imagen registrada.',
             'image' => [
                 'id' => intval($imageId),
                 'project_id' => $projectId,
                 'image_url' => $imageUrl,
+                'public_id' => $publicId,
                 'caption' => $caption,
                 'sort_order' => intval($sortOrder)
             ]
