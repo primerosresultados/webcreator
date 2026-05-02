@@ -226,26 +226,6 @@ if ($project && !empty($project['tags'])) {
                 </div>
             </div>
 
-            <!-- Quick lead form — tagged with the current project -->
-            <form id="pd-lead-form" class="pd-lead-form"
-                  data-project-title="<?=$h($project['title'])?>">
-                <div class="pd-lead-form-head">
-                    <h3>¿Te interesa un proyecto similar?</h3>
-                    <p>Consulta por <strong><?=$h($project['title'])?></strong> o algo parecido. Te contactamos sin compromiso.</p>
-                </div>
-                <div style="position:absolute;left:-9999px;" aria-hidden="true">
-                    <input type="text" name="website_url" tabindex="-1" autocomplete="off">
-                </div>
-                <input type="hidden" name="_form_time" value="">
-                <input type="hidden" name="source" value="proyecto-<?=$h($project['slug'])?>">
-                <div class="pd-lead-form-row">
-                    <input type="text" name="name" placeholder="Nombre *" required minlength="2" class="pd-lead-input">
-                    <input type="email" name="email" placeholder="Email *" required class="pd-lead-input">
-                    <input type="tel" name="phone" placeholder="Teléfono" class="pd-lead-input">
-                    <button type="submit" class="pd-lead-btn">Consultar</button>
-                </div>
-                <p class="pd-lead-status" role="status" aria-live="polite"></p>
-            </form>
         </div>
     </section>
 
@@ -392,57 +372,6 @@ if ($project && !empty($project['tags'])) {
     });
     </script>
     <?php endif; ?>
-
-    <!-- Lead form submission (tags lead with current project) -->
-    <script>
-    (function() {
-        const form = document.getElementById('pd-lead-form');
-        if (!form) return;
-
-        const timeField = form.querySelector('input[name="_form_time"]');
-        if (timeField) timeField.value = Math.floor(Date.now() / 1000);
-
-        const statusEl = form.querySelector('.pd-lead-status');
-        const setStatus = (msg, kind) => {
-            statusEl.textContent = msg;
-            statusEl.dataset.kind = kind || '';
-        };
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            setStatus('', '');
-
-            const data = Object.fromEntries(new FormData(form).entries());
-            const projectTitle = form.dataset.projectTitle || '';
-            // Prepend project context to message so it always appears in admin
-            data.message = `Consulta sobre ${projectTitle} (desde página del proyecto).`;
-
-            const btn = form.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Enviando…';
-
-            try {
-                const response = await fetch('/api/leads.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    window.location.href = '/gracias.php';
-                    return;
-                }
-                setStatus(result.error || 'No se pudo enviar. Intenta de nuevo.', 'error');
-            } catch (err) {
-                setStatus('Error de conexión. Intenta de nuevo.', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = originalText;
-            }
-        });
-    })();
-    </script>
 
     <?php endif; // end $project ?>
 
