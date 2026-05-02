@@ -60,6 +60,51 @@ try {
     }
 } catch (Exception $e) {}
 
+// Hero videos (precomputado para reusarlos en menú overlay y sección hero)
+// Prioridad: settings.hero_videos (admin) → config/hero-videos.php (file fallback).
+$heroVideos = [];
+$cloudinaryPoster = null;
+$heroPublicIds = [];
+$heroCloud = null;
+$heroTx = 'q_auto,f_auto';
+try {
+    if (isset($pdo)) {
+        $stmtH = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'hero_videos'");
+        $stmtH->execute();
+        $rowH = $stmtH->fetch();
+        if ($rowH && !empty($rowH['setting_value'])) {
+            $arr = json_decode($rowH['setting_value'], true);
+            if (is_array($arr)) {
+                foreach ($arr as $vv) {
+                    if (is_array($vv) && !empty($vv['public_id'])) $heroPublicIds[] = trim($vv['public_id']);
+                }
+            }
+        }
+    }
+} catch (Exception $e) {}
+$cloudCfgFile = @include __DIR__ . '/config/cloudinary.php';
+if (is_array($cloudCfgFile) && !empty($cloudCfgFile['cloudName'])) {
+    $heroCloud = $cloudCfgFile['cloudName'];
+    if (!empty($cloudCfgFile['transform'])) $heroTx = $cloudCfgFile['transform'];
+}
+if (empty($heroPublicIds)) {
+    $heroCfg = @include __DIR__ . '/config/hero-videos.php';
+    if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
+        $heroCloud = $heroCfg['cloudName'];
+        if (!empty($heroCfg['transform'])) $heroTx = $heroCfg['transform'];
+        foreach ($heroCfg['publicIds'] as $pid) {
+            $pid = trim($pid);
+            if ($pid !== '') $heroPublicIds[] = $pid;
+        }
+    }
+}
+if ($heroCloud && !empty($heroPublicIds)) {
+    foreach ($heroPublicIds as $pid) {
+        $heroVideos[] = "https://res.cloudinary.com/{$heroCloud}/video/upload/{$heroTx}/{$pid}.mp4";
+    }
+    $cloudinaryPoster = "https://res.cloudinary.com/{$heroCloud}/video/upload/q_auto,f_auto,so_0/{$heroPublicIds[0]}.jpg";
+}
+
 // Helpers
 $phoneClean = preg_replace('/[^0-9+]/', '', $S['phone']);
 $h = function($v) { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); };
@@ -149,7 +194,15 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     $linkedinUrl  = $S['linkedin']  ?? $S['socialLinkedin']  ?? '';
     ?>
     <div class="overlay-menu" id="overlay-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menú principal">
+        <?php if (!empty($heroVideos)): ?>
+        <div class="overlay-menu-image overlay-menu-image--video" aria-hidden="true">
+            <video src="<?=$h($heroVideos[0])?>"
+                   <?= $cloudinaryPoster ? 'poster="'.$h($cloudinaryPoster).'"' : '' ?>
+                   muted loop playsinline preload="metadata"></video>
+        </div>
+        <?php else: ?>
         <div class="overlay-menu-image" style="background-image:url('<?=$h($menuImage)?>');" aria-hidden="true"></div>
+        <?php endif; ?>
         <div class="overlay-menu-panel">
             <button class="overlay-menu-close" id="overlay-menu-close" aria-label="Cerrar menú">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -189,67 +242,6 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- ============================================ -->
     <!-- HERO SECTION — Video background loop -->
     <!-- ============================================ -->
-    <?php
-    // Hero videos desde Cloudinary.
-    // Prioridad: settings.hero_videos (admin) → config/hero-videos.php (file fallback).
-    $heroVideos = [];
-    $cloudinaryPoster = null;
-    $heroPublicIds = [];
-    $heroCloud = null;
-    $heroTx = 'q_auto,f_auto';
-
-    // 1) Intentar leer desde DB (admin)
-    try {
-        $cfgPath = __DIR__ . '/config/database.php';
-        if (file_exists($cfgPath)) {
-            require_once $cfgPath;
-            $pdoHero = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ]);
-            $stmtH = $pdoHero->prepare("SELECT setting_value FROM settings WHERE setting_key = 'hero_videos'");
-            $stmtH->execute();
-            $rowH = $stmtH->fetch();
-            if ($rowH && !empty($rowH['setting_value'])) {
-                $arr = json_decode($rowH['setting_value'], true);
-                if (is_array($arr)) {
-                    foreach ($arr as $v) {
-                        if (is_array($v) && !empty($v['public_id'])) {
-                            $heroPublicIds[] = trim($v['public_id']);
-                        }
-                    }
-                }
-            }
-        }
-    } catch (Exception $e) {}
-
-    // Cloud name: del config/cloudinary.php (mismo cloud que el resto del sitio)
-    $cloudCfgFile = @include __DIR__ . '/config/cloudinary.php';
-    if (is_array($cloudCfgFile) && !empty($cloudCfgFile['cloudName'])) {
-        $heroCloud = $cloudCfgFile['cloudName'];
-        if (!empty($cloudCfgFile['transform'])) $heroTx = $cloudCfgFile['transform'];
-    }
-
-    // 2) Fallback a config/hero-videos.php si no hay nada en DB
-    if (empty($heroPublicIds)) {
-        $heroCfg = @include __DIR__ . '/config/hero-videos.php';
-        if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
-            $heroCloud = $heroCfg['cloudName'];
-            if (!empty($heroCfg['transform'])) $heroTx = $heroCfg['transform'];
-            foreach ($heroCfg['publicIds'] as $pid) {
-                $pid = trim($pid);
-                if ($pid !== '') $heroPublicIds[] = $pid;
-            }
-        }
-    }
-
-    if ($heroCloud && !empty($heroPublicIds)) {
-        foreach ($heroPublicIds as $pid) {
-            $heroVideos[] = "https://res.cloudinary.com/{$heroCloud}/video/upload/{$heroTx}/{$pid}.mp4";
-        }
-        $cloudinaryPoster = "https://res.cloudinary.com/{$heroCloud}/video/upload/q_auto,f_auto,so_0/{$heroPublicIds[0]}.jpg";
-    }
-    ?>
     <section class="hero hero--video" id="inicio">
         <div class="hero-bg">
             <?php if (!empty($heroVideos)): ?>

@@ -72,17 +72,22 @@ function initHeader() {
     const closeBtn = document.getElementById('overlay-menu-close');
 
     if (toggle && overlay) {
+        const menuVideo = overlay.querySelector('.overlay-menu-image--video video');
         const openMenu = () => {
             overlay.classList.add('is-open');
             overlay.setAttribute('aria-hidden', 'false');
             toggle.setAttribute('aria-expanded', 'true');
             document.body.classList.add('menu-open');
+            if (menuVideo) {
+                try { menuVideo.currentTime = 0; menuVideo.play().catch(() => {}); } catch (e) {}
+            }
         };
         const closeMenu = () => {
             overlay.classList.remove('is-open');
             overlay.setAttribute('aria-hidden', 'true');
             toggle.setAttribute('aria-expanded', 'false');
             document.body.classList.remove('menu-open');
+            if (menuVideo) { try { menuVideo.pause(); } catch (e) {} }
         };
 
         toggle.addEventListener('click', () => {

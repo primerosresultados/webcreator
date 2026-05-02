@@ -63,6 +63,37 @@ try {
 
 $phoneClean = preg_replace('/[^0-9+]/', '', $S['phone']);
 $h = function($v) { return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); };
+
+// Hero videos del home (para el menú overlay)
+$menuHeroVideoUrl = null;
+$menuHeroPoster = null;
+try {
+    $cloudCfgFile = @include __DIR__ . '/../../config/cloudinary.php';
+    $heroCloud = (is_array($cloudCfgFile) && !empty($cloudCfgFile['cloudName'])) ? $cloudCfgFile['cloudName'] : null;
+    $heroTx = (is_array($cloudCfgFile) && !empty($cloudCfgFile['transform'])) ? $cloudCfgFile['transform'] : 'q_auto,f_auto';
+    $heroPid = null;
+    if (isset($pdo)) {
+        $sH = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'hero_videos'");
+        $sH->execute();
+        $rH = $sH->fetch();
+        if ($rH && !empty($rH['setting_value'])) {
+            $arr = json_decode($rH['setting_value'], true);
+            if (is_array($arr) && !empty($arr[0]['public_id'])) $heroPid = trim($arr[0]['public_id']);
+        }
+    }
+    if (!$heroPid) {
+        $heroCfg = @include __DIR__ . '/../../config/hero-videos.php';
+        if (is_array($heroCfg) && !empty($heroCfg['cloudName']) && !empty($heroCfg['publicIds'])) {
+            $heroCloud = $heroCfg['cloudName'];
+            if (!empty($heroCfg['transform'])) $heroTx = $heroCfg['transform'];
+            $heroPid = trim($heroCfg['publicIds'][0]);
+        }
+    }
+    if ($heroCloud && $heroPid) {
+        $menuHeroVideoUrl = "https://res.cloudinary.com/{$heroCloud}/video/upload/{$heroTx}/{$heroPid}.mp4";
+        $menuHeroPoster   = "https://res.cloudinary.com/{$heroCloud}/video/upload/q_auto,f_auto,so_0/{$heroPid}.jpg";
+    }
+} catch (Exception $e) {}
 $logoNormal   = !empty($S['logo_normal'])   ? $S['logo_normal']   : '/assets/img/logo-negative.png';
 $logoNegative = !empty($S['logo_negative']) ? $S['logo_negative'] : '/assets/img/logo-negative.png';
 $svgLogo = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><path d="M12 2 L2 7 L12 12 L22 7 Z"/><path d="M2 17 L12 22 L22 17"/><path d="M2 12 L12 17 L22 12"/></svg>';
@@ -156,7 +187,15 @@ if ($project && !empty($project['tags'])) {
     $linkedinUrl  = $S['linkedin']  ?? '';
     ?>
     <div class="overlay-menu" id="overlay-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menú principal">
+        <?php if ($menuHeroVideoUrl): ?>
+        <div class="overlay-menu-image overlay-menu-image--video" aria-hidden="true">
+            <video src="<?=$h($menuHeroVideoUrl)?>"
+                   <?= $menuHeroPoster ? 'poster="'.$h($menuHeroPoster).'"' : '' ?>
+                   muted loop playsinline preload="metadata"></video>
+        </div>
+        <?php else: ?>
         <div class="overlay-menu-image" style="background-image:url('<?=$h($menuImage)?>');" aria-hidden="true"></div>
+        <?php endif; ?>
         <div class="overlay-menu-panel">
             <button class="overlay-menu-close" id="overlay-menu-close" aria-label="Cerrar menú">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -237,14 +276,10 @@ if ($project && !empty($project['tags'])) {
                     <span class="pd-breadcrumb-sep">/</span>
                     <span class="pd-breadcrumb-current"><?=$h($project['title'])?></span>
                 </nav>
-                <?php if ($statusChip): ?><span class="pd-status"><?=$h($statusChip)?></span><?php endif; ?>
                 <h1><?=$h($project['title'])?></h1>
                 <div class="pd-meta">
                     <?php if ($project['location']): ?>
                     <span class="pd-meta-item"><?=$icon['pin']?><?=$h($project['location'])?></span>
-                    <?php endif; ?>
-                    <?php if ($project['year']): ?>
-                    <span class="pd-meta-item"><?=$icon['calendar']?><?=$h($project['year'])?></span>
                     <?php endif; ?>
                     <?php if ($project['area_m2']): ?>
                     <span class="pd-meta-item"><?=$icon['ruler']?><?=number_format($project['area_m2'], 0, ',', '.')?> m²</span>

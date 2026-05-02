@@ -103,16 +103,11 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                 </div>
             </div>
 
-            <!-- Row 3: Date + Year + Area + Status -->
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
+            <!-- Row 3: Date + Area + Status -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);margin-bottom:var(--space-4);">
                 <div class="form-group" style="margin-bottom:0;">
                     <label class="config-label">Fecha del Proyecto</label>
                     <input type="date" id="pf-date" class="form-input"
-                           style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label class="config-label">Año</label>
-                    <input type="number" id="pf-year" class="form-input" placeholder="2024" min="1900" max="2100"
                            style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -128,6 +123,8 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                     </select>
                 </div>
             </div>
+            <!-- Año oculto, derivado de la fecha -->
+            <input type="hidden" id="pf-year" value="">
 
             <!-- Description -->
             <div class="form-group" style="margin-bottom:var(--space-4);">
