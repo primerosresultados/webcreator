@@ -1772,6 +1772,28 @@ body.project-page .site-header {
 
 .pd-body p:last-child { margin-bottom: 0; }
 
+/* ── Intro: descripción arriba, full width, texto más chico ── */
+.pd-intro {
+    max-width: 880px;
+    margin: 0 0 3rem;
+}
+
+.pd-intro .section-label {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.pd-intro p {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 300;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.62);
+    margin: 0 0 1rem;
+}
+
+.pd-intro p:last-child { margin-bottom: 0; }
+
 /* ── Aside: ficha técnica ── */
 .pd-aside {
     position: sticky;
@@ -1906,9 +1928,9 @@ body.project-page .site-header {
     outline-offset: 3px;
 }
 
-/* ── Media tabs (Imágenes / Videos) en columna de descripción ── */
+/* ── Media tabs (Imágenes / Videos) ── */
 .pd-media {
-    margin-top: 2.5rem;
+    margin-top: 0;
 }
 
 .pd-media-tabs {

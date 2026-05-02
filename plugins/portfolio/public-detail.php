@@ -252,15 +252,18 @@ if ($project && !empty($project['tags'])) {
     $videos = !empty($project['videos']) ? $project['videos'] : [];
     ?>
     <section class="pd-content">
-        <div class="container pd-content-grid">
-            <div class="pd-body">
-                <?php if ($project['description']): ?>
+        <div class="container">
+            <?php if ($project['description']): ?>
+            <div class="pd-intro">
                 <span class="section-label">Sobre el proyecto</span>
                 <?php foreach (preg_split('/\R\R+/u', trim($project['description'])) as $paragraph): ?>
                 <p><?=$h($paragraph)?></p>
                 <?php endforeach; ?>
-                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
+            <div class="pd-content-grid">
+            <div class="pd-body">
                 <?php if (!empty($project['images']) || !empty($videos)): ?>
                 <div class="pd-media">
                     <?php $hasImages = !empty($project['images']); $hasVideos = !empty($videos); ?>
@@ -340,6 +343,7 @@ if ($project && !empty($project['tags'])) {
                     <?php endif; ?>
                 </div>
             </aside>
+            </div><!-- /.pd-content-grid -->
         </div>
     </section>
 
