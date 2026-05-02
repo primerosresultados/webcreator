@@ -296,11 +296,21 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- ============================================ -->
     <section class="section welcome-section" id="nosotros">
         <div class="container">
-            <div class="welcome-content" data-animate="fadeInUp">
-                <span class="welcome-badge"><?=strtoupper($h($S['siteName']))?></span>
-                <h2>
-                    Nos enfocamos en el diseño de casas en el sur de Chile, donde cada proyecto nace del respeto por el entorno natural y la visión de quienes lo habitarán.
-                </h2>
+            <?php
+            $welcomeCloud = (is_array($cloudCfgFile) && !empty($cloudCfgFile['cloudName'])) ? $cloudCfgFile['cloudName'] : 'dt7raeikn';
+            $welcomeTx    = (is_array($cloudCfgFile) && !empty($cloudCfgFile['transform'])) ? $cloudCfgFile['transform'] : 'q_auto,f_auto';
+            $welcomeImg   = "https://res.cloudinary.com/{$welcomeCloud}/image/upload/{$welcomeTx}/ChatGPT_Image_2_may_2026_07_38_54_p.m._hwobam";
+            ?>
+            <div class="welcome-grid" data-animate="fadeInUp">
+                <div class="welcome-image">
+                    <img src="<?=$h($welcomeImg)?>" alt="<?=$h($S['siteName'])?>" loading="lazy">
+                </div>
+                <div class="welcome-content welcome-content--side">
+                    <span class="welcome-badge"><?=strtoupper($h($S['siteName']))?></span>
+                    <h2>
+                        En FARE Arquitectura nos enfocamos en el diseño de casas en el sur de Chile, donde cada proyecto nace del respeto por el entorno natural y la visión de quienes lo habitarán.
+                    </h2>
+                </div>
             </div>
 
             <!-- Servicios -->
