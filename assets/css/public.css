@@ -1774,7 +1774,7 @@ body.project-page .site-header {
 
 /* ── Intro: descripción arriba, full width, texto más chico ── */
 .pd-intro {
-    max-width: 880px;
+    width: 100%;
     margin: 0 0 3rem;
 }
 

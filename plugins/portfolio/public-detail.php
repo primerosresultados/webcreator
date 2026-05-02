@@ -241,11 +241,23 @@ if ($project && !empty($project['tags'])) {
     // Helpers para videos
     $videoThumb = function($v) {
         $url = $v['video_url']; $type = $v['video_type'] ?? 'other';
-        if ($type === 'youtube' && preg_match('#(?:v=|youtu\.be/|/embed/)([A-Za-z0-9_-]{6,})#', $url, $m)) {
+        // YouTube
+        if (preg_match('#(?:youtube\.com.*[?&]v=|youtu\.be/|youtube\.com/embed/)([A-Za-z0-9_-]{6,})#', $url, $m)) {
             return "https://i.ytimg.com/vi/{$m[1]}/hqdefault.jpg";
         }
-        if ($type === 'upload' && preg_match('#^(https?://res\.cloudinary\.com/[^/]+/video/upload/)(?:[^/]+/)*(.+)\.[a-z0-9]+$#i', $url, $m)) {
-            return $m[1] . 'q_auto,f_auto,so_0,w_800,h_600,c_fill/' . $m[2] . '.jpg';
+        // Cloudinary upload — preservar el path completo del public_id (incluye carpetas)
+        if (preg_match('#^(https?://res\.cloudinary\.com/[^/]+/video/upload/)(.+?)\.[a-z0-9]+(\?.*)?$#i', $url, $m)) {
+            $base = $m[1];
+            $rest = $m[2]; // puede contener "v1234/folder/file" o "transform/v1234/folder/file"
+            // Quitar versión "vNNN/" si está al inicio
+            $rest = preg_replace('#^v\d+/#', '', $rest);
+            // Quitar transformaciones previas (segmento con coma) hasta llegar al public_id real
+            // ej: "q_auto,f_auto/v1234/folder/file" → "v1234/folder/file" → "folder/file"
+            while (preg_match('#^[a-z]_[^/]+(?:,[a-z]_[^/]+)*/(.+)$#i', $rest, $mm)) {
+                $rest = $mm[1];
+                $rest = preg_replace('#^v\d+/#', '', $rest);
+            }
+            return $base . 'q_auto,f_auto,so_0,w_800,h_600,c_fill/' . $rest . '.jpg';
         }
         return null;
     };
