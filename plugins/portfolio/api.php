@@ -464,12 +464,20 @@ switch ($pAction) {
         if (!$projectId) jsonError('project_id requerido.', 400);
         if (empty($videoUrl)) jsonError('video_url requerido.', 400);
 
-        // Detect video type
-        $videoType = 'other';
-        if (preg_match('/youtube\.com|youtu\.be/i', $videoUrl)) {
-            $videoType = 'youtube';
-        } elseif (preg_match('/vimeo\.com/i', $videoUrl)) {
-            $videoType = 'vimeo';
+        // Si el cliente envía video_type explícito, lo respetamos (ej: 'upload' desde Cloudinary).
+        $explicitType = $body['video_type'] ?? null;
+        $allowedTypes = ['youtube', 'vimeo', 'upload', 'other'];
+        if ($explicitType && in_array($explicitType, $allowedTypes, true)) {
+            $videoType = $explicitType;
+        } else {
+            $videoType = 'other';
+            if (preg_match('/youtube\.com|youtu\.be/i', $videoUrl)) {
+                $videoType = 'youtube';
+            } elseif (preg_match('/vimeo\.com/i', $videoUrl)) {
+                $videoType = 'vimeo';
+            } elseif (preg_match('#res\.cloudinary\.com/.+/video/upload/#i', $videoUrl)) {
+                $videoType = 'upload';
+            }
         }
 
         $db = getDB();

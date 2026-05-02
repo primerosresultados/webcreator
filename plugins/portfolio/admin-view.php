@@ -184,6 +184,11 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                     💡 Guarda el proyecto primero para poder subir imágenes y videos.
                 </div>
 
+                <!-- Hint -->
+                <p style="margin:0 0 var(--space-3) 0;font-size:11.5px;color:#8b90a6;">
+                    💡 Hacé clic en la <strong style="color:#f59e0b;">estrella ⭐</strong> de una imagen para usarla de portada (aparece en el listado y como cabecera del proyecto).
+                </p>
+
                 <!-- Gallery grid (shown after save) -->
                 <div id="pf-gallery-grid" class="portfolio-gallery-grid" style="display:none;">
                     <!-- Images injected here -->
@@ -210,12 +215,21 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                         </svg>
                         <span style="font-size:14px;font-weight:700;color:#1a1d2e;">Videos del Proyecto</span>
                     </div>
-                    <button type="button" class="btn btn-primary btn-sm" onclick="PortfolioAdmin.openAddVideoDialog()" id="pf-add-video-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
-                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Agregar Video
-                    </button>
+                    <div style="display:flex;gap:8px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pf-video-input').click()" id="pf-upload-video-btn" title="Subir archivo de video a Cloudinary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Subir Video
+                        </button>
+                        <input type="file" id="pf-video-input" accept="video/*" style="display:none;" onchange="PortfolioAdmin.uploadVideoFile(this)">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="PortfolioAdmin.openAddVideoDialog()" id="pf-add-video-btn" title="Agregar URL de YouTube/Vimeo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            URL Video
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Video list -->

@@ -354,8 +354,8 @@ const PortfolioAdmin = {
                     <img src="${escapeHtml(img.image_url)}" alt="${escapeHtml(img.caption || '')}" loading="lazy">
                     <div class="portfolio-gallery-actions">
                         <button type="button" class="btn btn-ghost btn-icon" 
-                                onclick="PortfolioAdmin.setFeatured(${projectId}, '${escapeHtml(img.image_url)}')" 
-                                title="Establecer como destacada"
+                                onclick="PortfolioAdmin.setFeatured(${projectId}, '${escapeHtml(img.image_url)}')"
+                                title="${img.image_url === featuredImage ? 'Imagen destacada (portada)' : 'Destacar como portada'}"
                                 style="color:${img.image_url === featuredImage ? '#f59e0b' : '#fff'};">
                             <svg viewBox="0 0 24 24" fill="${img.image_url === featuredImage ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         </button>
@@ -378,6 +378,17 @@ const PortfolioAdmin = {
     // IMAGE UPLOAD
     // ============================================
     async uploadImages(input) {
+        // Re-entrance guard: bloquea uploads concurrentes (ej: drop disparando varias veces).
+        if (this._uploading) return;
+        this._uploading = true;
+        try {
+            await this._uploadImagesInner(input);
+        } finally {
+            this._uploading = false;
+        }
+    },
+
+    async _uploadImagesInner(input) {
         const projectId = document.getElementById('pf-id').value;
         if (!projectId) {
             Toast.warning('Guarda el proyecto primero.');
@@ -510,6 +521,9 @@ const PortfolioAdmin = {
     initDropZone(projectId) {
         const dropZone = document.getElementById('pf-drop-zone');
         if (!dropZone) return;
+        // Evitar apilar listeners cada vez que se re-renderiza la galería.
+        if (dropZone._initialized) return;
+        dropZone._initialized = true;
 
         dropZone.onclick = () => document.getElementById('pf-image-input').click();
 
@@ -528,7 +542,7 @@ const PortfolioAdmin = {
             e.preventDefault();
             dropZone.style.borderColor = '';
             dropZone.style.background = '';
-            
+
             if (e.dataTransfer.files.length > 0) {
                 const input = document.getElementById('pf-image-input');
                 const dt = new DataTransfer();
@@ -604,6 +618,85 @@ const PortfolioAdmin = {
 
     closeAddVideoDialog() {
         document.getElementById('pf-add-video-modal').classList.remove('active');
+    },
+
+    // Subir archivo de video directo a Cloudinary y registrarlo como video tipo "upload"
+    async uploadVideoFile(input) {
+        if (this._uploadingVideo) return;
+        this._uploadingVideo = true;
+        try {
+            const projectId = document.getElementById('pf-id').value;
+            if (!projectId) { Toast.warning('Guarda el proyecto primero.'); return; }
+
+            const file = input.files && input.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('video/')) {
+                Toast.warning('El archivo no es un video.');
+                return;
+            }
+            // Cloudinary plan free permite hasta 100MB por archivo en uploads unsigned
+            if (file.size > 100 * 1024 * 1024) {
+                Toast.warning('El video excede 100MB.');
+                return;
+            }
+
+            // Cargar config Cloudinary
+            let cfg = window.CLOUDINARY_CFG;
+            if (!cfg) {
+                const node = document.getElementById('portfolio-cloudinary-cfg');
+                if (node && node.dataset.cfg) {
+                    try { cfg = JSON.parse(node.dataset.cfg); window.CLOUDINARY_CFG = cfg; } catch (e) {}
+                }
+            }
+            if (!cfg || !cfg.cloudName || !cfg.uploadPreset) {
+                Toast.error('Cloudinary no está configurado. Revisá config/cloudinary.php');
+                return;
+            }
+
+            Toast.info('Subiendo video... puede tardar.');
+
+            const cloudData = new FormData();
+            cloudData.append('file', file);
+            cloudData.append('upload_preset', cfg.uploadPreset);
+            if (cfg.folder) cloudData.append('folder', cfg.folder);
+
+            const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/video/upload`, {
+                method: 'POST',
+                body: cloudData
+            });
+            const cloudJson = await cloudRes.json();
+
+            if (!cloudRes.ok || !cloudJson.secure_url) {
+                Toast.error(`Cloudinary rechazó el video: ${cloudJson.error?.message || 'error desconocido'}`);
+                return;
+            }
+
+            // Registrar en backend con tipo "upload"
+            const result = await this.api('add_video', {
+                method: 'POST',
+                body: JSON.stringify({
+                    project_id: parseInt(projectId),
+                    video_url: cloudJson.secure_url,
+                    video_type: 'upload',
+                    title: file.name.replace(/\.[^.]+$/, '')
+                })
+            });
+
+            if (result && result.success) {
+                Toast.success('Video subido a Cloudinary.');
+                input.value = '';
+                const projResult = await this.api(`get&id=${projectId}`);
+                if (projResult && projResult.success) {
+                    this.showVideos(projectId, projResult.project.videos || []);
+                }
+            } else {
+                Toast.error(result?.error || 'Error al guardar el video.');
+            }
+        } catch (err) {
+            Toast.error('Error de red al subir el video.');
+        } finally {
+            this._uploadingVideo = false;
+        }
     },
 
     async addVideo() {
