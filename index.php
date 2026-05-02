@@ -123,17 +123,7 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <?php endif; ?>
             </a>
 
-            <div class="nav-links" id="nav-links">
-                <a href="#inicio" class="active">Inicio</a>
-                <a href="#nosotros">Nosotros</a>
-                <a href="#servicios">Servicios</a>
-                <a href="#proyectos">Proyectos</a>
-                <a href="#contacto">Contacto</a>
-                <a href="tel:<?=$phoneClean?>" class="nav-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><?=$h($S['phone'])?></a>
-                <a href="#inicio" class="btn btn-primary btn-sm">Solicitar Info</a>
-            </div>
-
-            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+            <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="overlay-menu">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -142,90 +132,91 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     </header>
 
     <!-- ============================================ -->
-    <!-- HERO SECTION — Full-screen with form -->
+    <!-- OVERLAY MENU (estilo Foster + Partners) -->
     <!-- ============================================ -->
-    <section class="hero" id="inicio">
-        <div class="hero-bg">
-            <img src="/assets/img/hero-bg.png" alt="Skyline moderno" loading="eager">
-            <div class="hero-overlay"></div>
-        </div>
-
-        <div class="container">
-            <div class="hero-grid">
-                <!-- Left: Text content -->
-                <div class="hero-content" data-animate="fadeInUp">
-                    <div class="hero-subtitle-row">
-                        <span class="hero-step">DISEÑO</span>
-                        <span class="hero-step-divider"></span>
-                        <span class="hero-step">ARQUITECTURA</span>
-                        <span class="hero-step-divider"></span>
-                        <span class="hero-step">NATURALEZA</span>
-                    </div>
-
-                    <h1>Tu Casa<br>Tus Sueños<br>Diseño Único</h1>
-
-                    <p class="hero-desc">
-                        <?=$h($S['siteDescription'])?>. Diseñamos casas en el sur de Chile donde la naturaleza y la arquitectura se encuentran en perfecta armonía.
-                    </p>
-
-                    <div class="hero-actions">
-                        <a href="#servicios" class="btn btn-outline-light btn-lg">Conoce Nuestros Servicios</a>
-                        <a href="#contacto" class="btn btn-outline-light btn-lg">Solicitar Cotización</a>
-                    </div>
-                </div>
-
-                <!-- Right: Lead capture form -->
-                <div class="hero-form" data-animate="fadeInUp" data-delay="200">
-                    <div class="hero-form-card">
-                        <div class="hero-form-header">
-                            <h3>Consulta tu proyecto</h3>
-                            <p>Te asesoramos sin compromiso</p>
-                        </div>
-                        <form id="hero-contact-form">
-                            <!-- Honeypot anti-spam -->
-                            <div style="position:absolute;left:-9999px;" aria-hidden="true">
-                                <input type="text" name="website_url" tabindex="-1" autocomplete="off">
-                            </div>
-                            <input type="hidden" name="_form_time" value="">
-                            <input type="hidden" name="source" value="website-hero">
-
-                            <div class="form-group">
-                                <input type="text" id="hero-name" name="name" class="form-input" placeholder="Nombre completo *" required minlength="2">
-                            </div>
-
-                            <div class="form-group">
-                                <input type="email" id="hero-email" name="email" class="form-input" placeholder="Email *" required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="tel" id="hero-phone" name="phone" class="form-input" placeholder="Teléfono">
-                            </div>
-
-                            <div class="form-group">
-                                <select id="hero-service" name="service" class="form-input">
-                                    <option value="">¿Qué tipo de proyecto necesitas?</option>
-                                    <option value="diseño-proyecto">Diseño de Proyecto</option>
-                                    <option value="obra-nueva">Obra Nueva</option>
-                                    <option value="ampliacion">Ampliación / Remodelación</option>
-                                    <option value="tramitacion">Tramitación Municipal</option>
-                                    <option value="visualizacion-3d">Visualización 3D</option>
-                                    <option value="otro">Otro</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <textarea id="hero-message" name="message" class="form-textarea" placeholder="Cuéntanos sobre tu proyecto: ubicación, tipo de terreno, ideas..." rows="3"></textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-accent btn-block btn-lg" id="hero-submit-btn">
-                                Enviar Solicitud →
-                            </button>
-
-                            <p class="hero-form-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Tus datos están seguros y protegidos</p>
-                        </form>
-                    </div>
+    <?php
+    // Detectar imagen para el menú: primer proyecto del portfolio o hero-bg
+    $menuImage = '/assets/img/hero-bg.png';
+    $portfolioDir = __DIR__ . '/assets/img';
+    foreach (['proyecto-1.png','proyecto-2.png','proyecto-3.png','proyecto-4.png'] as $p) {
+        if (file_exists($portfolioDir.'/'.$p)) { $menuImage = '/assets/img/'.$p; break; }
+    }
+    $instagramUrl = $S['instagram'] ?? $S['socialInstagram'] ?? '';
+    $linkedinUrl  = $S['linkedin']  ?? $S['socialLinkedin']  ?? '';
+    ?>
+    <div class="overlay-menu" id="overlay-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menú principal">
+        <div class="overlay-menu-image" style="background-image:url('<?=$h($menuImage)?>');" aria-hidden="true"></div>
+        <div class="overlay-menu-panel">
+            <button class="overlay-menu-close" id="overlay-menu-close" aria-label="Cerrar menú">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="overlay-menu-inner">
+                <span class="overlay-menu-eyebrow">Menú</span>
+                <nav class="overlay-menu-list" aria-label="Navegación principal">
+                    <a href="#nosotros">Estudio</a>
+                    <a href="#proyectos">Proyectos</a>
+                    <a href="#servicios">Servicios</a>
+                    <a href="#contacto">Contacto</a>
+                </nav>
+                <div class="overlay-menu-social">
+                    <?php if ($instagramUrl): ?>
+                    <a href="<?=$h($instagramUrl)?>" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <?php endif; ?>
+                    <?php if ($linkedinUrl): ?>
+                    <a href="<?=$h($linkedinUrl)?>" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    </a>
+                    <?php endif; ?>
+                    <?php if (!$instagramUrl && !$linkedinUrl): ?>
+                    <a href="#" aria-label="Instagram" onclick="return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn" onclick="return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- HERO SECTION — Video background loop -->
+    <!-- ============================================ -->
+    <?php
+    // Detectar videos en /uploads/videos (mp4/webm). Fallback: imagen hero-bg.
+    $videosDir = __DIR__ . '/uploads/videos';
+    $heroVideos = [];
+    if (is_dir($videosDir)) {
+        foreach (scandir($videosDir) as $f) {
+            if ($f === '.' || $f === '..') continue;
+            $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION));
+            if (in_array($ext, ['mp4','webm','mov','m4v'], true)) {
+                $heroVideos[] = '/uploads/videos/' . rawurlencode($f);
+            }
+        }
+        sort($heroVideos);
+    }
+    ?>
+    <section class="hero hero--video" id="inicio">
+        <div class="hero-bg">
+            <?php if (!empty($heroVideos)): ?>
+                <div class="hero-videos" id="hero-videos">
+                    <?php foreach ($heroVideos as $i => $src): ?>
+                        <video class="hero-video<?= $i === 0 ? ' is-active' : '' ?>"
+                               src="<?=$h($src)?>"
+                               muted
+                               playsinline
+                               <?= count($heroVideos) === 1 ? 'loop' : '' ?>
+                               <?= $i === 0 ? 'autoplay' : '' ?>
+                               preload="<?= $i === 0 ? 'auto' : 'metadata' ?>"></video>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <img src="/assets/img/hero-bg.png" alt="" loading="eager">
+            <?php endif; ?>
         </div>
     </section>
 

@@ -66,22 +66,34 @@ function initHeader() {
         lastScroll = currentScroll;
     }, { passive: true });
 
-    // Mobile menu toggle
+    // Overlay menu toggle (Foster + Partners style)
     const toggle = document.querySelector('.nav-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    const overlay = document.getElementById('overlay-menu');
+    const closeBtn = document.getElementById('overlay-menu-close');
 
-    if (toggle && navLinks) {
+    if (toggle && overlay) {
+        const openMenu = () => {
+            overlay.classList.add('is-open');
+            overlay.setAttribute('aria-hidden', 'false');
+            toggle.setAttribute('aria-expanded', 'true');
+            document.body.classList.add('menu-open');
+        };
+        const closeMenu = () => {
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('menu-open');
+        };
+
         toggle.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-            toggle.setAttribute('aria-expanded', navLinks.classList.contains('open'));
+            overlay.classList.contains('is-open') ? closeMenu() : openMenu();
         });
-
-        // Close on link click
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('open');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        overlay.querySelectorAll('.overlay-menu-list a').forEach(a => {
+            a.addEventListener('click', closeMenu);
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeMenu();
         });
     }
 
@@ -441,6 +453,49 @@ function initCounters() {
 }
 
 // ============================================
+// HERO VIDEO LOOP — rotate through videos in sequence
+// ============================================
+function initHeroVideos() {
+    const wrap = document.getElementById('hero-videos');
+    if (!wrap) return;
+    const videos = Array.from(wrap.querySelectorAll('video'));
+    if (videos.length === 0) return;
+
+    videos.forEach(v => { v.muted = true; v.setAttribute('playsinline',''); });
+
+    if (videos.length === 1) {
+        videos[0].loop = true;
+        const p = videos[0].play();
+        if (p && p.catch) p.catch(() => {});
+        return;
+    }
+
+    let idx = 0;
+    const playAt = (i) => {
+        videos.forEach((v, k) => {
+            if (k === i) {
+                v.classList.add('is-active');
+                try { v.currentTime = 0; } catch (e) {}
+                const p = v.play();
+                if (p && p.catch) p.catch(() => {});
+            } else {
+                v.classList.remove('is-active');
+                v.pause();
+            }
+        });
+    };
+
+    videos.forEach((v, i) => {
+        v.addEventListener('ended', () => {
+            idx = (i + 1) % videos.length;
+            playAt(idx);
+        });
+    });
+
+    playAt(0);
+}
+
+// ============================================
 // PAGE TRANSITIONS (subtle app-like fade)
 // ============================================
 function initPageTransitions() {
@@ -483,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCounters();
     initContactForm();
     initHeroForm();
+    initHeroVideos();
     initSmoothScroll();
     initWhatsApp();
     initPageTransitions();
