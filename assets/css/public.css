@@ -1193,6 +1193,14 @@ body.menu-open { overflow: hidden; }
     color: var(--color-secondary);
 }
 
+.footer-ig {
+    display: inline-flex !important;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+.footer-ig svg { flex-shrink: 0; }
+
 .footer-bottom {
     display: flex;
     align-items: center;
