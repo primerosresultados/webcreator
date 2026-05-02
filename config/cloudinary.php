@@ -14,7 +14,7 @@
 
 return [
     'cloudName'    => 'dt7raeikn',
-    'uploadPreset' => 'fare_portfolio_unsigned',
+    'uploadPreset' => 'Fare',
     // Carpeta destino dentro de Cloudinary (si el preset no la fija). Opcional.
     'folder'       => 'fare/portfolio',
     // Transformación por defecto al servir imágenes (mismo formato que Cloudinary)
