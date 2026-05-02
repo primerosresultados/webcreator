@@ -24,7 +24,7 @@ return [
     // Lista de public IDs (sin extensión). Se reproducen en orden.
     'publicIds' => [
         '15194819_3840_2160_60fps_zgbcgf',
-        // 'otro_video_id',
-        // 'otro_mas',
+        '13052294_3840_2160_24fps_bv0iau',
+        '13504352_3840_2160_30fps_q2frhf',
     ],
 ];
