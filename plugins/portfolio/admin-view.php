@@ -242,7 +242,7 @@ if (is_array($cloudCfg) && !empty($cloudCfg['cloudName'])) {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;margin:0 auto 8px;display:block;color:#ccc;">
                         <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>
                     </svg>
-                    Sin videos. Agrega URLs de YouTube o Vimeo.
+                    Sin videos. Subí un archivo a Cloudinary o agregá una URL de YouTube/Vimeo.
                 </div>
             </div>
 
