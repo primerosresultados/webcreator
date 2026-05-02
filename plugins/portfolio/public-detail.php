@@ -572,7 +572,7 @@ if ($project && !empty($project['tags'])) {
                 <div class="footer-col">
                     <h4>Navegación</h4>
                     <a href="/">Inicio</a>
-                    <a href="/#nosotros">Nosotros</a>
+                    <a href="/estudio">Estudio</a>
                     <a href="/#servicios">Servicios</a>
                     <a href="/#contacto">Contacto</a>
                 </div>
@@ -585,9 +585,25 @@ if ($project && !empty($project['tags'])) {
                 </div>
                 <div class="footer-col">
                     <h4>Contacto</h4>
-                    <a href="tel:<?=$phoneClean?>"><?=$h($S['phone'])?></a>
+                    <?php if (!empty($S['email'])): ?>
                     <a href="mailto:<?=$h($S['email'])?>"><?=$h($S['email'])?></a>
+                    <?php endif; ?>
+                    <?php if (!empty($S['phone'])): ?>
+                    <a href="tel:<?=$phoneClean?>"><?=$h($S['phone'])?></a>
+                    <?php endif; ?>
+                    <?php if (!empty($S['address'])): ?>
                     <span style="color:rgba(255,255,255,0.5);font-size:0.85rem;"><?=$h($S['address'])?></span>
+                    <?php endif; ?>
+                    <?php
+                    $igUrl = $S['instagram'] ?? '';
+                    $igHandle = ($igUrl && preg_match('#instagram\.com/([^/?#]+)#i', $igUrl, $mIg)) ? $mIg[1] : '';
+                    ?>
+                    <?php if ($igUrl): ?>
+                    <a href="<?=$h($igUrl)?>" target="_blank" rel="noopener" class="footer-ig">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        <span><?=$h($igHandle ?: 'Instagram')?></span>
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="footer-bottom">
