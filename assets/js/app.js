@@ -6,6 +6,74 @@
  */
 
 // ============================================
+// PAGE LOADER — animar logo del centro al header
+// ============================================
+(function () {
+    const loaderLogo = document.getElementById('page-loader-logo');
+    if (!loaderLogo) return;
+
+    // Min display time para que se vea el loader (UX). 600ms es suficiente.
+    const MIN_DISPLAY = 600;
+    const start = performance.now();
+
+    function runExitAnimation() {
+        const headerLogo = document.querySelector('.site-header .nav-brand img, .site-header .nav-brand svg');
+        if (!headerLogo) {
+            // No hay logo destino: solo desvanecer el loader
+            document.body.classList.add('is-loaded');
+            setTimeout(() => document.body.classList.remove('is-loading'), 800);
+            return;
+        }
+
+        // Asegurar que el header tenga su layout listo
+        const fromRect = loaderLogo.getBoundingClientRect();
+        const toRect = headerLogo.getBoundingClientRect();
+        if (fromRect.width === 0 || toRect.width === 0) {
+            document.body.classList.add('is-loaded');
+            setTimeout(() => document.body.classList.remove('is-loading'), 800);
+            return;
+        }
+
+        // Calcular delta para llevar el centro del loader-logo al centro del header-logo
+        const fromCx = fromRect.left + fromRect.width / 2;
+        const fromCy = fromRect.top + fromRect.height / 2;
+        const toCx = toRect.left + toRect.width / 2;
+        const toCy = toRect.top + toRect.height / 2;
+        const tx = toCx - fromCx;
+        const ty = toCy - fromCy;
+        const scale = toRect.height / fromRect.height;
+
+        loaderLogo.style.setProperty('--loader-tx', tx + 'px');
+        loaderLogo.style.setProperty('--loader-ty', ty + 'px');
+        loaderLogo.style.setProperty('--loader-scale', scale.toFixed(4));
+
+        document.body.classList.add('is-loaded');
+        // Después de que el loader desaparezca, sacamos is-loading para liberar scroll
+        setTimeout(() => document.body.classList.remove('is-loading'), 900);
+    }
+
+    function tryStart() {
+        const elapsed = performance.now() - start;
+        const wait = Math.max(0, MIN_DISPLAY - elapsed);
+        setTimeout(runExitAnimation, wait);
+    }
+
+    if (document.readyState === 'complete') {
+        tryStart();
+    } else {
+        window.addEventListener('load', tryStart, { once: true });
+    }
+
+    // Failsafe: nunca dejar el loader colgado
+    setTimeout(() => {
+        if (!document.body.classList.contains('is-loaded')) {
+            document.body.classList.add('is-loaded');
+            document.body.classList.remove('is-loading');
+        }
+    }, 5000);
+})();
+
+// ============================================
 // TOAST NOTIFICATION SYSTEM
 // ============================================
 const Toast = {

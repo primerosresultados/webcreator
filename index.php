@@ -155,7 +155,11 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
     <!-- Dynamic theme (loaded from database settings) -->
     <link rel="stylesheet" href="/api/theme.css.php">
 </head>
-<body>
+<body class="is-loading">
+    <!-- Page loader: fondo negro + logo centrado, animado a la cabecera al cargar -->
+    <div id="page-loader" aria-hidden="true">
+        <img id="page-loader-logo" src="<?=$h($logoNegative ?: $logoNormal ?: '/assets/img/logo-negative.png')?>" alt="">
+    </div>
 
     <!-- ============================================ -->
     <!-- HEADER / NAVIGATION -->
