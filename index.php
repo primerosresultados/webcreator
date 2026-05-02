@@ -233,101 +233,45 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
                 <a href="#contacto" class="btn btn-dark btn-lg">Conversemos sobre tu Proyecto</a>
             </div>
 
-            <!-- Trust signals -->
-            <div class="trust-grid" data-animate="fadeInUp" data-delay="200">
+            <!-- Servicios -->
+            <div class="trust-grid" id="servicios" data-animate="fadeInUp" data-delay="200">
                 <div class="trust-card">
                     <div class="trust-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     </div>
-                    <h4>Diseño Residencial</h4>
-                    <p>Casas diseñadas para integrarse con el paisaje del sur de Chile, respetando cada entorno.</p>
+                    <h4>Diseño</h4>
+                    <ul class="trust-list">
+                        <li>Anteproyecto</li>
+                        <li>Proyecto</li>
+                    </ul>
                 </div>
                 <div class="trust-card">
                     <div class="trust-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
                     <h4>Gestión Integral</h4>
-                    <p>Tramitaciones municipales, permisos de edificación y recepción final de obras.</p>
+                    <ul class="trust-list">
+                        <li>Tramitaciones municipales</li>
+                        <li>Permisos de Edificación</li>
+                        <li>Recepción final de Obras</li>
+                    </ul>
                 </div>
                 <div class="trust-card">
                     <div class="trust-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     </div>
                     <h4>Visualización 3D</h4>
-                    <p>Renders fotorrealistas para que visualices tu proyecto antes de construir.</p>
+                    <ul class="trust-list">
+                        <li>Modelos 3D</li>
+                        <li>Renders fotorrealistas</li>
+                    </ul>
                 </div>
                 <div class="trust-card">
                     <div class="trust-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <h4>Compromiso Total</h4>
-                    <p>Acompañamiento desde la primera idea hasta la entrega de llaves de tu hogar.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- SERVICES — Split Screen -->
-    <!-- ============================================ -->
-    <section class="services-split" id="servicios">
-        <div class="split-card" data-animate="fadeIn">
-            <img src="/assets/img/construction.png" alt="Diseño y Gestión de Proyectos" loading="lazy">
-            <div class="split-overlay"></div>
-            <div class="split-content">
-                <h3>Diseño y Gestión de Proyectos</h3>
-                <div class="split-tags">
-                    <span class="split-tag"># Diseño Arquitectónico</span>
-                    <span class="split-tag"># Planimetría Completa</span>
-                    <span class="split-tag"># Gestión de Obra</span>
-                </div>
-                <a href="#contacto" class="btn btn-outline-light">Consultar</a>
-            </div>
-        </div>
-        <div class="split-card" data-animate="fadeIn" data-delay="200">
-            <img src="/assets/img/architecture.png" alt="Ampliaciones y Obra Nueva" loading="lazy">
-            <div class="split-overlay"></div>
-            <div class="split-content">
-                <h3>Obra Nueva y Ampliaciones</h3>
-                <div class="split-tags">
-                    <span class="split-tag"># Permisos de Edificación</span>
-                    <span class="split-tag"># Viviendas y Terrazas</span>
-                    <span class="split-tag"># Quinchos y Espacios Exteriores</span>
-                </div>
-                <a href="#contacto" class="btn btn-outline-light">Consultar</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- STATS BAR -->
-    <!-- ============================================ -->
-    <section class="stats-bar">
-        <div class="container">
-            <div class="stats-grid" data-animate="fadeInUp">
-                <div class="stat-item">
-                    <div class="stat-value">
-                        <span class="stat-number" data-count="50">0</span><span class="stat-suffix">+</span>
-                    </div>
-                    <span class="stat-label">Proyectos Diseñados</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">
-                        <span class="stat-number" data-count="100">0</span><span class="stat-suffix">%</span>
-                    </div>
-                    <span class="stat-label">Compromiso</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">
-                        <span class="stat-number" data-count="10">0</span><span class="stat-suffix">+</span>
-                    </div>
-                    <span class="stat-label">Años de Experiencia</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">
-                        <span class="stat-number" data-count="5">0</span><span class="stat-suffix"></span>
-                    </div>
-                    <span class="stat-label">Servicios Especializados</span>
+                    <p>Acompañamiento desde la primera reunión hasta el término de la obra.</p>
                 </div>
             </div>
         </div>
