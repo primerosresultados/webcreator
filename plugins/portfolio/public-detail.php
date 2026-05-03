@@ -207,6 +207,7 @@ if ($project && !empty($project['tags'])) {
             <div class="overlay-menu-inner">
                 <span class="overlay-menu-eyebrow">Menú</span>
                 <nav class="overlay-menu-list" aria-label="Navegación principal">
+                    <a href="/">Inicio</a>
                     <a href="/estudio">Estudio</a>
                     <a href="/#proyectos">Proyectos</a>
                     <a href="/#servicios">Servicios</a>
