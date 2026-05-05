@@ -9,11 +9,29 @@
 // PAGE LOADER — animar logo del centro al header
 // ============================================
 (function () {
+    const loaderEl = document.getElementById('page-loader');
     const loaderLogo = document.getElementById('page-loader-logo');
-    if (!loaderLogo) return;
+    if (!loaderLogo || !loaderEl) return;
+
+    // Gate: solo mostrar la primera vez por sesión.
+    // Si ya se mostró, ocultamos sin animar y dejamos el sitio listo.
+    let alreadyShown = false;
+    try { alreadyShown = sessionStorage.getItem('loaderShown') === '1'; } catch (e) {}
+
+    if (alreadyShown) {
+        // Skip animación: ocultar loader inmediatamente, header-logo visible
+        loaderEl.style.transition = 'none';
+        loaderEl.style.opacity = '0';
+        loaderEl.style.visibility = 'hidden';
+        loaderEl.style.pointerEvents = 'none';
+        document.body.classList.add('is-loaded');
+        document.body.classList.remove('is-loading');
+        return;
+    }
 
     const MIN_DISPLAY = 2000;
     const start = performance.now();
+    try { sessionStorage.setItem('loaderShown', '1'); } catch (e) {}
 
     // Devuelve el logo del header que está REALMENTE visible (no display:none).
     function getVisibleHeaderLogo() {

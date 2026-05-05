@@ -158,11 +158,7 @@ if ($project && !empty($project['tags'])) {
     <link rel="stylesheet" href="/assets/css/public.css?v=<?=$v?>">
     <link rel="stylesheet" href="/api/theme.css.php">
 </head>
-<body class="project-page is-loading">
-    <!-- Page loader -->
-    <div id="page-loader" aria-hidden="true">
-        <img id="page-loader-logo" src="<?=$h($logoNegative ?: $logoNormal ?: '/assets/img/logo-negative.png')?>" alt="">
-    </div>
+<body class="project-page">
 
     <!-- HEADER (matches home: solo marca + hamburguesa) -->
     <header class="site-header" id="header">

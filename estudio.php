@@ -105,10 +105,7 @@ if (!empty($S['linkedin']))  $socials[] = ['url' => $S['linkedin'],  'label' => 
     <link rel="stylesheet" href="/assets/css/public.css?v=<?=$v?>">
     <link rel="stylesheet" href="/api/theme.css.php">
 </head>
-<body class="project-page is-loading">
-    <div id="page-loader" aria-hidden="true">
-        <img id="page-loader-logo" src="<?=$h($logoNegative ?: $logoNormal)?>" alt="">
-    </div>
+<body class="project-page">
 
     <!-- HEADER -->
     <header class="site-header" id="header">
