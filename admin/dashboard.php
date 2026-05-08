@@ -728,6 +728,102 @@ try {
                     <button class="btn btn-secondary" onclick="resetThemeConfig()" style="width:auto;padding:0.75rem 2rem;">Restablecer</button>
                     <button class="btn btn-primary" id="save-theme-btn" onclick="saveThemeConfig()" style="width:auto;padding:0.75rem 2rem;">Guardar Configuración</button>
                 </div>
+
+                <!-- ============================================ -->
+                <!-- USUARIOS / ADMINISTRADORES -->
+                <!-- ============================================ -->
+                <div class="admin-section-title" style="margin-top:var(--space-10);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Administradores del sitio</span>
+                </div>
+
+                <div class="card" style="margin-bottom:var(--space-6);">
+                    <p style="font-size:12px;color:#8b90a6;margin-bottom:var(--space-4);">Administra los usuarios con acceso al panel. Solo superadmin puede crear, eliminar o cambiar roles.</p>
+
+                    <!-- Mi cuenta: cambiar email + contraseña propia -->
+                    <div style="background:#f7f8fc;border:1.5px solid #e8eaf2;border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-4);">
+                        <p style="font-weight:600;font-size:13px;margin-bottom:var(--space-3);color:var(--text-primary);">Mi cuenta</p>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-3);margin-bottom:var(--space-3);">
+                            <div class="config-control">
+                                <label class="config-label">Mi email</label>
+                                <input type="email" id="me-email" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                            </div>
+                            <div class="config-control">
+                                <label class="config-label">Mi nombre</label>
+                                <input type="text" id="me-name" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                            </div>
+                            <div style="display:flex;align-items:flex-end;">
+                                <button class="btn btn-primary btn-sm" onclick="UsersAdmin.saveMe()">Guardar mi info</button>
+                            </div>
+                        </div>
+                        <details style="margin-top:var(--space-3);">
+                            <summary style="cursor:pointer;font-size:12px;color:var(--text-secondary);">Cambiar mi contraseña</summary>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-top:var(--space-3);">
+                                <input type="password" id="me-current-pw" placeholder="Contraseña actual" class="form-input" autocomplete="current-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                                <input type="password" id="me-new-pw" placeholder="Nueva contraseña (mín 8)" class="form-input" autocomplete="new-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                                <button class="btn btn-primary btn-sm" onclick="UsersAdmin.changeMyPassword()">Cambiar</button>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Lista de usuarios (solo superadmin) -->
+                    <div id="users-superadmin-section" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);">
+                            <p style="font-weight:600;font-size:13px;color:var(--text-primary);margin:0;">Todos los usuarios</p>
+                            <button class="btn btn-secondary btn-sm" onclick="UsersAdmin.openCreate()">+ Nuevo administrador</button>
+                        </div>
+                        <div id="users-list-table" style="border:1.5px solid #e8eaf2;border-radius:10px;overflow:hidden;background:#fff;">
+                            <div style="padding:1.5rem;text-align:center;color:#8b90a6;">Cargando…</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal: crear/editar usuario -->
+                <div class="modal-backdrop" id="users-modal-backdrop"></div>
+                <div class="modal" id="users-modal" style="max-width:520px;">
+                    <div class="modal-header">
+                        <h3 id="users-modal-title">Nuevo administrador</h3>
+                        <button class="modal-close" onclick="UsersAdmin.closeModal()">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="usr-id" value="">
+                        <div class="config-control">
+                            <label class="config-label">Usuario (sin espacios)</label>
+                            <input type="text" id="usr-username" class="form-input" placeholder="ej: alvaro" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                        </div>
+                        <div class="config-control" style="margin-top:var(--space-3);">
+                            <label class="config-label">Email</label>
+                            <input type="email" id="usr-email" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                        </div>
+                        <div class="config-control" style="margin-top:var(--space-3);">
+                            <label class="config-label">Nombre completo</label>
+                            <input type="text" id="usr-fullname" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                        </div>
+                        <div class="config-control" style="margin-top:var(--space-3);">
+                            <label class="config-label">Rol</label>
+                            <select id="usr-role" class="config-select">
+                                <option value="admin">Admin</option>
+                                <option value="superadmin">Super Admin</option>
+                                <option value="editor">Editor</option>
+                            </select>
+                        </div>
+                        <div class="config-control" id="usr-password-wrap" style="margin-top:var(--space-3);">
+                            <label class="config-label">Contraseña (mín 8 caracteres)</label>
+                            <input type="password" id="usr-password" class="form-input" autocomplete="new-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                        </div>
+                        <div id="usr-edit-extras" style="display:none;margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px solid #eef0f6;">
+                            <p style="font-size:12px;color:#8b90a6;margin-bottom:var(--space-2);">Cambiar contraseña de este usuario</p>
+                            <div style="display:flex;gap:8px;">
+                                <input type="password" id="usr-newpw" placeholder="Nueva contraseña" autocomplete="new-password" class="form-input" style="flex:1;background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
+                                <button class="btn btn-secondary btn-sm" onclick="UsersAdmin.adminResetPassword()">Cambiar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="UsersAdmin.closeModal()">Cancelar</button>
+                        <button class="btn btn-primary" id="usr-save-btn" onclick="UsersAdmin.save()">Guardar</button>
+                    </div>
+                </div>
             </div>
 
             <!-- ============================================ -->

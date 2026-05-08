@@ -693,7 +693,7 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
-    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); loadHeroVideos(); }
+    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); loadHeroVideos(); UsersAdmin.init(); }
     if (viewName === 'plugins') PluginManager.loadPlugins();
 
     // Handle dynamic plugin views (e.g., view-plugin-portfolio)
@@ -1661,3 +1661,189 @@ async function saveHeroVideos() {
         Toast.error(result?.error || 'Error al guardar.');
     }
 }
+
+// ============================================
+// USERS ADMIN — gestión de administradores
+// ============================================
+const UsersAdmin = {
+    me: null,
+    users: [],
+
+    async init() {
+        // Cargar info propia
+        const meRes = await api('/api/auth.php?action=me');
+        if (!meRes || !meRes.success) return;
+        this.me = meRes.user;
+        const emEl = document.getElementById('me-email'); if (emEl) emEl.value = this.me.email || '';
+        const nmEl = document.getElementById('me-name'); if (nmEl) nmEl.value = this.me.full_name || '';
+
+        // Si soy super, mostrar lista
+        if (this.me.role === 'superadmin') {
+            document.getElementById('users-superadmin-section').style.display = 'block';
+            await this.loadList();
+        } else {
+            const sec = document.getElementById('users-superadmin-section');
+            if (sec) sec.style.display = 'none';
+        }
+    },
+
+    async loadList() {
+        const res = await api('/api/users.php');
+        const cont = document.getElementById('users-list-table');
+        if (!res || !res.success) {
+            cont.innerHTML = '<div style="padding:1rem;color:#dc2626;font-size:12px;">No se pudo cargar.</div>';
+            return;
+        }
+        this.users = res.users || [];
+        if (!this.users.length) { cont.innerHTML = '<div style="padding:1rem;color:#8b90a6;font-size:12px;">Sin usuarios.</div>'; return; }
+        cont.innerHTML = `
+            <table class="data-table" style="margin:0;">
+                <thead>
+                    <tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Estado</th><th style="width:170px;">Acciones</th></tr>
+                </thead>
+                <tbody>
+                ${this.users.map(u => `
+                    <tr data-id="${u.id}">
+                        <td><strong>${escapeHtml(u.full_name || u.username)}</strong><br><span style="font-size:11px;color:#8b90a6;">@${escapeHtml(u.username)}</span></td>
+                        <td>${escapeHtml(u.email)}</td>
+                        <td><span class="badge" style="background:${u.role === 'superadmin' ? '#6366f1' : '#9ca3af'};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">${u.role}</span></td>
+                        <td>${u.is_active == 1 ? '<span style="color:#16a34a;">Activo</span>' : '<span style="color:#dc2626;">Inactivo</span>'}</td>
+                        <td>
+                            <button class="btn btn-ghost btn-sm" onclick="UsersAdmin.openEdit(${u.id})" title="Editar">✏️</button>
+                            <button class="btn btn-ghost btn-sm" onclick="UsersAdmin.toggleActive(${u.id}, ${u.is_active == 1 ? 0 : 1})" title="${u.is_active == 1 ? 'Desactivar' : 'Activar'}">${u.is_active == 1 ? '🚫' : '✓'}</button>
+                            <button class="btn btn-ghost btn-sm" onclick="UsersAdmin.delete(${u.id})" title="Eliminar" style="color:#dc2626;">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>
+        `;
+    },
+
+    openCreate() {
+        document.getElementById('users-modal-title').textContent = 'Nuevo administrador';
+        document.getElementById('usr-id').value = '';
+        document.getElementById('usr-username').value = '';
+        document.getElementById('usr-email').value = '';
+        document.getElementById('usr-fullname').value = '';
+        document.getElementById('usr-role').value = 'admin';
+        document.getElementById('usr-password').value = '';
+        document.getElementById('usr-username').disabled = false;
+        document.getElementById('usr-password-wrap').style.display = 'block';
+        document.getElementById('usr-edit-extras').style.display = 'none';
+        this._showModal();
+    },
+
+    openEdit(id) {
+        const u = this.users.find(x => x.id == id);
+        if (!u) return;
+        document.getElementById('users-modal-title').textContent = `Editar: ${u.username}`;
+        document.getElementById('usr-id').value = u.id;
+        document.getElementById('usr-username').value = u.username;
+        document.getElementById('usr-username').disabled = true; // no editable
+        document.getElementById('usr-email').value = u.email;
+        document.getElementById('usr-fullname').value = u.full_name || '';
+        document.getElementById('usr-role').value = u.role;
+        document.getElementById('usr-password').value = '';
+        document.getElementById('usr-password-wrap').style.display = 'none'; // sin password en update
+        document.getElementById('usr-newpw').value = '';
+        document.getElementById('usr-edit-extras').style.display = 'block';
+        this._showModal();
+    },
+
+    _showModal() {
+        document.getElementById('users-modal-backdrop').classList.add('active');
+        document.getElementById('users-modal').classList.add('active');
+    },
+
+    closeModal() {
+        document.getElementById('users-modal-backdrop').classList.remove('active');
+        document.getElementById('users-modal').classList.remove('active');
+    },
+
+    async save() {
+        const id = document.getElementById('usr-id').value;
+        const payload = {
+            username: document.getElementById('usr-username').value.trim(),
+            email: document.getElementById('usr-email').value.trim(),
+            full_name: document.getElementById('usr-fullname').value.trim(),
+            role: document.getElementById('usr-role').value,
+        };
+        if (id) {
+            // Update
+            payload.id = parseInt(id);
+            delete payload.username; // no se cambia
+            const r = await api('/api/users.php?action=update', { method: 'POST', body: JSON.stringify(payload) });
+            if (r && r.success) { Toast.success('Usuario actualizado.'); this.closeModal(); await this.loadList(); }
+            else Toast.error(r?.error || 'Error.');
+        } else {
+            // Create
+            payload.password = document.getElementById('usr-password').value;
+            if (!payload.username || !payload.email || !payload.password) { Toast.error('Usuario, email y contraseña son obligatorios.'); return; }
+            if (payload.password.length < 8) { Toast.error('La contraseña debe tener al menos 8 caracteres.'); return; }
+            const r = await api('/api/users.php?action=create', { method: 'POST', body: JSON.stringify(payload) });
+            if (r && r.success) { Toast.success('Usuario creado.'); this.closeModal(); await this.loadList(); }
+            else Toast.error(r?.error || 'Error.');
+        }
+    },
+
+    async adminResetPassword() {
+        const id = parseInt(document.getElementById('usr-id').value);
+        const newPw = document.getElementById('usr-newpw').value;
+        if (!id || !newPw) { Toast.error('Ingresá una contraseña nueva.'); return; }
+        if (newPw.length < 8) { Toast.error('Mínimo 8 caracteres.'); return; }
+        const r = await api('/api/users.php?action=password', {
+            method: 'POST',
+            body: JSON.stringify({ id, new_password: newPw })
+        });
+        if (r && r.success) { Toast.success('Contraseña cambiada.'); document.getElementById('usr-newpw').value = ''; }
+        else Toast.error(r?.error || 'Error.');
+    },
+
+    async toggleActive(id, newState) {
+        const r = await api('/api/users.php?action=toggle', {
+            method: 'POST',
+            body: JSON.stringify({ id, is_active: !!newState })
+        });
+        if (r && r.success) { Toast.success(r.message); await this.loadList(); }
+        else Toast.error(r?.error || 'Error.');
+    },
+
+    async delete(id) {
+        if (!confirm('¿Eliminar este usuario? Esta acción no se puede deshacer.')) return;
+        const r = await api('/api/users.php?action=delete', {
+            method: 'POST',
+            body: JSON.stringify({ id })
+        });
+        if (r && r.success) { Toast.success('Usuario eliminado.'); await this.loadList(); }
+        else Toast.error(r?.error || 'Error.');
+    },
+
+    async saveMe() {
+        if (!this.me) return;
+        const payload = {
+            id: this.me.id,
+            email: document.getElementById('me-email').value.trim(),
+            full_name: document.getElementById('me-name').value.trim(),
+        };
+        const r = await api('/api/users.php?action=update', { method: 'POST', body: JSON.stringify(payload) });
+        if (r && r.success) { Toast.success('Tu info se actualizó.'); this.me.email = payload.email; this.me.full_name = payload.full_name; }
+        else Toast.error(r?.error || 'Error.');
+    },
+
+    async changeMyPassword() {
+        const cur = document.getElementById('me-current-pw').value;
+        const nw  = document.getElementById('me-new-pw').value;
+        if (!cur || !nw) { Toast.error('Completá ambos campos.'); return; }
+        if (nw.length < 8) { Toast.error('Mínimo 8 caracteres.'); return; }
+        const r = await api('/api/users.php?action=password', {
+            method: 'POST',
+            body: JSON.stringify({ current_password: cur, new_password: nw })
+        });
+        if (r && r.success) {
+            Toast.success('Tu contraseña fue cambiada.');
+            document.getElementById('me-current-pw').value = '';
+            document.getElementById('me-new-pw').value = '';
+        } else Toast.error(r?.error || 'Error.');
+    },
+};
