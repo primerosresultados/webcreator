@@ -577,6 +577,14 @@ if (!empty($S['pinterest'])) $socials[] = ['url' => $S['pinterest'], 'label' => 
 
             <div class="footer-bottom">
                 <span>&copy; <?=date('Y')?> <?=$h($S['siteName'])?>. Todos los derechos reservados.</span>
+                <?php
+                $deployFile    = __DIR__ . '/config/deploy-version.php';
+                $deployVersion = @include $deployFile;
+                $deployTime    = @filemtime($deployFile);
+                ?>
+                <span class="footer-deploy" title="<?=$h((string)$deployVersion)?>">
+                    <?=$h((string)$deployVersion)?><?php if ($deployTime): ?> · deploy <?=date('Y-m-d H:i', $deployTime)?><?php endif; ?>
+                </span>
                 <div class="footer-social">
                     <?php if ($igHandle): ?>
                     <a href="<?=$h($igUrl)?>" target="_blank" rel="noopener" aria-label="Instagram">

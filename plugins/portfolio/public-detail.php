@@ -615,6 +615,14 @@ if ($project && !empty($project['tags'])) {
             </div>
             <div class="footer-bottom">
                 <span>&copy; <?=date('Y')?> <?=$h($S['siteName'])?>. Todos los derechos reservados.</span>
+                <?php
+                $deployFile    = __DIR__ . '/../../config/deploy-version.php';
+                $deployVersion = @include $deployFile;
+                $deployTime    = @filemtime($deployFile);
+                ?>
+                <span class="footer-deploy" title="<?=$h((string)$deployVersion)?>">
+                    <?=$h((string)$deployVersion)?><?php if ($deployTime): ?> · deploy <?=date('Y-m-d H:i', $deployTime)?><?php endif; ?>
+                </span>
                 <div class="footer-social">
                     <?php foreach ($socials as $social): ?>
                     <a href="<?=$h($social['url'])?>" target="_blank" rel="noopener" aria-label="<?=$social['label']?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><?=$social['icon']?></svg></a>

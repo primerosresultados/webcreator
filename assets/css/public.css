@@ -1471,10 +1471,22 @@ body.menu-open { overflow: hidden; }
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
     padding-top: var(--space-6);
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     font-size: var(--text-xs);
     color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-deploy {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 0.04em;
+    cursor: help;
+    flex: 0 1 auto;
+    text-align: center;
 }
 
 .footer-social {
