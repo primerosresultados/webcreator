@@ -693,7 +693,8 @@ function switchView(viewName) {
     // Load data for the view
     if (viewName === 'dashboard') loadDashboard();
     if (viewName === 'leads') loadLeads();
-    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); loadHeroVideos(); UsersAdmin.init(); }
+    if (viewName === 'settings') { loadSiteInfo(); loadThankYouConfig(); loadSavedLogos(); loadThemeConfig(); loadHeroVideos(); }
+    if (viewName === 'users') { UsersAdmin.init(); }
     if (viewName === 'plugins') PluginManager.loadPlugins();
 
     // Handle dynamic plugin views (e.g., view-plugin-portfolio)

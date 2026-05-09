@@ -114,6 +114,10 @@ try {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         Configuración
                     </a>
+                    <a class="sidebar-link" data-view="users" href="#">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Usuarios
+                    </a>
                     <a class="sidebar-link" href="#" onclick="exportLeadsCSV(); return false;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Exportar CSV
@@ -729,50 +733,51 @@ try {
                     <button class="btn btn-primary" id="save-theme-btn" onclick="saveThemeConfig()" style="width:auto;padding:0.75rem 2rem;">Guardar Configuración</button>
                 </div>
 
-                <!-- ============================================ -->
-                <!-- USUARIOS / ADMINISTRADORES -->
-                <!-- ============================================ -->
-                <div class="admin-section-title" style="margin-top:var(--space-10);">
+            </div>
+
+            <!-- ============================================ -->
+            <!-- VIEW: USUARIOS -->
+            <!-- ============================================ -->
+            <div class="admin-content admin-view hidden" id="view-users">
+                <div class="admin-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span>Administradores del sitio</span>
+                    <span>Mi cuenta</span>
                 </div>
 
                 <div class="card" style="margin-bottom:var(--space-6);">
-                    <p style="font-size:12px;color:#8b90a6;margin-bottom:var(--space-4);">Administra los usuarios con acceso al panel. Solo superadmin puede crear, eliminar o cambiar roles.</p>
-
-                    <!-- Mi cuenta: cambiar email + contraseña propia -->
-                    <div style="background:#f7f8fc;border:1.5px solid #e8eaf2;border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-4);">
-                        <p style="font-weight:600;font-size:13px;margin-bottom:var(--space-3);color:var(--text-primary);">Mi cuenta</p>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-3);margin-bottom:var(--space-3);">
-                            <div class="config-control">
-                                <label class="config-label">Mi email</label>
-                                <input type="email" id="me-email" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
-                            </div>
-                            <div class="config-control">
-                                <label class="config-label">Mi nombre</label>
-                                <input type="text" id="me-name" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
-                            </div>
-                            <div style="display:flex;align-items:flex-end;">
-                                <button class="btn btn-primary btn-sm" onclick="UsersAdmin.saveMe()">Guardar mi info</button>
-                            </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-4);">
+                        <div class="config-control">
+                            <label class="config-label">Mi email</label>
+                            <input type="email" id="me-email" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
                         </div>
-                        <details style="margin-top:var(--space-3);">
-                            <summary style="cursor:pointer;font-size:12px;color:var(--text-secondary);">Cambiar mi contraseña</summary>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-top:var(--space-3);">
-                                <input type="password" id="me-current-pw" placeholder="Contraseña actual" class="form-input" autocomplete="current-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
-                                <input type="password" id="me-new-pw" placeholder="Nueva contraseña (mín 8)" class="form-input" autocomplete="new-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:8px;padding:8px 12px;font-size:13px;">
-                                <button class="btn btn-primary btn-sm" onclick="UsersAdmin.changeMyPassword()">Cambiar</button>
-                            </div>
-                        </details>
+                        <div class="config-control">
+                            <label class="config-label">Mi nombre</label>
+                            <input type="text" id="me-name" class="form-input" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                        </div>
+                    </div>
+                    <div style="margin-top:var(--space-4);display:flex;justify-content:flex-end;">
+                        <button class="btn btn-primary btn-sm" onclick="UsersAdmin.saveMe()">Guardar mi info</button>
                     </div>
 
-                    <!-- Lista de usuarios (solo superadmin) -->
-                    <div id="users-superadmin-section" style="display:none;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);">
-                            <p style="font-weight:600;font-size:13px;color:var(--text-primary);margin:0;">Todos los usuarios</p>
-                            <button class="btn btn-secondary btn-sm" onclick="UsersAdmin.openCreate()">+ Nuevo administrador</button>
+                    <details style="margin-top:var(--space-5);padding-top:var(--space-4);border-top:1px solid #eef0f6;">
+                        <summary style="cursor:pointer;font-size:13px;color:var(--text-secondary);font-weight:600;">Cambiar mi contraseña</summary>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-3);margin-top:var(--space-4);">
+                            <input type="password" id="me-current-pw" placeholder="Contraseña actual" class="form-input" autocomplete="current-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                            <input type="password" id="me-new-pw" placeholder="Nueva contraseña (mín 8)" class="form-input" autocomplete="new-password" style="background:#fff;border:1.5px solid #e8eaf2;border-radius:10px;padding:10px 14px;font-size:13px;">
+                            <button class="btn btn-primary btn-sm" onclick="UsersAdmin.changeMyPassword()">Cambiar</button>
                         </div>
-                        <div id="users-list-table" style="border:1.5px solid #e8eaf2;border-radius:10px;overflow:hidden;background:#fff;">
+                    </details>
+                </div>
+
+                <!-- Lista de usuarios (solo superadmin) -->
+                <div id="users-superadmin-section" style="display:none;">
+                    <div class="admin-section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#6366f1;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        <span>Administradores</span>
+                        <button class="btn btn-primary btn-sm" onclick="UsersAdmin.openCreate()" style="margin-left:auto;">+ Nuevo administrador</button>
+                    </div>
+                    <div class="card" style="padding:0;overflow:hidden;">
+                        <div id="users-list-table">
                             <div style="padding:1.5rem;text-align:center;color:#8b90a6;">Cargando…</div>
                         </div>
                     </div>
