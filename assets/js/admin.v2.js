@@ -684,7 +684,7 @@ function switchView(viewName) {
     if (targetView) targetView.classList.remove('hidden');
 
     // Update header title
-    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads', settings: 'Configuración del Sitio', plugins: 'Gestionar Plugins' };
+    const titles = { dashboard: 'Dashboard', leads: 'Gestión de Leads', settings: 'Configuración del Sitio', users: 'Usuarios', plugins: 'Gestionar Plugins' };
     const headerTitle = document.querySelector('.admin-header h1');
     if (headerTitle) headerTitle.textContent = titles[viewName] || viewName;
 
