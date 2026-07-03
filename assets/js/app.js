@@ -441,38 +441,19 @@ function initHeroForm() {
 function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
-            e.preventDefault();
-            const target = document.querySelector(anchor.getAttribute('href'));
+            // El href puede cambiar después de cargar (botones dinámicos):
+            // solo interceptar si sigue siendo un anchor interno con destino real.
+            const href = anchor.getAttribute('href');
+            if (!href || !href.startsWith('#') || href === '#') return;
+            const target = document.querySelector(href);
             if (target) {
+                e.preventDefault();
                 const offset = 80; // Header height
                 const top = target.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top, behavior: 'smooth' });
             }
         });
     });
-}
-
-// ============================================
-// WHATSAPP FLOATING BUTTON (direct link, no form)
-// ============================================
-function initWhatsApp() {
-    // Load site info from public endpoint (no auth required)
-    fetch('/api/settings.php?public=1')
-        .then(r => r.json())
-        .then(d => {
-            if (!d.success || !d.site_info || !d.site_info.whatsapp) return;
-
-            const waNumber = d.site_info.whatsapp.replace(/[^0-9]/g, '');
-            const btn = document.getElementById('whatsapp-btn');
-            if (!btn) return;
-
-            const msg = encodeURIComponent('Hola, me gustaría obtener más información.');
-            btn.href = `https://wa.me/${waNumber}?text=${msg}`;
-            btn.target = '_blank';
-            btn.rel = 'noopener';
-            btn.style.display = 'flex';
-        })
-        .catch(() => {});
 }
 
 // ============================================
@@ -645,6 +626,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroForm();
     initHeroVideos();
     initSmoothScroll();
-    initWhatsApp();
     initPageTransitions();
 });
